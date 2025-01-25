@@ -10,6 +10,14 @@ namespace ScraperApp.Infrastructure.Data
         /// <summary>
         /// Initializes a new instance of the <see cref="ScraperDbContext"/> class.
         /// </summary>
+        public ScraperDbContext()
+            : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ScraperDbContext"/> class.
+        /// </summary>
         /// <param name="dbOptions">The database context options.</param>
         public ScraperDbContext(DbContextOptions<ScraperDbContext> dbOptions)
             : base(dbOptions)
