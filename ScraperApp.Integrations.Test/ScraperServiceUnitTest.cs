@@ -17,7 +17,7 @@ namespace ScraperApp.Integrations.Test
         {
             var mappingConfig = new MapperConfiguration(cfg =>
             {
-                cfg.AddProfile<AutoMapperProfile>(); // Register the AutoMapper profile
+                cfg.AddProfile<AutoMapperProfile>();
             });
 
             this.Mapper = mappingConfig.CreateMapper();
