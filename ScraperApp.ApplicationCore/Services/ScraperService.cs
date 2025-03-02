@@ -2,35 +2,54 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using AutoMapper;
 using HtmlAgilityPack;
+using ScraperApp.ApplicationCore.Enums;
+using ScraperApp.ApplicationCore.Models;
 
 namespace ScraperApp.ApplicationCore.Services
 {
     /// <summary>
     /// Provides services related to retrieving and processing HTML data.
     /// </summary>
-    public class ScraperService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ScraperService"/> class.
+    /// </remarks>
+    /// <param name="mapper">The mapper.</param>
+    public class ScraperService(IMapper mapper)
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ScraperService"/> class.
+        /// Gets or sets the mapper.
         /// </summary>
-        public ScraperService()
-        {
-        }
+        private IMapper Mapper { get; set; } = mapper;
 
         /// <summary>
         /// Gets a page's HTML.
         /// </summary>
+        /// <param name="request">The scraper request.</param>
         /// <returns>The page's HTML.</returns>
-        public async Task GetPageHtml()
+        public async Task<Result> GetPageHtml(ScraperRequest request)
         {
-            var html = @"https://html-agility-pack.net/";
+            switch (request.Options.QueryOptionsType)
+            {
+                case (int)QueryOptionsTypeEnum.Ebay:
+                    request.Options = this.Mapper.Map<EbayQueryOptions>(request.Options);
+                    break;
+                default:
+                    return new Result
+                    {
+                        Succeeded = false,
+                    };
+            }
 
-            var web = new HtmlWeb();
+            var webUtility = new HtmlWeb();
+            var htmlDoc = await webUtility.LoadFromWebAsync(request.Url);
 
-            var htmlDoc = web.Load(html);
-
-            var node = htmlDoc.DocumentNode.SelectSingleNode("//head/title");
+            return new Result
+            {
+                Succeeded = true,
+                Data = htmlDoc,
+            };
         }
     }
 }
