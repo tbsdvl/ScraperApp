@@ -18,5 +18,10 @@ namespace ScraperApp.ApplicationCore.Models
         /// Gets or sets the query options type.
         /// </summary>
         public int QueryOptionsType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the search term.
+        /// </summary>
+        required public string SearchTerm { get; set; }
     }
 }

@@ -15,4 +15,8 @@
     <ProjectReference Include="..\ScraperApp.ApplicationCore\ScraperApp.ApplicationCore.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
 </Project>

@@ -30,40 +30,24 @@ namespace ScraperApp.Integrations.Test
             return new ScraperRequest()
             {
                 Url = "https://ebay.com",
-                Options = new QueryOptions()
+                Options = new EbayQueryOptions()
                 {
-                    QueryOptionsType = (int)QueryOptionsTypeEnum.Ebay,
+                    SearchTerm = "test",
                 },
             };
         }
 
         [TestMethod]
-        public async Task GetPage_Succeeds()
+        public async Task GetItems_Succeeds()
         {
             // Arrange
             var request = GetScraperRequest();
 
             // Act
-            var result = await this.ScraperService.GetPageHtml(request);
+            var result = await this.ScraperService.GetItems(request);
 
             // Assert
-            Assert.IsTrue(result.Succeeded);
-            Assert.IsTrue(result.Data != null);
-        }
-
-        [TestMethod]
-        public async Task GetPage_No_Query_Options_Type_Fails()
-        {
-            // Arrange
-            var request = GetScraperRequest();
-            request.Options.QueryOptionsType = 0;
-
-            // Act
-            var result = await this.ScraperService.GetPageHtml(request);
-
-            // Assert
-            Assert.IsTrue(result.Succeeded);
-            Assert.IsTrue(result.Data != null);
+            Assert.IsTrue(result.Items.Count > 0, "List of items is empty.");
         }
     }
 }

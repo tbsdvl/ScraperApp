@@ -2,6 +2,8 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using ScraperApp.ApplicationCore.Enums;
+
 namespace ScraperApp.ApplicationCore.Models
 {
     /// <summary>
@@ -9,5 +11,12 @@ namespace ScraperApp.ApplicationCore.Models
     /// </summary>
     public class EbayQueryOptions : QueryOptions
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EbayQueryOptions"/> class.
+        /// </summary>
+        public EbayQueryOptions()
+        {
+            this.QueryOptionsType = (int)QueryOptionsTypeEnum.Ebay;
+        }
     }
 }

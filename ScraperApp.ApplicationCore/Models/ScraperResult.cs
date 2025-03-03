@@ -1,13 +1,13 @@
-﻿// <copyright file="Result.cs" company="Psybersimian LLC">
+﻿// <copyright file="ScraperResult.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
 namespace ScraperApp.ApplicationCore.Models
 {
     /// <summary>
-    /// Represents the result of an operation.
+    /// Represents the result of a scraping operation.
     /// </summary>
-    public class Result
+    public class ScraperResult
     {
         /// <summary>
         /// Gets or sets a value indicating whether or not the result succeeded.

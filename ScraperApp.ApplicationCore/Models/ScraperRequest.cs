@@ -12,7 +12,7 @@ namespace ScraperApp.ApplicationCore.Models
         /// <summary>
         /// Gets or sets the URL.
         /// </summary>
-        required public string Url { get; set; }
+        public string? Url { get; set; }
 
         /// <summary>
         /// Gets or sets the query options.
