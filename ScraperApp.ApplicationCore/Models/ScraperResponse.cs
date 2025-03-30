@@ -17,7 +17,7 @@ namespace ScraperApp.ApplicationCore.Models
         /// <summary>
         /// Gets or sets an error message.
         /// </summary>
-        required public string ErrorMessage { get; set; }
+        public string ErrorMessage { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether or not the response succeeded.

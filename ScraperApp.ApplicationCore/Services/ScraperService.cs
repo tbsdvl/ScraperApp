@@ -135,7 +135,6 @@ namespace ScraperApp.ApplicationCore.Services
             return new ScraperResponse()
             {
                 Items = items,
-                ErrorMessage = string.Empty,
                 Succeeded = true,
             };
         }
