@@ -4,6 +4,9 @@
 
 namespace ScraperApp.ApplicationCore.Enums
 {
+    /// <summary>
+    /// The query options type enum.
+    /// </summary>
     public enum QueryOptionsTypeEnum
     {
         /// <summary>

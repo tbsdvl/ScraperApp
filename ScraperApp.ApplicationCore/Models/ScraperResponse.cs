@@ -13,5 +13,15 @@ namespace ScraperApp.ApplicationCore.Models
         /// Gets or sets the list of items.
         /// </summary>
         required public List<Item> Items { get; set; }
+
+        /// <summary>
+        /// Gets or sets an error message.
+        /// </summary>
+        required public string ErrorMessage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether or not the response succeeded.
+        /// </summary>
+        required public bool Succeeded { get; set; }
     }
 }

@@ -74,13 +74,23 @@ namespace ScraperApp.ApplicationCore.Services
         /// </summary>
         /// <param name="request">The request.</param>
         /// <returns>The scraper response including a list of items.</returns>
-        public async Task<ScraperResponse> GetItems(ScraperRequest request)
+        public async Task<ScraperResponse> GetItemsAsync(ScraperRequest request)
         {
             var items = new List<Item>();
             if (request.Options.QueryOptionsType == (int)QueryOptionsTypeEnum.Ebay)
             {
                 var page = await this.GetPageHtml(request);
                 var nodes = page.DocumentNode.SelectNodes("//ul[contains(@class, 'srp-results srp-list clearfix')]/li[contains(@class, 's-item')]");
+
+                if (nodes is null || nodes.Count == 0)
+                {
+                    return new ScraperResponse()
+                    {
+                        Items = items,
+                        ErrorMessage = "No items found on the page. Please check the search term or the URL.",
+                        Succeeded = false,
+                    };
+                }
 
                 foreach (var node in nodes)
                 {
@@ -114,6 +124,8 @@ namespace ScraperApp.ApplicationCore.Services
             return new ScraperResponse()
             {
                 Items = items,
+                ErrorMessage = string.Empty,
+                Succeeded = true,
             };
         }
     }
