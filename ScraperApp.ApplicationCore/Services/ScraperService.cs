@@ -6,6 +6,7 @@ using AutoMapper;
 using HtmlAgilityPack;
 using ScraperApp.ApplicationCore.Constants;
 using ScraperApp.ApplicationCore.Enums;
+using ScraperApp.ApplicationCore.Extensions;
 using ScraperApp.ApplicationCore.Models;
 
 namespace ScraperApp.ApplicationCore.Services
@@ -77,10 +78,12 @@ namespace ScraperApp.ApplicationCore.Services
         public async Task<ScraperResponse> GetItemsAsync(ScraperRequest request)
         {
             var items = new List<Item>();
+
+            // use plumbing to get a service for scraping HTML
             if (request.Options.QueryOptionsType == (int)QueryOptionsTypeEnum.Ebay)
             {
                 var page = await this.GetPageHtml(request);
-                var nodes = page.DocumentNode.SelectNodes("//ul[contains(@class, 'srp-results srp-list clearfix')]/li[contains(@class, 's-item')]");
+                var nodes = page.DocumentNode.SelectNodes(NodePathConstants.EbayItemsList);
 
                 if (nodes is null || nodes.Count == 0)
                 {
@@ -95,28 +98,36 @@ namespace ScraperApp.ApplicationCore.Services
                 foreach (var node in nodes)
                 {
                     var id = node.Id;
-                    if (id == null)
+                    if (string.IsNullOrWhiteSpace(id))
                     {
                         continue;
                     }
 
-                    var name = node.SelectSingleNode(".//a[contains(@class, 's-item__link')]");
-                    if (name == null)
+                    var name = node.SelectSingleNode(NodePathConstants.EbayItemName);
+                    if (name is null)
                     {
                         continue;
                     }
 
-                    var price = node.SelectSingleNode(".//span[contains(@class, 's-item__price')]");
-                    if (price == null)
+                    var price = node.SelectSingleNode(NodePathConstants.EbayItemPrice);
+                    if (price is null)
                     {
                         continue;
+                    }
+
+                    var priceText = price.InnerText.Trim();
+                    var priceRange = new List<decimal>();
+                    if (priceText.Contains("to", StringComparison.OrdinalIgnoreCase))
+                    {
+                        priceRange = priceText.ToPriceRange();
                     }
 
                     items.Add(new Item()
                     {
                         Id = id,
-                        Name = name.InnerText,
-                        Price = price.InnerText,
+                        Name = name.InnerText.Trim(),
+                        MinPrice = priceRange.Count > 0 ? priceRange.First() : priceText.ToDecimalPrice(),
+                        MaxPrice = priceRange.LastOrDefault(),
                     });
                 }
             }

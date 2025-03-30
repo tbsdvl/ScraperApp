@@ -25,8 +25,13 @@ namespace ScraperApp.ApplicationCore.Models
         // required public string Description { get; set; }
 
         /// <summary>
-        /// Gets or sets the price.
+        /// Gets or sets the min price.
         /// </summary>
-        required public string Price { get; set; }
+        required public decimal MinPrice { get; set; }
+
+        /// <summary>
+        /// Gets or sets the max price.
+        /// </summary>
+        public decimal MaxPrice { get; set; }
     }
 }
