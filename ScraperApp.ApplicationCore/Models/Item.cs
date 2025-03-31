@@ -20,6 +20,11 @@ namespace ScraperApp.ApplicationCore.Models
         required public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the item name contains all uppercase letters.
+        /// </summary>
+        required public bool HasUpperCaseName { get; set; }
+
+        /// <summary>
         /// Gets or sets the description.
         /// </summary>
         // required public string Description { get; set; }
@@ -33,5 +38,65 @@ namespace ScraperApp.ApplicationCore.Models
         /// Gets or sets the max price.
         /// </summary>
         public decimal MaxPrice { get; set; }
+
+        /// <summary>
+        /// Gets or sets the sale date.
+        /// </summary>
+        public DateTime SaleDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the number of watchers.
+        /// </summary>
+        public int TotalWatchers { get; set; }
+
+        /// <summary>
+        /// Gets or sets the condition.
+        /// </summary>
+        public string Condition { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total bids.
+        /// </summary>
+        public int TotalBids { get; set; }
+
+        /// <summary>
+        /// Gets or sets the buying format.
+        /// </summary>
+        public string BuyingFormat { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the item has free delivery.
+        /// </summary>
+        public bool HasFreeDelivery { get; set; }
+
+        /// <summary>
+        /// Gets or sets the quantity sold.
+        /// </summary>
+        public int QuantitySold { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the item has an offer such as a discount.
+        /// </summary>
+        public bool HasOffer { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the item is sponsored.
+        /// </summary>
+        public bool IsSponsored { get; set; }
+
+        /// <summary>
+        /// Gets or sets the seller name.
+        /// </summary>
+        public string SellerName { get; set; }
+
+        /// <summary>
+        /// Gets or sets the total seller reviews.
+        /// </summary>
+        public int TotalSellerReviews { get; set; }
+
+        /// <summary>
+        /// Gets or sets the seller rating.
+        /// </summary>
+        public decimal SellerRating { get; set; }
     }
 }

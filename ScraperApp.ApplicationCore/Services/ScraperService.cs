@@ -8,6 +8,7 @@ using ScraperApp.ApplicationCore.Constants;
 using ScraperApp.ApplicationCore.Enums;
 using ScraperApp.ApplicationCore.Extensions;
 using ScraperApp.ApplicationCore.Models;
+using System.Text.RegularExpressions;
 
 namespace ScraperApp.ApplicationCore.Services
 {
@@ -45,7 +46,7 @@ namespace ScraperApp.ApplicationCore.Services
         /// Gets the request URL with the query parameters.
         /// </summary>
         /// <param name="request">The request.</param>
-        private void SetRequestUrlWithQueryParams(ScraperRequest request)
+        private static void SetRequestUrlWithQueryParams(ScraperRequest request)
         {
             switch (request.Options.QueryOptionsType)
             {
@@ -60,14 +61,46 @@ namespace ScraperApp.ApplicationCore.Services
         /// </summary>
         /// <param name="request">The scraper request.</param>
         /// <returns>The page's HTML.</returns>
-        private async Task<HtmlDocument> GetPageHtml(ScraperRequest request)
+        private static async Task<HtmlDocument> GetPageHtml(ScraperRequest request)
         {
-            this.SetRequestUrlWithQueryParams(request);
+            SetRequestUrlWithQueryParams(request);
 
             var webUtility = new HtmlWeb();
             var htmlDoc = await webUtility.LoadFromWebAsync(request.Url);
 
             return htmlDoc;
+        }
+
+        /// <summary>
+        /// Gets the total seller's reviews.
+        /// </summary>
+        /// <param name="sellerInfoText">The seller info text.</param>
+        /// <returns>The total seller's reviews.</returns>
+        private static int GetTotalSellerReviews(string sellerInfoText)
+        {
+            if (string.IsNullOrWhiteSpace(sellerInfoText))
+    {
+                return 0;
+            }
+
+            var match = Regex.Match(sellerInfoText, @"\((\d+)\)");
+            return match.Success ? int.Parse(match.Groups[1].Value) : 0;
+        }
+
+        /// <summary>
+        /// Gets the seller's rating.
+        /// </summary>
+        /// <param name="sellerInfoText">The seller info text.</param>
+        /// <returns>The seller's rating.</returns>
+        private static decimal GetSellerRating(string sellerInfoText)
+        {
+            if (string.IsNullOrWhiteSpace(sellerInfoText))
+            {
+                return 0;
+            }
+
+            var match = Regex.Match(sellerInfoText, @"(\d+)%");
+            return match.Success ? decimal.Parse(match.Groups[1].Value) : 0;
         }
 
         /// <summary>
@@ -82,8 +115,8 @@ namespace ScraperApp.ApplicationCore.Services
             // use plumbing to get a service for scraping HTML
             if (request.Options.QueryOptionsType == (int)QueryOptionsTypeEnum.Ebay)
             {
-                var page = await this.GetPageHtml(request);
-                var nodes = page.DocumentNode.SelectNodes(NodePathConstants.EbayItemsList);
+                var page = await GetPageHtml(request);
+                var nodes = page.DocumentNode.SelectNodes(NodePathConstants.Ebay.ItemsList);
 
                 if (nodes is null || nodes.Count == 0)
                 {
@@ -103,14 +136,10 @@ namespace ScraperApp.ApplicationCore.Services
                         continue;
                     }
 
-                    var name = node.SelectSingleNode(NodePathConstants.EbayItemName);
-                    if (name is null)
-                    {
-                        continue;
-                    }
+                    var name = node.SelectSingleNode(NodePathConstants.Ebay.ItemName);
+                    var price = node.SelectSingleNode(NodePathConstants.Ebay.ItemPrice);
 
-                    var price = node.SelectSingleNode(NodePathConstants.EbayItemPrice);
-                    if (price is null)
+                    if (name is null || price is null)
                     {
                         continue;
                     }
@@ -122,13 +151,46 @@ namespace ScraperApp.ApplicationCore.Services
                         priceRange = priceText.ToPriceRange();
                     }
 
-                    items.Add(new Item()
+                    var saleDate = node.SelectSingleNode(NodePathConstants.Ebay.SaleDate);
+                    var condition = node.SelectSingleNode(NodePathConstants.Ebay.Condition);
+                    var totalBids = node.SelectSingleNode(NodePathConstants.Ebay.TotalBids);
+                    var buyingFormat = node.SelectSingleNode(NodePathConstants.Ebay.BuyingFormat);
+                    var hasFreeDelivery = node.SelectSingleNode(NodePathConstants.Ebay.HasFreeDelivery);
+                    var totalWatchers = node.SelectSingleNode(NodePathConstants.Ebay.TotalWatchers);
+                    var hasOffer = node.SelectSingleNode(NodePathConstants.Ebay.HasOffer);
+                    var isSponsored = node.SelectSingleNode(NodePathConstants.Ebay.IsSponsored);
+                    var sellerInfo = node.SelectSingleNode(NodePathConstants.Ebay.SellerInfo);
+
+                    var quantitySoldMatch = Regex.Match(node.InnerText, @"(\d{1,3}(?:,\d{3})*)\s*sold");
+                    var quantitySold = 0;
+                    if (quantitySoldMatch.Success)
+                    {
+                        var soldText = quantitySoldMatch.Groups[1].Value;
+                        quantitySold = int.Parse(soldText.Replace(",", string.Empty));
+                    }
+
+                    var item = new Item()
                     {
                         Id = id,
                         Name = name.InnerText.Trim(),
+                        HasUpperCaseName = name.InnerText.All(c => char.IsUpper(c)),
                         MinPrice = priceRange.Count > 0 ? priceRange.First() : priceText.ToDecimalPrice(),
                         MaxPrice = priceRange.LastOrDefault(),
-                    });
+                        SaleDate = saleDate is not null ? DateTime.Parse(saleDate.InnerText.Trim()) : DateTime.MinValue,
+                        Condition = condition is not null ? condition.InnerText.Trim() : string.Empty,
+                        TotalBids = totalBids is not null ? int.Parse(totalBids.InnerText.Trim().Split(' ')[0]) : 0,
+                        BuyingFormat = buyingFormat is not null ? buyingFormat.InnerText.Trim() : string.Empty,
+                        HasFreeDelivery = hasFreeDelivery is not null,
+                        TotalWatchers = totalWatchers is not null ? int.Parse(totalWatchers.InnerText.Trim().Split(' ')[0]) : 0,
+                        HasOffer = hasOffer is not null,
+                        IsSponsored = isSponsored is not null,
+                        SellerName = sellerInfo.InnerText.Split('(')[0].Trim(),
+                        TotalSellerReviews = GetTotalSellerReviews(sellerInfo.InnerText),
+                        SellerRating = GetSellerRating(sellerInfo.InnerText),
+                        QuantitySold = quantitySold,
+                    };
+
+                    items.Add(item);
                 }
             }
 

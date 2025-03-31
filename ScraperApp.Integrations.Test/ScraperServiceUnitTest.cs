@@ -55,7 +55,9 @@ namespace ScraperApp.Integrations.Test
         {
             // Arrange
             var request = GetScraperRequest();
-            request.Options.SearchTerm = "shoes"; // unsure why this returns no results.
+
+            // searching for generic products like "shoes" returns a different search results structure.
+            request.Options.SearchTerm = "shoes";
 
             // Act
             var result = await this.ScraperService.GetItemsAsync(request);
