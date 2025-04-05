@@ -62,7 +62,7 @@ namespace ScraperApp.ApplicationCore.Models
         /// <summary>
         /// Gets or sets the buying format.
         /// </summary>
-        public string BuyingFormat { get; set; }
+        public int BuyingFormat { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the item has free delivery.

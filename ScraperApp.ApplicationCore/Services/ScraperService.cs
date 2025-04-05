@@ -104,6 +104,31 @@ namespace ScraperApp.ApplicationCore.Services
         }
 
         /// <summary>
+        /// Gets the buying format.
+        /// </summary>
+        /// <param name="innerText">The inner text of the node.</param>
+        /// <returns>The buying format.</returns>
+        private static BuyingFormatEnum GetBuyingFormat(string innerText)
+        {
+            if (innerText.Contains("Buy It Now", StringComparison.OrdinalIgnoreCase))
+            {
+                return BuyingFormatEnum.BuyItNow;
+            }
+
+            if (innerText.Contains("Best Offer", StringComparison.OrdinalIgnoreCase))
+            {
+                return BuyingFormatEnum.BestOffer;
+            }
+
+            if (innerText.Contains("Bids", StringComparison.OrdinalIgnoreCase))
+            {
+                return BuyingFormatEnum.Bids;
+            }
+
+            return BuyingFormatEnum.None;
+        }
+
+        /// <summary>
         /// Gets a list of items from a page.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -128,8 +153,9 @@ namespace ScraperApp.ApplicationCore.Services
                     };
                 }
 
-                foreach (var node in nodes)
+                for (int i = 0; i < nodes.Count; i++)
                 {
+                    var node = nodes[i];
                     var id = node.Id;
                     if (string.IsNullOrWhiteSpace(id))
                     {
@@ -151,15 +177,14 @@ namespace ScraperApp.ApplicationCore.Services
                         priceRange = priceText.ToPriceRange();
                     }
 
-                    var saleDate = node.SelectSingleNode(NodePathConstants.Ebay.SaleDate);
+                    var saleDate = node.SelectNodes(NodePathConstants.Ebay.SaleDate)?.ElementAt(i);
                     var condition = node.SelectSingleNode(NodePathConstants.Ebay.Condition);
-                    var totalBids = node.SelectSingleNode(NodePathConstants.Ebay.TotalBids);
-                    var buyingFormat = node.SelectSingleNode(NodePathConstants.Ebay.BuyingFormat);
-                    var hasFreeDelivery = node.SelectSingleNode(NodePathConstants.Ebay.HasFreeDelivery);
-                    var totalWatchers = node.SelectSingleNode(NodePathConstants.Ebay.TotalWatchers);
-                    var hasOffer = node.SelectSingleNode(NodePathConstants.Ebay.HasOffer);
-                    var isSponsored = node.SelectSingleNode(NodePathConstants.Ebay.IsSponsored);
-                    var sellerInfo = node.SelectSingleNode(NodePathConstants.Ebay.SellerInfo);
+                    var totalBids = node.SelectNodes(NodePathConstants.Ebay.TotalBids)?.ElementAt(i);
+                    var buyingFormat = node.SelectNodes(NodePathConstants.Ebay.BuyingFormat)?.ElementAt(i);
+                    var totalWatchers = node.SelectNodes(NodePathConstants.Ebay.TotalWatchers)?.ElementAt(i);
+                    var hasOffer = node.SelectNodes(NodePathConstants.Ebay.HasOffer)?.ElementAt(i);
+                    var isSponsored = node.SelectNodes(NodePathConstants.Ebay.IsSponsored)?.ElementAt(i);
+                    var sellerInfo = node.SelectNodes(NodePathConstants.Ebay.SellerInfo).ElementAt(i);
 
                     var quantitySoldMatch = Regex.Match(node.InnerText, @"(\d{1,3}(?:,\d{3})*)\s*sold");
                     var quantitySold = 0;
@@ -179,8 +204,8 @@ namespace ScraperApp.ApplicationCore.Services
                         SaleDate = saleDate is not null ? DateTime.Parse(saleDate.InnerText.Trim()) : DateTime.MinValue,
                         Condition = condition is not null ? condition.InnerText.Trim() : string.Empty,
                         TotalBids = totalBids is not null ? int.Parse(totalBids.InnerText.Trim().Split(' ')[0]) : 0,
-                        BuyingFormat = buyingFormat is not null ? buyingFormat.InnerText.Trim() : string.Empty,
-                        HasFreeDelivery = hasFreeDelivery is not null,
+                        BuyingFormat = (int)GetBuyingFormat(node.InnerText),
+                        HasFreeDelivery = node.InnerText.Contains("Free delivery", StringComparison.OrdinalIgnoreCase),
                         TotalWatchers = totalWatchers is not null ? int.Parse(totalWatchers.InnerText.Trim().Split(' ')[0]) : 0,
                         HasOffer = hasOffer is not null,
                         IsSponsored = isSponsored is not null,
