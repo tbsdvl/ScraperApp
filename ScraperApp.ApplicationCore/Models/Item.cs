@@ -42,7 +42,7 @@ namespace ScraperApp.ApplicationCore.Models
         /// <summary>
         /// Gets or sets the sale date.
         /// </summary>
-        public DateTime SaleDate { get; set; }
+        public DateTime? SaleDate { get; set; }
 
         /// <summary>
         /// Gets or sets the number of watchers.

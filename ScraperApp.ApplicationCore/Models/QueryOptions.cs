@@ -20,6 +20,11 @@ namespace ScraperApp.ApplicationCore.Models
         public int QueryOptionsType { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to include sold items only in the search results.
+        /// </summary>
+        public bool SoldItemsOnly { get; set; }
+
+        /// <summary>
         /// Gets or sets the search term.
         /// </summary>
         required public string SearchTerm { get; set; }

@@ -39,6 +39,16 @@ namespace ScraperApp.ApplicationCore.Services
                 baseUrl += request.Options.SearchTerm;
             }
 
+            if (request.Options.SoldItemsOnly)
+            {
+                baseUrl += "&LH_Sold=1&LH_Complete=1";
+            }
+
+            if (request.Options.PageNumber > 0)
+            {
+                baseUrl += "&_pgn=" + request.Options.PageNumber;
+            }
+
             return baseUrl;
         }
 
@@ -129,6 +139,38 @@ namespace ScraperApp.ApplicationCore.Services
         }
 
         /// <summary>
+        /// Gets the sold date from the text.
+        /// </summary>
+        /// <param name="text">The text containing the sold date.</param>
+        /// <returns>The sold date.</returns>
+        private static DateTime? GetSoldDate(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return DateTime.MinValue;
+            }
+
+            var match = Regex.Match(text, @"Sold\s+([A-Za-z]+\s+\d{1,2},\s+\d{4})");
+            return match.Success ? DateTime.Parse(match.Groups[1].Value) : null;
+        }
+
+        /// <summary>
+        /// Gets the number of bids from the text.
+        /// </summary>
+        /// <param name="text">The text containing the number of bids.</param>
+        /// <returns>The number of bids.</returns>
+        private static int GetNumberOfBids(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return 0;
+            }
+
+            var match = Regex.Match(text, @"(\d+)\s+bids");
+            return match.Success ? int.Parse(match.Groups[1].Value) : 0;
+        }
+
+        /// <summary>
         /// Gets a list of items from a page.
         /// </summary>
         /// <param name="request">The request.</param>
@@ -177,9 +219,8 @@ namespace ScraperApp.ApplicationCore.Services
                         priceRange = priceText.ToPriceRange();
                     }
 
-                    var saleDate = node.SelectNodes(NodePathConstants.Ebay.SaleDate)?.ElementAt(i);
+                    var saleDate = GetSoldDate(node.InnerText);
                     var condition = node.SelectSingleNode(NodePathConstants.Ebay.Condition);
-                    var totalBids = node.SelectNodes(NodePathConstants.Ebay.TotalBids)?.ElementAt(i);
                     var buyingFormat = node.SelectNodes(NodePathConstants.Ebay.BuyingFormat)?.ElementAt(i);
                     var totalWatchers = node.SelectNodes(NodePathConstants.Ebay.TotalWatchers)?.ElementAt(i);
                     var hasOffer = node.SelectNodes(NodePathConstants.Ebay.HasOffer)?.ElementAt(i);
@@ -201,11 +242,11 @@ namespace ScraperApp.ApplicationCore.Services
                         HasUpperCaseName = name.InnerText.All(c => char.IsUpper(c)),
                         MinPrice = priceRange.Count > 0 ? priceRange.First() : priceText.ToDecimalPrice(),
                         MaxPrice = priceRange.LastOrDefault(),
-                        SaleDate = saleDate is not null ? DateTime.Parse(saleDate.InnerText.Trim()) : DateTime.MinValue,
+                        SaleDate = saleDate,
                         Condition = condition is not null ? condition.InnerText.Trim() : string.Empty,
-                        TotalBids = totalBids is not null ? int.Parse(totalBids.InnerText.Trim().Split(' ')[0]) : 0,
+                        TotalBids = GetNumberOfBids(node.InnerText),
                         BuyingFormat = (int)GetBuyingFormat(node.InnerText),
-                        HasFreeDelivery = node.InnerText.Contains("Free delivery", StringComparison.OrdinalIgnoreCase),
+                        HasFreeDelivery = node.InnerText.Contains(NodePathConstants.Ebay.FreeDeliveryText, StringComparison.OrdinalIgnoreCase),
                         TotalWatchers = totalWatchers is not null ? int.Parse(totalWatchers.InnerText.Trim().Split(' ')[0]) : 0,
                         HasOffer = hasOffer is not null,
                         IsSponsored = isSponsored is not null,

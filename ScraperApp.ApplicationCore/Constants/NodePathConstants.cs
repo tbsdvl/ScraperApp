@@ -92,6 +92,11 @@ namespace ScraperApp.ApplicationCore.Constants
             /// Expression for selecting the seller info of an individual eBay item node.
             /// </summary>
             public const string SellerInfoSection = "/span[@class='s-item__detail s-item__detail--secondary']/span[@class='s-item__seller-info']";
+
+            /// <summary>
+            /// Constant for the free delivery text.
+            /// </summary>
+            public const string FreeDeliveryText = "Free delivery";
         }
     }
 }

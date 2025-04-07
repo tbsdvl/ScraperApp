@@ -32,6 +32,7 @@ namespace ScraperApp.Integrations.Test
                 Options = new EbayQueryOptions()
                 {
                     SearchTerm = "test",
+                    SoldItemsOnly = false,
                 },
             };
         }
@@ -65,6 +66,23 @@ namespace ScraperApp.Integrations.Test
             // Assert
             Assert.IsTrue(result.Items.Count == 0, "List of items is not empty.");
             Assert.IsFalse(result.Succeeded, "The response successfully returned a list of items.");
+        }
+
+        [TestMethod]
+        public async Task GetItemsAsync_Sold_Items_Succeeds()
+        {
+            // Arrange
+            var request = GetScraperRequest();
+            request.Options.SoldItemsOnly = true;
+
+            // Act
+            var result = await this.ScraperService.GetItemsAsync(request);
+
+            // Assert
+            Assert.IsTrue(result.Items.Count > 0, "List of items is empty.");
+            Assert.IsTrue(result.Succeeded, "The response failed to return a list of items.");
+            Assert.IsTrue(result.Items.First().SaleDate > DateTime.MinValue,
+                "The first item in the list should have a sale date when SoldItemsOnly is true.");
         }
     }
 }
