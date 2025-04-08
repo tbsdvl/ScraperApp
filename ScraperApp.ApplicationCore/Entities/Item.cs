@@ -2,13 +2,18 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-namespace ScraperApp.ApplicationCore.Models
+namespace ScraperApp.ApplicationCore.Entities
 {
     /// <summary>
-    /// Represents the data of an item.
+    /// Represents an item.
     /// </summary>
     public class Item
     {
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
+        required public long Id { get; set; }
+
         /// <summary>
         /// Gets or sets the element id.
         /// </summary>

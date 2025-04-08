@@ -235,9 +235,10 @@ namespace ScraperApp.ApplicationCore.Services
                         quantitySold = int.Parse(soldText.Replace(",", string.Empty));
                     }
 
+                    // this can be an entity
                     var item = new Item()
                     {
-                        Id = id,
+                        ElementId = id,
                         Name = name.InnerText.Trim(),
                         HasUpperCaseName = name.InnerText.All(c => char.IsUpper(c)),
                         MinPrice = priceRange.Count > 0 ? priceRange.First() : priceText.ToDecimalPrice(),
