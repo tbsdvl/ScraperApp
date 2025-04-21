@@ -1,3 +1,7 @@
+// <copyright file="BuyingFormatEnum.cs" company="Psybersimian LLC">
+// Copyright (c) Psybersimian LLC. All rights reserved.
+// </copyright>
+
 namespace ScraperApp.ApplicationCore.Enums
 {
     /// <summary>
@@ -23,6 +27,6 @@ namespace ScraperApp.ApplicationCore.Enums
         /// <summary>
         /// Bids format.
         /// </summary>
-        Bids
+        Bids,
     }
 }

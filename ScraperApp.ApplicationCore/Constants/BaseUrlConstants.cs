@@ -1,4 +1,4 @@
-﻿// <copyright file="UrlConstants.cs" company="Psybersimian LLC">
+﻿// <copyright file="BaseUrlConstants.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 

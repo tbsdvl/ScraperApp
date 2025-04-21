@@ -49,6 +49,16 @@ namespace ScraperApp.ApplicationCore.Services
                 baseUrl += "&_pgn=" + request.Options.PageNumber;
             }
 
+            if (!string.IsNullOrWhiteSpace(request.Options.ZipCode))
+            {
+                baseUrl += "&_stpos=" + request.Options.ZipCode;
+            }
+
+            if (request.Options.Distance.HasValue)
+            {
+                baseUrl += "&_sadis=" + request.Options.Distance;
+            }
+
             return baseUrl;
         }
 

@@ -17,7 +17,7 @@ namespace ScraperApp.ApplicationCore.Models
         /// <summary>
         /// Gets or sets the query options type.
         /// </summary>
-        public int QueryOptionsType { get; set; }
+        public int? QueryOptionsType { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to include sold items only in the search results.
@@ -28,5 +28,15 @@ namespace ScraperApp.ApplicationCore.Models
         /// Gets or sets the search term.
         /// </summary>
         required public string SearchTerm { get; set; }
+
+        /// <summary>
+        /// Gets or sets the zip code.
+        /// </summary>
+        public string ZipCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the distance.
+        /// </summary>
+        public int? Distance { get; set; }
     }
 }
