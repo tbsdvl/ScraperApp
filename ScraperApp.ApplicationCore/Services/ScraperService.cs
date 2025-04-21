@@ -2,13 +2,13 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using System.Text.RegularExpressions;
 using AutoMapper;
 using HtmlAgilityPack;
 using ScraperApp.ApplicationCore.Constants;
 using ScraperApp.ApplicationCore.Enums;
 using ScraperApp.ApplicationCore.Extensions;
 using ScraperApp.ApplicationCore.Models;
-using System.Text.RegularExpressions;
 
 namespace ScraperApp.ApplicationCore.Services
 {
