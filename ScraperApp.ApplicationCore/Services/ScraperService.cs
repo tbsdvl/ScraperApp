@@ -269,8 +269,6 @@ namespace ScraperApp.ApplicationCore.Services
                         priceRange = priceText.ToPriceRange();
                     }
 
-                    // can't use element at, it will get the data for the wrong node
-                    // find another way to get data from the correct nodes.
                     var saleDate = GetSoldDate(node.InnerText);
                     var condition = node.SelectSingleNode(NodePathConstants.Ebay.Condition);
                     var buyingFormat = node.SelectSingleNode(NodePathConstants.Ebay.BuyingFormat);
