@@ -57,7 +57,11 @@ namespace ScraperApp.ApplicationCore.Extensions
                 };
             }
 
-            throw new FormatException("Invalid price format.");
+            return new ()
+            {
+                0,
+                0,
+            };
         }
     }
 }

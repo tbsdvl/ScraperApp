@@ -43,5 +43,10 @@ namespace ScraperApp.ApplicationCore.Models
         /// Gets or sets the category id.
         /// </summary>
         public int? CategoryId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum page number.
+        /// </summary>
+        public int? MaxPageNumber { get; set; }
     }
 }

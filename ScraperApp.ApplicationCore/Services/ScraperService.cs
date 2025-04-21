@@ -27,6 +27,11 @@ namespace ScraperApp.ApplicationCore.Services
         private IMapper Mapper { get; set; } = mapper;
 
         /// <summary>
+        /// Gets or sets the maximum page number to scrape.
+        /// </summary>
+        private int MaxPageNumber { get; set; } = 200;
+
+        /// <summary>
         /// Gets the eBay URL.
         /// </summary>
         /// <param name="request">The scraper request.</param>
@@ -127,7 +132,7 @@ namespace ScraperApp.ApplicationCore.Services
                 return 0;
             }
 
-            var match = Regex.Match(sellerInfoText, @"(\d+)%");
+            var match = Regex.Match(sellerInfoText, @"(\d+(\.\d+)?)%");
             return match.Success ? decimal.Parse(match.Groups[1].Value) : 0;
         }
 
@@ -200,22 +205,49 @@ namespace ScraperApp.ApplicationCore.Services
             // use plumbing to get a service for scraping HTML
             if (request.Options.QueryOptionsType == (int)QueryOptionsTypeEnum.Ebay)
             {
-                var page = await GetPageHtml(request);
-                var nodes = page.DocumentNode.SelectNodes(NodePathConstants.Ebay.ItemsList);
+                var itemNodes = new List<HtmlNode>();
+                var previousItemId = string.Empty;
 
-                if (nodes is null || nodes.Count == 0)
+                if (request.Options.MaxPageNumber.HasValue)
                 {
-                    return new ScraperResponse()
-                    {
-                        Items = items,
-                        ErrorMessage = "No items found on the page. Please check the search term or the URL.",
-                        Succeeded = false,
-                    };
+                    this.MaxPageNumber = request.Options.MaxPageNumber.Value;
                 }
 
-                for (int i = 0; i < nodes.Count; i++)
+                for (int i = 1; i <= this.MaxPageNumber; i++)
                 {
-                    var node = nodes[i];
+                    request.Options.PageNumber = i;
+                    var page = await GetPageHtml(request);
+                    var nodes = page.DocumentNode.SelectNodes(NodePathConstants.Ebay.ItemsList);
+
+                    if (nodes is null || nodes.Count == 0)
+                    {
+                        return new ScraperResponse()
+                        {
+                            Items = items,
+                            ErrorMessage = "No items found on the page. Please check the search term or the URL.",
+                            Succeeded = false,
+                        };
+                    }
+
+                    var firstNode = nodes.FirstOrDefault();
+
+                    if (string.IsNullOrWhiteSpace(firstNode?.Id))
+                    {
+                        break;
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(previousItemId) && previousItemId.Equals(firstNode.Id, StringComparison.OrdinalIgnoreCase))
+                    {
+                        break;
+                    }
+
+                    previousItemId = firstNode.Id;
+
+                    itemNodes.AddRange(nodes);
+                }
+
+                foreach (var node in itemNodes)
+                {
                     var id = node.Id;
                     if (string.IsNullOrWhiteSpace(id))
                     {
@@ -237,13 +269,14 @@ namespace ScraperApp.ApplicationCore.Services
                         priceRange = priceText.ToPriceRange();
                     }
 
+                    // can't use element at, it will get the data for the wrong node
+                    // find another way to get data from the correct nodes.
                     var saleDate = GetSoldDate(node.InnerText);
                     var condition = node.SelectSingleNode(NodePathConstants.Ebay.Condition);
-                    var buyingFormat = node.SelectNodes(NodePathConstants.Ebay.BuyingFormat)?.ElementAt(i);
-                    var totalWatchers = node.SelectNodes(NodePathConstants.Ebay.TotalWatchers)?.ElementAt(i);
-                    var hasOffer = node.SelectNodes(NodePathConstants.Ebay.HasOffer)?.ElementAt(i);
-                    var isSponsored = node.SelectNodes(NodePathConstants.Ebay.IsSponsored)?.ElementAt(i);
-                    var sellerInfo = node.SelectNodes(NodePathConstants.Ebay.SellerInfo).ElementAt(i);
+                    var buyingFormat = node.SelectSingleNode(NodePathConstants.Ebay.BuyingFormat);
+                    var totalWatchers = node.SelectSingleNode(NodePathConstants.Ebay.TotalWatchers);
+                    var offer = node.SelectSingleNode(NodePathConstants.Ebay.HasOffer);
+                    var sellerInfo = node.SelectSingleNode(NodePathConstants.Ebay.SellerInfo);
 
                     var quantitySoldMatch = Regex.Match(node.InnerText, @"(\d{1,3}(?:,\d{3})*)\s*sold");
                     var quantitySold = 0;
@@ -253,7 +286,7 @@ namespace ScraperApp.ApplicationCore.Services
                         quantitySold = int.Parse(soldText.Replace(",", string.Empty));
                     }
 
-                    // this can be an entity
+                    // this will be an entity
                     var item = new Item()
                     {
                         ElementId = id,
@@ -267,11 +300,10 @@ namespace ScraperApp.ApplicationCore.Services
                         BuyingFormat = (int)GetBuyingFormat(node.InnerText),
                         HasFreeDelivery = node.InnerText.Contains(NodePathConstants.Ebay.FreeDeliveryText, StringComparison.OrdinalIgnoreCase),
                         TotalWatchers = totalWatchers is not null ? int.Parse(totalWatchers.InnerText.Trim().Split(' ')[0]) : 0,
-                        HasOffer = hasOffer is not null,
-                        IsSponsored = isSponsored is not null,
-                        SellerName = sellerInfo.InnerText.Split('(')[0].Trim(),
-                        TotalSellerReviews = GetTotalSellerReviews(sellerInfo.InnerText),
-                        SellerRating = GetSellerRating(sellerInfo.InnerText),
+                        HasOffer = offer is not null,
+                        SellerName = sellerInfo is not null ? sellerInfo.InnerText.Split('(')[0].Trim() : string.Empty,
+                        TotalSellerReviews = sellerInfo is not null ? GetTotalSellerReviews(sellerInfo.InnerText) : null,
+                        SellerRating = sellerInfo is not null ? GetSellerRating(sellerInfo.InnerText) : null,
                         QuantitySold = quantitySold,
                         CategoryId = request.Options.CategoryId,
                     };

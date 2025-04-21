@@ -61,17 +61,17 @@ namespace ScraperApp.ApplicationCore.Constants
             /// <summary>
             /// Expression for selecting whether the item has an offer such as a discount.
             /// </summary>
-            public const string HasOffer = SecondaryAttributesContainer + "/div[@class='s-card__attribute-row']/span[contains(@class, 'negative bold large')]";
+            public const string HasOffer = ".//span[contains(@class, 's-item__dynamic') and contains(text(), 'Offer')]";
 
             /// <summary>
             /// Expression for checking if the item is sponsored or promoted in eBay search results.
             /// </summary>
-            public const string IsSponsored = AttributeRow + "/span[contains(@class, 's-bsaq651_s-9hme301')]";
+            public const string IsSponsored = ".//div[contains(@class, 's-item__detail') and .//div[contains(text(), 'Sponsored')]]";
 
             /// <summary>
             /// Expression for selecting the seller info of an individual eBay item node.
             /// </summary>
-            public const string SellerInfo = SecondaryAttributesContainer + SellerInfoSection + "/span[@class='s-item__seller-info-text']";
+            public const string SellerInfo = ".//span[@class='s-item__seller-info-text']";
 
             /// <summary>
             /// Expression for selecting the quantity sold of an individual eBay item node.
