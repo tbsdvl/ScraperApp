@@ -98,5 +98,10 @@ namespace ScraperApp.ApplicationCore.Models
         /// Gets or sets the seller rating.
         /// </summary>
         public decimal? SellerRating { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category id.
+        /// </summary>
+        public int? CategoryId { get; set; }
     }
 }

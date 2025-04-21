@@ -33,7 +33,15 @@ namespace ScraperApp.ApplicationCore.Services
         /// <returns>The eBay URL.</returns>
         private static string GetEbayUrl(ScraperRequest request)
         {
-            var baseUrl = BaseUrlConstants.EBAY;
+            var baseUrl = UrlConstants.EBAY;
+
+            if (request.Options.CategoryId.HasValue)
+            {
+                baseUrl += request.Options.CategoryId + UrlConstants.EBAYINDEX;
+            }
+
+            baseUrl += UrlConstants.EBAYSEARCHQUERY;
+
             if (!string.IsNullOrWhiteSpace(request.Options.SearchTerm))
             {
                 baseUrl += request.Options.SearchTerm;
@@ -41,32 +49,32 @@ namespace ScraperApp.ApplicationCore.Services
 
             if (request.Options.SoldItemsOnly)
             {
-                baseUrl += "&LH_Sold=1&LH_Complete=1";
+                baseUrl += UrlConstants.EBAYSOLDITEMS;
             }
 
             if (request.Options.PageNumber > 0)
             {
-                baseUrl += "&_pgn=" + request.Options.PageNumber;
+                baseUrl += UrlConstants.EBAYPAGENUM + request.Options.PageNumber;
             }
 
             if (!string.IsNullOrWhiteSpace(request.Options.ZipCode))
             {
-                baseUrl += "&_stpos=" + request.Options.ZipCode;
+                baseUrl += UrlConstants.EBAYZIPCODE + request.Options.ZipCode;
             }
 
             if (request.Options.Distance.HasValue)
             {
-                baseUrl += "&_sadis=" + request.Options.Distance;
+                baseUrl += UrlConstants.EBAYDISTANCE + request.Options.Distance;
             }
 
             return baseUrl;
         }
 
         /// <summary>
-        /// Gets the request URL with the query parameters.
+        /// Builds the request URL with the query parameters.
         /// </summary>
         /// <param name="request">The request.</param>
-        private static void SetRequestUrlWithQueryParams(ScraperRequest request)
+        private static void BuildRequestUrl(ScraperRequest request)
         {
             switch (request.Options.QueryOptionsType)
             {
@@ -83,7 +91,7 @@ namespace ScraperApp.ApplicationCore.Services
         /// <returns>The page's HTML.</returns>
         private static async Task<HtmlDocument> GetPageHtml(ScraperRequest request)
         {
-            SetRequestUrlWithQueryParams(request);
+            BuildRequestUrl(request);
 
             var webUtility = new HtmlWeb();
             var htmlDoc = await webUtility.LoadFromWebAsync(request.Url);
@@ -265,6 +273,7 @@ namespace ScraperApp.ApplicationCore.Services
                         TotalSellerReviews = GetTotalSellerReviews(sellerInfo.InnerText),
                         SellerRating = GetSellerRating(sellerInfo.InnerText),
                         QuantitySold = quantitySold,
+                        CategoryId = request.Options.CategoryId,
                     };
 
                     items.Add(item);

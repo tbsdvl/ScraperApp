@@ -38,5 +38,10 @@ namespace ScraperApp.ApplicationCore.Models
         /// Gets or sets the distance.
         /// </summary>
         public int? Distance { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category id.
+        /// </summary>
+        public int? CategoryId { get; set; }
     }
 }
