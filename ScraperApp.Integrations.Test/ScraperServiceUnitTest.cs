@@ -39,7 +39,7 @@ namespace ScraperApp.Integrations.Test
                 {
                     SearchTerm = "test",
                     SoldItemsOnly = false,
-                    MaxPageNumber = 5,
+                    MaxPageNumber = 2,
                 },
             };
         }
