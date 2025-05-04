@@ -20,7 +20,7 @@ namespace ScraperApp.ApplicationCore
             this.CreateMap<EbayQueryOptions, QueryOptions>()
                 .ReverseMap();
 
-            this.CreateMap<Item, Entities.Item>()
+            this.CreateMap<ItemModel, Entities.Item>()
                 .ReverseMap();
         }
     }

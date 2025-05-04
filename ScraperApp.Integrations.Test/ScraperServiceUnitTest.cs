@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using ScraperApp.ApplicationCore;
+using ScraperApp.ApplicationCore.Interfaces;
 using ScraperApp.ApplicationCore.Models;
 using ScraperApp.ApplicationCore.Services;
 
@@ -9,6 +12,9 @@ namespace ScraperApp.Integrations.Test
     public sealed class ScraperServiceUnitTest
     {
         private IMapper Mapper { get; set; }
+        
+        private IServiceScopeFactory ServiceScopeFactory { get; set; }
+        
         private ScraperService ScraperService { get; set; }
 
         [TestInitialize]
@@ -20,6 +26,12 @@ namespace ScraperApp.Integrations.Test
             });
 
             this.Mapper = mappingConfig.CreateMapper();
+
+            var serviceCollection = new ServiceCollection();
+            serviceCollection.TryAddTransient<IMapper>();
+            serviceCollection.TryAddTransient<IScraperService, EbayScraperService>();
+            
+            this.ServiceScopeFactory = serviceCollection;
 
             this.ScraperService = new ScraperService(this.Mapper);
         }

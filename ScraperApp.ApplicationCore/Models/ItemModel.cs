@@ -1,4 +1,4 @@
-﻿// <copyright file="Item.cs" company="Psybersimian LLC">
+﻿// <copyright file="ItemModel.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
@@ -7,7 +7,7 @@ namespace ScraperApp.ApplicationCore.Models
     /// <summary>
     /// Represents the data of an item.
     /// </summary>
-    public class Item
+    public class ItemModel
     {
         /// <summary>
         /// Gets or sets the element id.
