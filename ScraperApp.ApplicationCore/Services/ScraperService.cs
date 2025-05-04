@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ScraperApp.ApplicationCore.Enums;
 using ScraperApp.ApplicationCore.Interfaces;
 using ScraperApp.ApplicationCore.Models;
+using ScraperApp.Resource;
 
 namespace ScraperApp.ApplicationCore.Services
 {
@@ -127,7 +128,7 @@ namespace ScraperApp.ApplicationCore.Services
                 return new ScraperResponse()
                 {
                     Items = items,
-                    ErrorMessage = "Query options type must have a value.",
+                    ErrorMessage = ErrorMessages.MissingQueryOption,
                 };
             }
 
@@ -138,7 +139,7 @@ namespace ScraperApp.ApplicationCore.Services
                 return new ScraperResponse()
                 {
                     Items = items,
-                    ErrorMessage = "Invalid query options type.",
+                    ErrorMessage = ErrorMessages.InvalidQueryOptionType,
                 };
             }
 
@@ -148,7 +149,7 @@ namespace ScraperApp.ApplicationCore.Services
                 return new ScraperResponse()
                 {
                     Items = items,
-                    ErrorMessage = "No items found on the page. Please check the search term or the URL.",
+                    ErrorMessage = ErrorMessages.NoItemsFound,
                 };
             }
 
