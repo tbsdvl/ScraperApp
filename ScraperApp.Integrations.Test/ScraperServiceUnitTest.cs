@@ -2,7 +2,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ScraperApp.ApplicationCore;
-using ScraperApp.ApplicationCore.Interfaces;
 using ScraperApp.ApplicationCore.Models;
 using ScraperApp.ApplicationCore.Services;
 
@@ -10,11 +9,7 @@ namespace ScraperApp.Integrations.Test
 {
     [TestClass]
     public sealed class ScraperServiceUnitTest
-    {
-        private IMapper Mapper { get; set; }
-        
-        private IServiceScopeFactory ServiceScopeFactory { get; set; }
-        
+    {           
         private ScraperService ScraperService { get; set; }
 
         [TestInitialize]
@@ -25,15 +20,14 @@ namespace ScraperApp.Integrations.Test
                 cfg.AddProfile<AutoMapperProfile>();
             });
 
-            this.Mapper = mappingConfig.CreateMapper();
-
             var serviceCollection = new ServiceCollection();
-            serviceCollection.TryAddTransient<IMapper>();
-            serviceCollection.TryAddTransient<IScraperService, EbayScraperService>();
+            serviceCollection.AddSingleton(mappingConfig.CreateMapper());
+            serviceCollection.TryAddTransient<EbayScraperService>();
+            serviceCollection.TryAddTransient<ScraperService>();
             
-            this.ServiceScopeFactory = serviceCollection;
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            this.ScraperService = new ScraperService(this.Mapper);
+            this.ScraperService = serviceProvider.GetRequiredService<ScraperService>();
         }
 
         private static ScraperRequest GetScraperRequest()
@@ -70,7 +64,7 @@ namespace ScraperApp.Integrations.Test
             // Arrange
             var request = GetScraperRequest();
 
-            // searching for generic products like "shoes" returns a different search results structure.
+            // searching for generic products like "shoes" returns a different search results page structure.
             request.Options.SearchTerm = "shoes";
 
             // Act

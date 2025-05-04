@@ -25,13 +25,6 @@ namespace ScraperApp.ApplicationCore.Interfaces
         string GetUrl(ScraperRequest request);
 
         /// <summary>
-        /// Gets an items list node path based on the query options type.
-        /// </summary>
-        /// <param name="queryOptionsTypeId">The query options type id.</param>
-        /// <returns>The items list node path.</returns>
-        string GetItemsListNodePath(int queryOptionsTypeId);
-
-        /// <summary>
         /// Gets a list of items from HTML nodes.
         /// </summary>
         /// <param name="request">The scraper request.</param>

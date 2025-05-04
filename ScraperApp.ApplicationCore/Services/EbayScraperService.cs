@@ -157,12 +157,6 @@ namespace ScraperApp.ApplicationCore.Services
         }
 
         /// <inheritdoc/>
-        public string GetItemsListNodePath(int queryOptionsTypeId)
-        {
-            return NodePathConstants.Ebay.ItemsList;
-        }
-
-        /// <inheritdoc/>
         public List<ItemModel> GetItems(ScraperRequest request, List<HtmlNode> nodes)
         {
             var items = new List<ItemModel>();
