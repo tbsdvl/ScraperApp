@@ -2,6 +2,8 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using System.ComponentModel.DataAnnotations;
+
 namespace ScraperApp.ApplicationCore.Models
 {
     /// <summary>
@@ -12,6 +14,7 @@ namespace ScraperApp.ApplicationCore.Models
         /// <summary>
         /// Gets or sets the page number.
         /// </summary>
+        [Required]
         public int PageNumber { get; set; }
 
         /// <summary>
@@ -27,7 +30,8 @@ namespace ScraperApp.ApplicationCore.Models
         /// <summary>
         /// Gets or sets the search term.
         /// </summary>
-        required public string SearchTerm { get; set; }
+        [Required]
+        public string SearchTerm { get; set; }
 
         /// <summary>
         /// Gets or sets the zip code.

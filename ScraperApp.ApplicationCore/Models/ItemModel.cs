@@ -25,11 +25,6 @@ namespace ScraperApp.ApplicationCore.Models
         required public bool HasUpperCaseName { get; set; }
 
         /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        // required public string Description { get; set; }
-
-        /// <summary>
         /// Gets or sets the min price.
         /// </summary>
         required public decimal MinPrice { get; set; }

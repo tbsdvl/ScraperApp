@@ -2,6 +2,8 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using System.ComponentModel.DataAnnotations;
+
 namespace ScraperApp.ApplicationCore.Models
 {
     /// <summary>
@@ -17,6 +19,7 @@ namespace ScraperApp.ApplicationCore.Models
         /// <summary>
         /// Gets or sets the query options.
         /// </summary>
-        required public QueryOptions Options { get; set; }
+        [Required]
+        public QueryOptions Options { get; set; }
     }
 }
