@@ -121,9 +121,9 @@ namespace ScraperApp.ApplicationCore.Services
         {
             var baseUrl = UrlConstants.EBAY;
 
-            if (request.Options.CategoryId.HasValue)
+            if (request.Options.CategoryTypeId.HasValue)
             {
-                baseUrl += request.Options.CategoryId + UrlConstants.EBAYINDEX;
+                baseUrl += request.Options.CategoryTypeId + UrlConstants.EBAYINDEX;
             }
 
             baseUrl += UrlConstants.EBAYSEARCHQUERY;
@@ -199,9 +199,10 @@ namespace ScraperApp.ApplicationCore.Services
                     quantitySold = int.Parse(soldText.Replace(",", string.Empty));
                 }
 
-                // items will map to a list of entities
                 var item = new ItemModel()
                 {
+                    MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay,
+                    CategoryTypeId = request.Options.CategoryTypeId,
                     ElementId = id,
                     Name = name.InnerText.Trim(),
                     HasUpperCaseName = name.InnerText.All(c => char.IsUpper(c)),
@@ -218,7 +219,7 @@ namespace ScraperApp.ApplicationCore.Services
                     TotalSellerReviews = sellerInfo is not null ? GetTotalSellerReviews(sellerInfo.InnerText) : null,
                     SellerRating = sellerInfo is not null ? GetSellerRating(sellerInfo.InnerText) : null,
                     QuantitySold = quantitySold,
-                    CategoryId = request.Options.CategoryId,
+                    CategoryId = request.Options.CategoryTypeId,
                 };
 
                 items.Add(item);

@@ -16,7 +16,7 @@ namespace ScraperApp.ApplicationCore.Models
         /// </summary>
         public EbayQueryOptions()
         {
-            this.QueryOptionsType = (int)QueryOptionsTypeEnum.Ebay;
+            this.MarketplaceType = (int)MarketplaceTypeEnum.Ebay;
         }
     }
 }

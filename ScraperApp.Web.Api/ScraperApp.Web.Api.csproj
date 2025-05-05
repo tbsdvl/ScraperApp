@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ScraperApp.ApplicationCore\ScraperApp.ApplicationCore.csproj" />
+    <ProjectReference Include="..\ScraperApp.Infrastructure\ScraperApp.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

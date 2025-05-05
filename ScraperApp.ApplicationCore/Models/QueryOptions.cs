@@ -18,9 +18,9 @@ namespace ScraperApp.ApplicationCore.Models
         public int PageNumber { get; set; }
 
         /// <summary>
-        /// Gets or sets the query options type.
+        /// Gets or sets the marketplace type.
         /// </summary>
-        public int? QueryOptionsType { get; set; }
+        public int? MarketplaceType { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to include sold items only in the search results.
@@ -44,9 +44,9 @@ namespace ScraperApp.ApplicationCore.Models
         public int? Distance { get; set; }
 
         /// <summary>
-        /// Gets or sets the category id.
+        /// Gets or sets the category type id.
         /// </summary>
-        public int? CategoryId { get; set; }
+        public int? CategoryTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum page number.

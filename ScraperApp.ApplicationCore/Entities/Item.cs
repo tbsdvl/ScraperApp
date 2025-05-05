@@ -2,22 +2,34 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ScraperApp.ApplicationCore.Entities
 {
     /// <summary>
     /// Represents an item.
     /// </summary>
-    public class Item
+    public class Item : BaseEntity<int>
     {
-        /// <summary>
-        /// Gets or sets the id.
-        /// </summary>
-        required public long Id { get; set; }
-
         /// <summary>
         /// Gets or sets the element id.
         /// </summary>
         required public string ElementId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category type id.
+        /// </summary>
+        [ForeignKey(nameof(CategoryType))]
+        [Required]
+        public int? CategoryTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the marketplace type id.
+        /// </summary>
+        [ForeignKey(nameof(MarketplaceType))]
+        [Required]
+        public int? MarketplaceTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the name.

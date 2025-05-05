@@ -5,6 +5,7 @@
 using AutoMapper;
 using HtmlAgilityPack;
 using Microsoft.Extensions.DependencyInjection;
+using ScraperApp.ApplicationCore.Entities;
 using ScraperApp.ApplicationCore.Enums;
 using ScraperApp.ApplicationCore.Interfaces;
 using ScraperApp.ApplicationCore.Models;
@@ -63,7 +64,7 @@ namespace ScraperApp.ApplicationCore.Services
         {
             return serviceTypeId switch
             {
-                (int)QueryOptionsTypeEnum.Ebay => serviceScope.ServiceProvider.GetRequiredService<EbayScraperService>(),
+                (int)MarketplaceTypeEnum.Ebay => serviceScope.ServiceProvider.GetRequiredService<EbayScraperService>(),
                 _ => null,
             };
         }
@@ -123,7 +124,7 @@ namespace ScraperApp.ApplicationCore.Services
         public async Task<ScraperResponse> GetItemsAsync(ScraperRequest request)
         {
             var items = new List<ItemModel>();
-            if (!request.Options.QueryOptionsType.HasValue)
+            if (!request.Options.MarketplaceType.HasValue)
             {
                 return new ScraperResponse()
                 {
@@ -133,7 +134,7 @@ namespace ScraperApp.ApplicationCore.Services
             }
 
             using var serviceScope = this.ServiceScopeFactory.CreateScope();
-            var service = GetService(serviceScope, request.Options.QueryOptionsType.Value);
+            var service = GetService(serviceScope, request.Options.MarketplaceType.Value);
             if (service is null)
             {
                 return new ScraperResponse()
@@ -155,6 +156,18 @@ namespace ScraperApp.ApplicationCore.Services
 
             items = service.GetItems(request, nodes);
 
+            if (items.Count == 0)
+            {
+                return new ScraperResponse()
+                {
+                    Items = items,
+                    ErrorMessage = ErrorMessages.NoItemsFound,
+                };
+            }
+
+            var itemEntities = this.Mapper.Map<List<Item>>(items);
+
+            // save the items to the database.
             return new ScraperResponse()
             {
                 Items = items,

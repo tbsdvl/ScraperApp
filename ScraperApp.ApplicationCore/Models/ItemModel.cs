@@ -2,6 +2,8 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using System.ComponentModel.DataAnnotations;
+
 namespace ScraperApp.ApplicationCore.Models
 {
     /// <summary>
@@ -9,6 +11,16 @@ namespace ScraperApp.ApplicationCore.Models
     /// </summary>
     public class ItemModel
     {
+        /// <summary>
+        /// Gets or sets the category type id.
+        /// </summary>
+        required public int? CategoryTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the marketplace type id.
+        /// </summary>
+        required public int? MarketplaceTypeId { get; set; }
+
         /// <summary>
         /// Gets or sets the element id.
         /// </summary>

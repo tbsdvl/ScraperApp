@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\" />
+    <ProjectReference Include="..\ScraperApp.ApplicationCore\ScraperApp.ApplicationCore.csproj" />
   </ItemGroup>
 
 </Project>

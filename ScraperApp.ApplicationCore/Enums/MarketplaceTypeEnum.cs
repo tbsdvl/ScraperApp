@@ -1,13 +1,13 @@
-﻿// <copyright file="QueryOptionsTypeEnum.cs" company="Psybersimian LLC">
+﻿// <copyright file="MarketplaceTypeEnum.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
 namespace ScraperApp.ApplicationCore.Enums
 {
     /// <summary>
-    /// The query options type enum.
+    /// The marketplace type enum.
     /// </summary>
-    public enum QueryOptionsTypeEnum
+    public enum MarketplaceTypeEnum
     {
         /// <summary>
         /// The eBay enum value.

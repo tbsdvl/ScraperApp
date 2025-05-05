@@ -3,6 +3,7 @@
 // </copyright>
 
 using AutoMapper;
+using ScraperApp.ApplicationCore.Entities;
 using ScraperApp.ApplicationCore.Models;
 
 namespace ScraperApp.ApplicationCore
@@ -20,7 +21,10 @@ namespace ScraperApp.ApplicationCore
             this.CreateMap<EbayQueryOptions, QueryOptions>()
                 .ReverseMap();
 
-            this.CreateMap<ItemModel, Entities.Item>()
+            this.CreateMap<ItemModel, Item>()
+                .ReverseMap();
+
+            this.CreateMap<LookupModel, BaseLookupEntity>()
                 .ReverseMap();
         }
     }
