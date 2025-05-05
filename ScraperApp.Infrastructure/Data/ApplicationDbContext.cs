@@ -25,13 +25,6 @@ namespace ScraperApp.Infrastructure.Data
         private IUserContextService UserContextService { get; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class.
-        /// </summary>
-        public ApplicationDbContext() : base()
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class with the specified options and user context service.
         /// </summary>
         /// <param name="options">The db context options.</param>

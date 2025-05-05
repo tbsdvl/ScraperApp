@@ -36,5 +36,4 @@ namespace ScraperApp.ApplicationCore.Services
             return this.HttpContextAccessor.HttpContext.User.Claims.GetUserObjectId();
         }
     }
-
 }
