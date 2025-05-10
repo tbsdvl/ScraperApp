@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35527.113
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Listopotamus.Web", "Listopotamus\Listopotamus.Web.esproj", "{9E484F2F-521B-4F6D-8D4C-25314BA15B03}"
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "Listopotamus.Web", "Listopotamus.Web\Listopotamus.Web.esproj", "{9E484F2F-521B-4F6D-8D4C-25314BA15B03}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listopotamus.Web.Api", "Listopotamus.Web.Api\Listopotamus.Web.Api.csproj", "{FCD362CD-7C31-4568-AE25-0C010C535A91}"
 EndProject
