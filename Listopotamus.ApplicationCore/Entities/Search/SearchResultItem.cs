@@ -18,14 +18,14 @@ namespace Listopotamus.ApplicationCore.Entities.Search
         /// </summary>
         [ForeignKey(nameof(SearchQuery))]
         [Required]
-        public int SearchQueryId { get; set; }
+        public long? SearchQueryId { get; set; }
 
         /// <summary>
         /// Gets or sets the item id.
         /// </summary>
         [ForeignKey(nameof(Item))]
         [Required]
-        public int ItemId { get; set; }
+        public long? ItemId { get; set; }
 
         /// <summary>
         /// Gets or sets the search query.

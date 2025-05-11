@@ -1,4 +1,4 @@
-﻿// <copyright file="Role.cs" company="Psybersimian LLC">
+﻿// <copyright file="UserClaim.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Identity;
 namespace Listopotamus.ApplicationCore.Entities.Identity
 {
     /// <summary>
-    /// Represents a role in the identity system.
+    /// Represents a claim associated with a user in the identity system.
     /// </summary>
-    public class Role : IdentityRole<long>
+    public class UserClaim : IdentityUserClaim<int>
     {
     }
 }

@@ -6,18 +6,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Listopotamus.ApplicationCore.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using Listopotamus.ApplicationCore.Entities.Lookups;
 using Listopotamus.ApplicationCore.Entities.Items;
 using Listopotamus.ApplicationCore.Entities;
-using EGov.ApplicationCore.Entities.Identity;
+using Listopotamus.ApplicationCore.Entities.Identity;
 
 namespace Listopotamus.Infrastructure.Data
 {
     /// <summary>
     /// Represents the application database context.
     /// </summary>
-    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
+    public class ApplicationDbContext : IdentityDbContext<User, Role, long>
     {
         /// <summary>
         /// The system user name.
