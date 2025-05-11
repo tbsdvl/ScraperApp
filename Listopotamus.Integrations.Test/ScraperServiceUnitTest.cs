@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Listopotamus.ApplicationCore;
 using Listopotamus.ApplicationCore.Models;
-using System.Globalization;
 using Listopotamus.ApplicationCore.Enums;
 
 namespace Listopotamus.Integrations.Test
