@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Listopotamus.ApplicationCore;
 using Listopotamus.Infrastructure.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Caching.Cosmos;
+using Microsoft.Azure.Cosmos.Fluent;
+using Microsoft.Extensions.Caching.Distributed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +20,15 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// Add the Cosmos DB cache
+builder.Services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
+{
+    cacheOptions.ContainerName = builder.Configuration["DistributedCache:CosmosCacheContainer"];
+    cacheOptions.DatabaseName = builder.Configuration["DistributedCache:CosmosCacheDatabase"];
+    cacheOptions.ClientBuilder = new CosmosClientBuilder(builder.Configuration["DistributedCache:CosmosConnectionString"]);
+    cacheOptions.CreateIfNotExists = true;
+});
+
 // Add Identity
 builder.Services.AddAuthorization();
 
@@ -30,6 +42,24 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 app.MapIdentityApi<IdentityUser>();
+
+// Use distributed cache
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    var currentTimeUTC = DateTime.UtcNow.ToString();
+    byte[] encodedCurrentTimeUTC = System.Text.Encoding.UTF8.GetBytes(currentTimeUTC);
+    var options = new DistributedCacheEntryOptions()
+        .SetSlidingExpiration(TimeSpan.FromSeconds(20));
+    var distributedCache = app.Services.GetService<IDistributedCache>();
+    if (distributedCache != null)
+    {
+        distributedCache.Set("cachedTimeUTC", encodedCurrentTimeUTC, options);
+    }
+    else
+    {
+        Console.WriteLine("IDistributedCache service is not available.");
+    }
+});
 
 if (app.Environment.IsDevelopment())
 {
