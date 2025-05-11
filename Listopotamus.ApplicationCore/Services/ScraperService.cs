@@ -4,11 +4,10 @@
 
 using AutoMapper;
 using HtmlAgilityPack;
-using Listopotamus.ApplicationCore.Entities;
+using Listopotamus.ApplicationCore.Entities.Items;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.ApplicationCore.Models;
-using Listopotamus.ApplicationCore.Services;
 using Listopotamus.Resource;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -125,7 +124,7 @@ namespace Listopotamus.ApplicationCore.Services
         public async Task<ScraperResponse> GetItemsAsync(ScraperRequest request)
         {
             var items = new List<ItemModel>();
-            if (!request.Options.MarketplaceType.HasValue)
+            if (!request.Options.MarketplaceTypeId.HasValue)
             {
                 return new ScraperResponse()
                 {
@@ -135,7 +134,7 @@ namespace Listopotamus.ApplicationCore.Services
             }
 
             using var serviceScope = this.ServiceScopeFactory.CreateScope();
-            var service = GetService(serviceScope, request.Options.MarketplaceType.Value);
+            var service = GetService(serviceScope, request.Options.MarketplaceTypeId.Value);
             if (service is null)
             {
                 return new ScraperResponse()
@@ -169,6 +168,7 @@ namespace Listopotamus.ApplicationCore.Services
             var itemEntities = this.Mapper.Map<List<Item>>(items);
 
             // save the items to the database.
+            // then return the response.
             return new ScraperResponse()
             {
                 Items = items,

@@ -43,5 +43,15 @@ namespace Listopotamus.ApplicationCore.Constants
         /// The eBay distance query param.
         /// </summary>
         public const string EBAYDISTANCE = "&_sadis=";
+
+        /// <summary>
+        /// The eBay location query param.
+        /// </summary>
+        public const string EBAYLOCATION = "&LH_PrefLoc=";
+
+        /// <summary>
+        /// The eBay category type query param.
+        /// </summary>
+        public const string EBAYCATEGORY = "&_sacat=";
     }
 }

@@ -4,20 +4,35 @@
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Listopotamus.ApplicationCore.Entities;
 using Listopotamus.ApplicationCore.Interfaces;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Listopotamus.ApplicationCore.Entities.Lookups;
+using Listopotamus.ApplicationCore.Entities.Items;
+using Listopotamus.ApplicationCore.Entities;
+using EGov.ApplicationCore.Entities.Identity;
 
 namespace Listopotamus.Infrastructure.Data
 {
     /// <summary>
     /// Represents the application database context.
     /// </summary>
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
         /// <summary>
         /// The system user name.
         /// </summary>
         private const string SYSTEM = "SYSTEM";
+
+        /// <summary>
+        /// The default external id index name.
+        /// </summary>
+        private const string DefaultExternalIdIndex = "UCX_ExternalId";
+
+        /// <summary>
+        /// The default lookup value index name.
+        /// </summary>
+        private const string DefaultLookupValueIndex = "UCX_LookupValue";
 
         /// <summary>
         /// Gets the user context service.
@@ -113,6 +128,50 @@ namespace Listopotamus.Infrastructure.Data
         }
 
         /// <summary>
+        /// Adds external indexes to the external entity types.
+        /// </summary>
+        /// <param name="builder">The model builder.</param>
+        /// <param name="entityTypes">The collection of entity types.</param>
+        private static void AddExternalIndexes(ModelBuilder builder, IEnumerable<Microsoft.EntityFrameworkCore.Metadata.IMutableEntityType> entityTypes)
+        {
+            foreach (var entityType in entityTypes)
+            {
+                var clrType = entityType.ClrType;
+                if (clrType.BaseType is not null &&
+                    clrType.BaseType.IsGenericType &&
+                    clrType.BaseType.GetGenericTypeDefinition() == typeof(BaseExternalEntity<>))
+                {
+                    var entityBuilder = builder.Entity(clrType);
+
+                    entityBuilder.HasIndex("ExternalId")
+                        .IsUnique()
+                        .HasDatabaseName(DefaultExternalIdIndex);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds lookup indexes to the lookup entity types.
+        /// </summary>
+        /// <param name="builder">The model builder.</param>
+        /// <param name="entityTypes">The collection of entity types.</param>
+        private static void AddLookupIndexes(ModelBuilder builder, IEnumerable<Microsoft.EntityFrameworkCore.Metadata.IMutableEntityType> entityTypes)
+        {
+            foreach (var entityType in entityTypes)
+            {
+                var clrType = entityType.ClrType;
+                if (clrType.BaseType is not null && clrType.BaseType == typeof(BaseLookupEntity))
+                {
+                    var entityBuilder = builder.Entity(clrType);
+
+                    entityBuilder.HasIndex("Id")
+                        .IsUnique()
+                        .HasDatabaseName(DefaultLookupValueIndex);
+                }
+            }
+        }
+
+        /// <summary>
         /// Configures the model for the application database context.
         /// </summary>
         /// <param name="builder">The model builder.</param>
@@ -120,17 +179,16 @@ namespace Listopotamus.Infrastructure.Data
         {
             base.OnModelCreating(builder);
             RenameTablesAndIds(builder);
-            builder.Entity<Item>(entity => {
-                entity.HasIndex(e => e.ElementId)
-                    .IsUnique()
-                    .HasDatabaseName($"IX_Item_ElementId");
 
-                entity.HasIndex(e => e.MarketplaceTypeId)
-                    .HasDatabaseName("IX_Item_MarketplaceTypeId");
+            // add external id index to user
+            builder.Entity<User>()
+                .HasIndex(x => x.ExternalId)
+                .IsUnique()
+                .HasDatabaseName(DefaultExternalIdIndex);
 
-                entity.HasIndex(e => e.CategoryTypeId)
-                    .HasDatabaseName("IX_Item_CategoryTypeId");
-            });
+            var entityTypes = builder.Model.GetEntityTypes();
+            AddExternalIndexes(builder, entityTypes);
+            AddLookupIndexes(builder, entityTypes);
 
             // turn off cascading deletes
             foreach (var entityType in builder.Model.GetEntityTypes())

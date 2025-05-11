@@ -4,6 +4,7 @@
 
 using AutoMapper;
 using Listopotamus.ApplicationCore.Entities;
+using Listopotamus.ApplicationCore.Entities.Items;
 using Listopotamus.ApplicationCore.Models;
 
 namespace Listopotamus.ApplicationCore
@@ -18,7 +19,7 @@ namespace Listopotamus.ApplicationCore
         /// </summary>
         public AutoMapperProfile()
         {
-            this.CreateMap<EbayQueryOptions, QueryOptions>()
+            this.CreateMap<EbaySearchQueryModel, SearchQueryModel>()
                 .ReverseMap();
 
             this.CreateMap<ItemModel, Item>()

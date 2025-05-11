@@ -2,8 +2,6 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using System.ComponentModel.DataAnnotations;
-
 namespace Listopotamus.ApplicationCore.Models
 {
     /// <summary>
@@ -20,6 +18,11 @@ namespace Listopotamus.ApplicationCore.Models
         /// Gets or sets the marketplace type id.
         /// </summary>
         required public int? MarketplaceTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the location type id.
+        /// </summary>
+        required public int? LocationTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the element id.
@@ -107,8 +110,8 @@ namespace Listopotamus.ApplicationCore.Models
         public decimal? SellerRating { get; set; }
 
         /// <summary>
-        /// Gets or sets the category id.
+        /// Gets or sets the location.
         /// </summary>
-        public int? CategoryId { get; set; }
+        public string Location { get; set; }
     }
 }

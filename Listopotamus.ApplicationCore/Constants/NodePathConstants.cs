@@ -94,6 +94,11 @@ namespace Listopotamus.ApplicationCore.Constants
             public const string SellerInfoSection = "/span[@class='s-item__detail s-item__detail--secondary']/span[@class='s-item__seller-info']";
 
             /// <summary>
+            /// Expression for selecting the location of an individual eBay item.
+            /// </summary>
+            public const string Location = ".//span[@class='s-item__location s-item__itemLocation']";
+
+            /// <summary>
             /// Constant for the free delivery text.
             /// </summary>
             public const string FreeDeliveryText = "Free delivery";

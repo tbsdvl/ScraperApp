@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Listopotamus.ApplicationCore;
 using Listopotamus.Infrastructure.Data;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,12 +17,20 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+// Add Identity
+builder.Services.AddAuthorization();
+
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
+
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.MapIdentityApi<IdentityUser>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

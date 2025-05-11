@@ -2,7 +2,7 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-namespace Listopotamus.ApplicationCore.Entities
+namespace Listopotamus.ApplicationCore.Entities.Lookups
 {
     /// <summary>
     /// Represents a marketplace type.

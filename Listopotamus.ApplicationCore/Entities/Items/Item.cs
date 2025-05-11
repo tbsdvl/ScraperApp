@@ -4,19 +4,16 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Listopotamus.ApplicationCore.Entities.Lookups;
+using Listopotamus.ApplicationCore.Entities.Search;
 
-namespace Listopotamus.ApplicationCore.Entities
+namespace Listopotamus.ApplicationCore.Entities.Items
 {
     /// <summary>
     /// Represents an item.
     /// </summary>
-    public class Item : BaseEntity<int>
+    public class Item : BaseExternalEntity<long?>
     {
-        /// <summary>
-        /// Gets or sets the element id.
-        /// </summary>
-        required public string ElementId { get; set; }
-
         /// <summary>
         /// Gets or sets the category type id.
         /// </summary>
@@ -30,6 +27,18 @@ namespace Listopotamus.ApplicationCore.Entities
         [ForeignKey(nameof(MarketplaceType))]
         [Required]
         public int? MarketplaceTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the location type id.
+        /// </summary>
+        [ForeignKey(nameof(LocationType))]
+        [Required]
+        public int? LocationTypeId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the element id.
+        /// </summary>
+        required public string ElementId { get; set; }
 
         /// <summary>
         /// Gets or sets the name.
@@ -110,5 +119,30 @@ namespace Listopotamus.ApplicationCore.Entities
         /// Gets or sets the seller rating.
         /// </summary>
         public decimal? SellerRating { get; set; }
+
+        /// <summary>
+        /// Gets or sets the location.
+        /// </summary>
+        public string Location { get; set; }
+
+        /// <summary>
+        /// Gets or sets the marketplace type.
+        /// </summary>
+        public MarketplaceType MarketplaceType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category type.
+        /// </summary>
+        public CategoryType CategoryType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the location type.
+        /// </summary>
+        public LocationType LocationType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the search result items.
+        /// </summary>
+        public List<SearchResultItem> SearchResultItems { get; set; }
     }
 }

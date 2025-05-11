@@ -20,6 +20,6 @@ namespace Listopotamus.ApplicationCore.Models
         /// Gets or sets the query options.
         /// </summary>
         [Required]
-        public QueryOptions Options { get; set; }
+        public SearchQueryModel Options { get; set; }
     }
 }

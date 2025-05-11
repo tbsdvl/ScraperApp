@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Listopotamus.ApplicationCore;
 using Listopotamus.ApplicationCore.Models;
+using System.Globalization;
+using Listopotamus.ApplicationCore.Enums;
 
 namespace Listopotamus.Integrations.Test
 {
@@ -35,11 +37,12 @@ namespace Listopotamus.Integrations.Test
             return new ScraperRequest()
             {
                 Url = "https://ebay.com",
-                Options = new EbayQueryOptions()
+                Options = new EbaySearchQueryModel()
                 {
                     SearchTerm = "test",
                     SoldItemsOnly = false,
                     MaxPageNumber = 2,
+                    LocationTypeId = (int)LocationTypeEnum.US,
                 },
             };
         }

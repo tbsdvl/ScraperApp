@@ -2,6 +2,8 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using System.Globalization;
+
 namespace Listopotamus.ApplicationCore.Extensions
 {
     /// <summary>
@@ -47,6 +49,7 @@ namespace Listopotamus.ApplicationCore.Extensions
                 throw new FormatException("Invalid price range format.");
             }
 
+            // TODO: Pass in a culture info to handle different currency formats
             if (decimal.TryParse(prices[0].Replace("$", string.Empty), out decimal minPrice) &&
                 decimal.TryParse(prices[1].Replace("$", string.Empty), out decimal maxPrice))
             {

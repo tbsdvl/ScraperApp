@@ -1,4 +1,4 @@
-﻿// <copyright file="EbayQueryOptions.cs" company="Psybersimian LLC">
+﻿// <copyright file="EbaySearchQueryModel.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
@@ -9,14 +9,14 @@ namespace Listopotamus.ApplicationCore.Models
     /// <summary>
     /// Represents the query options for scraping eBay pages.
     /// </summary>
-    public class EbayQueryOptions : QueryOptions
+    public class EbaySearchQueryModel : SearchQueryModel
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="EbayQueryOptions"/> class.
+        /// Initializes a new instance of the <see cref="EbaySearchQueryModel"/> class.
         /// </summary>
-        public EbayQueryOptions()
+        public EbaySearchQueryModel()
         {
-            this.MarketplaceType = (int)MarketplaceTypeEnum.Ebay;
+            this.MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay;
         }
     }
 }

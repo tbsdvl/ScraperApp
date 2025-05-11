@@ -133,6 +133,11 @@ namespace Listopotamus.ApplicationCore.Services
                 baseUrl += request.Options.SearchTerm;
             }
 
+            if (request.Options.CategoryTypeId.HasValue)
+            {
+                baseUrl += UrlConstants.EBAYCATEGORY + request.Options.CategoryTypeId;
+            }
+
             if (request.Options.SoldItemsOnly)
             {
                 baseUrl += UrlConstants.EBAYSOLDITEMS;
@@ -151,6 +156,11 @@ namespace Listopotamus.ApplicationCore.Services
             if (request.Options.Distance.HasValue)
             {
                 baseUrl += UrlConstants.EBAYDISTANCE + request.Options.Distance;
+            }
+
+            if (request.Options.LocationTypeId.HasValue)
+            {
+                baseUrl += UrlConstants.EBAYLOCATION + request.Options.LocationTypeId;
             }
 
             return baseUrl;
@@ -190,6 +200,7 @@ namespace Listopotamus.ApplicationCore.Services
                 var totalWatchers = node.SelectSingleNode(NodePathConstants.Ebay.TotalWatchers);
                 var offer = node.SelectSingleNode(NodePathConstants.Ebay.HasOffer);
                 var sellerInfo = node.SelectSingleNode(NodePathConstants.Ebay.SellerInfo);
+                var location = node.SelectSingleNode(NodePathConstants.Ebay.Location);
 
                 var quantitySoldMatch = Regex.Match(node.InnerText, @"(\d{1,3}(?:,\d{3})*)\s*sold");
                 var quantitySold = 0;
@@ -202,7 +213,8 @@ namespace Listopotamus.ApplicationCore.Services
                 var item = new ItemModel()
                 {
                     MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay,
-                    CategoryTypeId = request.Options.CategoryTypeId,
+                    CategoryTypeId = request.Options.CategoryTypeId ?? (int)CategoryTypeEnum.AllCategories,
+                    LocationTypeId = request.Options.LocationTypeId,
                     ElementId = id,
                     Name = name.InnerText.Trim(),
                     HasUpperCaseName = name.InnerText.All(c => char.IsUpper(c)),
@@ -219,7 +231,7 @@ namespace Listopotamus.ApplicationCore.Services
                     TotalSellerReviews = sellerInfo is not null ? GetTotalSellerReviews(sellerInfo.InnerText) : null,
                     SellerRating = sellerInfo is not null ? GetSellerRating(sellerInfo.InnerText) : null,
                     QuantitySold = quantitySold,
-                    CategoryId = request.Options.CategoryTypeId,
+                    Location = location is not null ? location.InnerText.Replace("from ", string.Empty).Trim() : string.Empty,
                 };
 
                 items.Add(item);
