@@ -10,7 +10,7 @@ namespace Listopotamus.ApplicationCore.Entities.Identity
     /// <summary>
     /// Represents a user.
     /// </summary>
-    public class User : IdentityUser<long>
+    public class User : IdentityUser<int>
     {
         /// <summary>
         /// Gets or sets the first name.

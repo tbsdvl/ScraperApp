@@ -10,13 +10,14 @@ using Listopotamus.ApplicationCore.Entities.Lookups;
 using Listopotamus.ApplicationCore.Entities.Items;
 using Listopotamus.ApplicationCore.Entities;
 using Listopotamus.ApplicationCore.Entities.Identity;
+using System.Diagnostics;
 
 namespace Listopotamus.Infrastructure.Data
 {
     /// <summary>
     /// Represents the application database context.
     /// </summary>
-    public class ApplicationDbContext : IdentityDbContext<User, Role, long>
+    public class ApplicationDbContext : IdentityDbContext<User, Role, int>
     {
         /// <summary>
         /// The system user name.
@@ -68,9 +69,10 @@ namespace Listopotamus.Infrastructure.Data
         /// Renames tables and primary key columns to match the entity CLR names.
         /// </summary>
         /// <param name="builder"></param>
-        private static void RenameTablesAndIds(ModelBuilder builder)
+        /// <param name="entityTypes">The collection of entity types.</param>
+        private static void RenameTablesAndIds(ModelBuilder builder, IEnumerable<Microsoft.EntityFrameworkCore.Metadata.IMutableEntityType> entityTypes)
         {
-            foreach (var entity in builder.Model.GetEntityTypes())
+            foreach (var entity in entityTypes)
             {
                 var tableName = entity.ClrType.Name;
                 builder.Entity(entity.ClrType).ToTable(tableName);
@@ -177,7 +179,10 @@ namespace Listopotamus.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            RenameTablesAndIds(builder);
+            var entityTypes = builder.Model.GetEntityTypes();
+
+            // Debugger.Launch();
+            RenameTablesAndIds(builder, entityTypes);
 
             // add external id index to user
             builder.Entity<User>()
@@ -185,7 +190,6 @@ namespace Listopotamus.Infrastructure.Data
                 .IsUnique()
                 .HasDatabaseName(DefaultExternalIdIndex);
 
-            var entityTypes = builder.Model.GetEntityTypes();
             AddExternalIndexes(builder, entityTypes);
             AddLookupIndexes(builder, entityTypes);
 
