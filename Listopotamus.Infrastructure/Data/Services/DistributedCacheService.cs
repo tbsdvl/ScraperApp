@@ -2,37 +2,22 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using Listopotamus.ApplicationCore.Entities.Identity;
-using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
+using Listopotamus.Core.Entities.Identity;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace Listopotamus.Infrastructure.Data.Services
 {
     /// <summary>
     /// Represents the distributed cache service.
     /// </summary>
-    public class DistributedCacheService : IDistributedCacheService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="DistributedCacheService"/> class.
+    /// </remarks>
+    /// <param name="cache">The distributed cache instance.</param>
+    public class DistributedCacheService(IDistributedCache cache) : IDistributedCacheService
     {
-        private readonly IDistributedCache DistributedCache;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DistributedCacheService"/> class.
-        /// </summary>
-        /// <param name="cache">The distributed cache instance.</param>
-        public DistributedCacheService(IDistributedCache cache)
-        {
-            DistributedCache = cache;
-        }
-
-        /// <summary>
-        /// Generates a cache key for a user based on their object ID.
-        /// </summary>
-        /// <param name="objectId">The object ID of the user.</param>
-        /// <returns>The cache key.</returns>
-        private static string GetCacheKeyForUser(string objectId)
-        {
-            return $"User:{objectId}";
-        }
+        private IDistributedCache DistributedCache { get; } = cache;
 
         /// <inheritdoc />
         public async Task<User?> FindUserByObjectIdAsync(string objectId)
@@ -58,7 +43,7 @@ namespace Listopotamus.Infrastructure.Data.Services
 
             var options = new DistributedCacheEntryOptions
             {
-                AbsoluteExpirationRelativeToNow = expiration
+                AbsoluteExpirationRelativeToNow = expiration,
             };
 
             await this.DistributedCache.SetStringAsync(cacheKey, serializedUser, options);
@@ -69,6 +54,16 @@ namespace Listopotamus.Infrastructure.Data.Services
         {
             var cacheKey = GetCacheKeyForUser(objectId);
             await this.DistributedCache.RemoveAsync(cacheKey);
+        }
+
+        /// <summary>
+        /// Generates a cache key for a user based on their object ID.
+        /// </summary>
+        /// <param name="objectId">The object ID of the user.</param>
+        /// <returns>The cache key.</returns>
+        private static string GetCacheKeyForUser(string objectId)
+        {
+            return $"User:{objectId}";
         }
     }
 }

@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	  <NoWarn>SA1201, SA1202</NoWarn>
+	<NoWarn>SA0001, SA1201, SA1202, SA1009</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,8 +19,6 @@
     <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="HtmlAgilityPack" Version="1.11.74" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.3.1" />
-    <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="8.0.0" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -30,6 +28,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Listopotamus.Core\Listopotamus.Core.csproj" />
     <ProjectReference Include="..\Listopotamus.Resource\Listopotamus.Resource.csproj" />
+    <ProjectReference Include="..\Listopotamus.Shared\Listopotamus.Shared.csproj" />
   </ItemGroup>
 
 </Project>

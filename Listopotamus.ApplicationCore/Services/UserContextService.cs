@@ -3,7 +3,7 @@
 // </copyright>
 
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.Core.Extensions;
+using Listopotamus.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace Listopotamus.ApplicationCore.Services
@@ -11,21 +11,16 @@ namespace Listopotamus.ApplicationCore.Services
     /// <summary>
     /// Represents the user context service.
     /// </summary>
-    public class UserContextService : IUserContextService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="UserContextService"/> class.
+    /// </remarks>
+    /// <param name="httpContextAccessor">The http context accessor.</param>
+    public class UserContextService(IHttpContextAccessor httpContextAccessor) : IUserContextService
     {
         /// <summary>
         /// Gets the HTTP context accessor.
         /// </summary>
-        private IHttpContextAccessor HttpContextAccessor { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UserContextService"/> class.
-        /// </summary>
-        /// <param name="httpContextAccessor">The http context accessor.</param>
-        public UserContextService(IHttpContextAccessor httpContextAccessor)
-        {
-            this.HttpContextAccessor = httpContextAccessor;
-        }
+        private IHttpContextAccessor HttpContextAccessor { get; } = httpContextAccessor;
 
         /// <summary>
         /// Gets the user id from the HTTP context.

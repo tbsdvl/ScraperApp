@@ -3,7 +3,7 @@
 // </copyright>
 
 using HtmlAgilityPack;
-using Listopotamus.ApplicationCore.Models;
+using Listopotamus.ApplicationCore.DTOs;
 
 namespace Listopotamus.ApplicationCore.Interfaces
 {
@@ -30,6 +30,6 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// <param name="request">The scraper request.</param>
         /// <param name="nodes">The list of HTML nodes.</param>
         /// <returns>A list of items.</returns>
-        List<ItemModel> GetItems(ScraperRequest request, List<HtmlNode> nodes);
+        List<ItemDto> GetItems(ScraperRequest request, List<HtmlNode> nodes);
     }
 }

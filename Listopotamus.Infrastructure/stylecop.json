@@ -19,6 +19,9 @@
     },
     "namingRules": {
       "allowCommonHungarianPrefixes": false
+    },
+    "spacingRules": {
+      "": false
     }
   }
 }

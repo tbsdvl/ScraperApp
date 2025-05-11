@@ -5,10 +5,10 @@
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Listopotamus.ApplicationCore.Constants;
+using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Extensions;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.ApplicationCore.Models;
 
 namespace Listopotamus.ApplicationCore.Services
 {
@@ -121,55 +121,55 @@ namespace Listopotamus.ApplicationCore.Services
         {
             var baseUrl = UrlConstants.EBAY;
 
-            if (request.Options.CategoryTypeId.HasValue)
+            if (request.Query.CategoryTypeId.HasValue)
             {
-                baseUrl += request.Options.CategoryTypeId + UrlConstants.EBAYINDEX;
+                baseUrl += request.Query.CategoryTypeId + UrlConstants.EBAYINDEX;
             }
 
             baseUrl += UrlConstants.EBAYSEARCHQUERY;
 
-            if (!string.IsNullOrWhiteSpace(request.Options.SearchTerm))
+            if (!string.IsNullOrWhiteSpace(request.Query.SearchTerm))
             {
-                baseUrl += request.Options.SearchTerm;
+                baseUrl += request.Query.SearchTerm;
             }
 
-            if (request.Options.CategoryTypeId.HasValue)
+            if (request.Query.CategoryTypeId.HasValue)
             {
-                baseUrl += UrlConstants.EBAYCATEGORY + request.Options.CategoryTypeId;
+                baseUrl += UrlConstants.EBAYCATEGORY + request.Query.CategoryTypeId;
             }
 
-            if (request.Options.SoldItemsOnly)
+            if (request.Query.SoldItemsOnly)
             {
                 baseUrl += UrlConstants.EBAYSOLDITEMS;
             }
 
-            if (request.Options.PageNumber > 0)
+            if (request.Query.PageNumber > 0)
             {
-                baseUrl += UrlConstants.EBAYPAGENUM + request.Options.PageNumber;
+                baseUrl += UrlConstants.EBAYPAGENUM + request.Query.PageNumber;
             }
 
-            if (!string.IsNullOrWhiteSpace(request.Options.ZipCode))
+            if (!string.IsNullOrWhiteSpace(request.Query.ZipCode))
             {
-                baseUrl += UrlConstants.EBAYZIPCODE + request.Options.ZipCode;
+                baseUrl += UrlConstants.EBAYZIPCODE + request.Query.ZipCode;
             }
 
-            if (request.Options.Distance.HasValue)
+            if (request.Query.Distance.HasValue)
             {
-                baseUrl += UrlConstants.EBAYDISTANCE + request.Options.Distance;
+                baseUrl += UrlConstants.EBAYDISTANCE + request.Query.Distance;
             }
 
-            if (request.Options.LocationTypeId.HasValue)
+            if (request.Query.LocationTypeId.HasValue)
             {
-                baseUrl += UrlConstants.EBAYLOCATION + request.Options.LocationTypeId;
+                baseUrl += UrlConstants.EBAYLOCATION + request.Query.LocationTypeId;
             }
 
             return baseUrl;
         }
 
         /// <inheritdoc/>
-        public List<ItemModel> GetItems(ScraperRequest request, List<HtmlNode> nodes)
+        public List<ItemDto> GetItems(ScraperRequest request, List<HtmlNode> nodes)
         {
-            var items = new List<ItemModel>();
+            var items = new List<ItemDto>();
 
             foreach (var node in nodes)
             {
@@ -210,11 +210,11 @@ namespace Listopotamus.ApplicationCore.Services
                     quantitySold = int.Parse(soldText.Replace(",", string.Empty));
                 }
 
-                var item = new ItemModel()
+                var item = new ItemDto()
                 {
                     MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay,
-                    CategoryTypeId = request.Options.CategoryTypeId ?? (int)CategoryTypeEnum.AllCategories,
-                    LocationTypeId = request.Options.LocationTypeId,
+                    CategoryTypeId = request.Query.CategoryTypeId ?? (int)CategoryTypeEnum.AllCategories,
+                    LocationTypeId = request.Query.LocationTypeId,
                     ElementId = id,
                     Name = name.InnerText.Trim(),
                     HasUpperCaseName = name.InnerText.All(c => char.IsUpper(c)),

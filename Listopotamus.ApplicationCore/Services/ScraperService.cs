@@ -4,10 +4,10 @@
 
 using AutoMapper;
 using HtmlAgilityPack;
-using Listopotamus.ApplicationCore.Entities.Items;
+using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.ApplicationCore.Models;
+using Listopotamus.Core.Entities.Items;
 using Listopotamus.Resource;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -80,14 +80,14 @@ namespace Listopotamus.ApplicationCore.Services
             var itemNodes = new List<HtmlNode>();
             var previousItemId = string.Empty;
 
-            if (request.Options.MaxPageNumber.HasValue)
+            if (request.Query.MaxPageNumber.HasValue)
             {
-                this.MaxPageNumber = request.Options.MaxPageNumber.Value;
+                this.MaxPageNumber = request.Query.MaxPageNumber.Value;
             }
 
             for (int i = 1; i <= this.MaxPageNumber; i++)
             {
-                request.Options.PageNumber = i;
+                request.Query.PageNumber = i;
                 var page = await GetPageHtmlAsync(request, service);
                 var nodes = page.DocumentNode.SelectNodes(service.ItemsListNodePath);
 
@@ -123,8 +123,8 @@ namespace Listopotamus.ApplicationCore.Services
         /// <returns>The scraper response including a list of items.</returns>
         public async Task<ScraperResponse> GetItemsAsync(ScraperRequest request)
         {
-            var items = new List<ItemModel>();
-            if (!request.Options.MarketplaceTypeId.HasValue)
+            var items = new List<ItemDto>();
+            if (!request.Query.MarketplaceTypeId.HasValue)
             {
                 return new ScraperResponse()
                 {
@@ -134,7 +134,7 @@ namespace Listopotamus.ApplicationCore.Services
             }
 
             using var serviceScope = this.ServiceScopeFactory.CreateScope();
-            var service = GetService(serviceScope, request.Options.MarketplaceTypeId.Value);
+            var service = GetService(serviceScope, request.Query.MarketplaceTypeId.Value);
             if (service is null)
             {
                 return new ScraperResponse()

@@ -3,8 +3,8 @@ using Listopotamus.ApplicationCore.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Listopotamus.ApplicationCore;
-using Listopotamus.ApplicationCore.Models;
 using Listopotamus.ApplicationCore.Enums;
+using Listopotamus.ApplicationCore.DTOs;
 
 namespace Listopotamus.Integrations.Test
 {
@@ -36,7 +36,7 @@ namespace Listopotamus.Integrations.Test
             return new ScraperRequest()
             {
                 Url = "https://ebay.com",
-                Options = new EbaySearchQueryModel()
+                Query = new EbaySearchQueryDto()
                 {
                     SearchTerm = "test",
                     SoldItemsOnly = false,
@@ -67,7 +67,7 @@ namespace Listopotamus.Integrations.Test
             var request = GetScraperRequest();
 
             // searching for generic products like "shoes" returns a different search results page structure.
-            request.Options.SearchTerm = "shoes";
+            request.Query.SearchTerm = "shoes";
 
             // Act
             var result = await this.ScraperService.GetItemsAsync(request);
@@ -82,7 +82,7 @@ namespace Listopotamus.Integrations.Test
         {
             // Arrange
             var request = GetScraperRequest();
-            request.Options.SoldItemsOnly = true;
+            request.Query.SoldItemsOnly = true;
 
             // Act
             var result = await this.ScraperService.GetItemsAsync(request);

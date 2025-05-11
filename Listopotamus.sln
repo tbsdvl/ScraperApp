@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listopotamus.Resource", "Li
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listopotamus.Core", "Listopotamus.Core\Listopotamus.Core.csproj", "{B7BD9413-1CF2-488C-B938-C281A704F52B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Listopotamus.Shared", "Listopotamus.Shared\Listopotamus.Shared.csproj", "{B92063B2-D296-4BEB-A518-8EA0963676B9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -60,6 +62,10 @@ Global
 		{B7BD9413-1CF2-488C-B938-C281A704F52B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B7BD9413-1CF2-488C-B938-C281A704F52B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B7BD9413-1CF2-488C-B938-C281A704F52B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B92063B2-D296-4BEB-A518-8EA0963676B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B92063B2-D296-4BEB-A518-8EA0963676B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B92063B2-D296-4BEB-A518-8EA0963676B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B92063B2-D296-4BEB-A518-8EA0963676B9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

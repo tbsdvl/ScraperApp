@@ -2,22 +2,27 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using Listopotamus.ApplicationCore.Interfaces;
+using Listopotamus.Core.Entities;
+using Listopotamus.Core.Entities.Identity;
+using Listopotamus.Core.Entities.Items;
+using Listopotamus.Core.Entities.Lookups;
+using Listopotamus.Core.Entities.Search;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Listopotamus.ApplicationCore.Interfaces;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Listopotamus.ApplicationCore.Entities.Lookups;
-using Listopotamus.ApplicationCore.Entities.Items;
-using Listopotamus.ApplicationCore.Entities;
-using Listopotamus.ApplicationCore.Entities.Identity;
-using System.Diagnostics;
 
 namespace Listopotamus.Infrastructure.Data
 {
     /// <summary>
     /// Represents the application database context.
     /// </summary>
-    public class ApplicationDbContext : IdentityDbContext<User, Role, int>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class with the specified options and user context service.
+    /// </remarks>
+    /// <param name="options">The db context options.</param>
+    /// <param name="userContextService">The user context service.</param>
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IUserContextService userContextService) : IdentityDbContext<User, Role, int>(options)
     {
         /// <summary>
         /// The system user name.
@@ -35,22 +40,6 @@ namespace Listopotamus.Infrastructure.Data
         private const string DefaultLookupValueIndex = "UCX_LookupValue";
 
         /// <summary>
-        /// Gets the user context service.
-        /// </summary>
-        private IUserContextService UserContextService { get; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationDbContext"/> class with the specified options and user context service.
-        /// </summary>
-        /// <param name="options">The db context options.</param>
-        /// <param name="userContextService">The user context service.</param>
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IUserContextService userContextService)
-            : base(options)
-        {
-            this.UserContextService = userContextService;
-        }
-
-        /// <summary>
         /// Gets or sets the marketplace types.
         /// </summary>
         public DbSet<MarketplaceType> MarketplaceTypes { get; set; }
@@ -61,14 +50,102 @@ namespace Listopotamus.Infrastructure.Data
         public DbSet<CategoryType> CategoryTypes { get; set; }
 
         /// <summary>
+        /// Gets or sets the location types.
+        /// </summary>
+        public DbSet<LocationType> LocationTypes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user searches.
+        /// </summary>
+        public DbSet<UserSearch> UserSearches { get; set; }
+
+        /// <summary>
+        /// Gets or sets the search queries.
+        /// </summary>
+        public DbSet<SearchQuery> SearchQueries { get; set; }
+
+        /// <summary>
+        /// Gets or sets the search result items.
+        /// </summary>
+        public DbSet<SearchResultItem> SearchResultItems { get; set; }
+
+        /// <summary>
         /// Gets or sets the items.
         /// </summary>
         public DbSet<Item> Items { get; set; }
 
         /// <summary>
+        /// Gets the user context service.
+        /// </summary>
+        private IUserContextService UserContextService { get; } = userContextService;
+
+        /// <summary>
+        /// Saves changes to the database asynchronously.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> representing saving the entity.</returns>
+        public async Task<int> SaveChangesAsync()
+        {
+            var currentDate = DateTime.Now;
+            var userName = this.UserContextService.GetUserId() ?? SYSTEM;
+
+            foreach (var entry in this.ChangeTracker
+                         .Entries()
+                         .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
+            {
+                var isAdded = entry.State == EntityState.Added;
+
+                SetIfExists(entry, "UpdatedDate", currentDate);
+                SetIfExists(entry, "UpdatedBy", userName);
+
+                if (isAdded)
+                {
+                    SetIfExists(entry, "CreatedDate", currentDate);
+                    SetIfExists(entry, "CreatedBy", userName);
+                }
+                else
+                {
+                    MarkUnmodified(entry, "CreatedDate");
+                    MarkUnmodified(entry, "CreatedBy");
+                }
+            }
+
+            return await base.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// Configures the model for the application database context.
+        /// </summary>
+        /// <param name="builder">The model builder.</param>
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            var entityTypes = builder.Model.GetEntityTypes();
+
+            RenameTablesAndIds(builder, entityTypes);
+
+            // add external id index to user
+            builder.Entity<User>()
+                .HasIndex(x => x.ExternalId)
+                .IsUnique()
+                .HasDatabaseName(DefaultExternalIdIndex);
+
+            AddExternalIndexes(builder, entityTypes);
+            AddLookupIndexes(builder, entityTypes);
+
+            // turn off cascading deletes
+            foreach (var entityType in builder.Model.GetEntityTypes())
+            {
+                entityType.GetForeignKeys()
+                    .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade)
+                    .ToList()
+                    .ForEach(fk => fk.DeleteBehavior = DeleteBehavior.Restrict);
+            }
+        }
+
+        /// <summary>
         /// Renames tables and primary key columns to match the entity CLR names.
         /// </summary>
-        /// <param name="builder"></param>
+        /// <param name="builder">The builder.</param>
         /// <param name="entityTypes">The collection of entity types.</param>
         private static void RenameTablesAndIds(ModelBuilder builder, IEnumerable<Microsoft.EntityFrameworkCore.Metadata.IMutableEntityType> entityTypes)
         {
@@ -93,10 +170,10 @@ namespace Listopotamus.Infrastructure.Data
         /// <summary>
         /// Sets the value of a property if it exists in the entity.
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="propertyName"></param>
-        /// <param name="value"></param>
-        private void SetIfExists(EntityEntry entry, string propertyName, object value)
+        /// <param name="entry">The entry.</param>
+        /// <param name="propertyName">The property name.</param>
+        /// <param name="value">The value.</param>
+        private static void SetIfExists(EntityEntry entry, string propertyName, object value)
         {
             if (HasProperty(entry, propertyName))
             {
@@ -107,9 +184,9 @@ namespace Listopotamus.Infrastructure.Data
         /// <summary>
         /// Marks a property as unmodified if it exists in the entity.
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="propertyName"></param>
-        private void MarkUnmodified(EntityEntry entry, string propertyName)
+        /// <param name="entry">The entry.</param>
+        /// <param name="propertyName">The property name.</param>
+        private static void MarkUnmodified(EntityEntry entry, string propertyName)
         {
             if (HasProperty(entry, propertyName))
             {
@@ -120,10 +197,10 @@ namespace Listopotamus.Infrastructure.Data
         /// <summary>
         /// Checks if a property exists in the entity.
         /// </summary>
-        /// <param name="entry"></param>
-        /// <param name="propertyName"></param>
-        /// <returns></returns>
-        private bool HasProperty(EntityEntry entry, string propertyName)
+        /// <param name="entry">The entry.</param>
+        /// <param name="propertyName">The property name.</param>
+        /// <returns>A value indicating whether or not the entry has a property.</returns>
+        private static bool HasProperty(EntityEntry entry, string propertyName)
         {
             return entry.Metadata.FindProperty(propertyName) != null;
         }
@@ -170,68 +247,6 @@ namespace Listopotamus.Infrastructure.Data
                         .HasDatabaseName(DefaultLookupValueIndex);
                 }
             }
-        }
-
-        /// <summary>
-        /// Configures the model for the application database context.
-        /// </summary>
-        /// <param name="builder">The model builder.</param>
-        protected override void OnModelCreating(ModelBuilder builder)
-        {
-            base.OnModelCreating(builder);
-            var entityTypes = builder.Model.GetEntityTypes();
-
-            RenameTablesAndIds(builder, entityTypes);
-
-            // add external id index to user
-            builder.Entity<User>()
-                .HasIndex(x => x.ExternalId)
-                .IsUnique()
-                .HasDatabaseName(DefaultExternalIdIndex);
-
-            AddExternalIndexes(builder, entityTypes);
-            AddLookupIndexes(builder, entityTypes);
-
-            // turn off cascading deletes
-            foreach (var entityType in builder.Model.GetEntityTypes())
-            {
-                entityType.GetForeignKeys()
-                    .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade)
-                    .ToList()
-                    .ForEach(fk => fk.DeleteBehavior = DeleteBehavior.Restrict);
-            }
-        }
-
-        /// <summary>
-        /// Saves changes to the database asynchronously.
-        /// </summary>
-        public async Task<int> SaveChangesAsync()
-        {
-            var currentDate = DateTime.Now;
-            var userName = this.UserContextService.GetUserId() ?? SYSTEM;
-
-            foreach (var entry in this.ChangeTracker
-                         .Entries()
-                         .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
-            {
-                var isAdded = entry.State == EntityState.Added;
-
-                SetIfExists(entry, "UpdatedDate", currentDate);
-                SetIfExists(entry, "UpdatedBy", userName);
-
-                if (isAdded)
-                {
-                    SetIfExists(entry, "CreatedDate", currentDate);
-                    SetIfExists(entry, "CreatedBy", userName);
-                }
-                else // Modified
-                {
-                    MarkUnmodified(entry, "CreatedDate");
-                    MarkUnmodified(entry, "CreatedBy");
-                }
-            }
-
-            return await base.SaveChangesAsync();
         }
     }
 }
