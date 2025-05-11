@@ -181,7 +181,6 @@ namespace Listopotamus.Infrastructure.Data
             base.OnModelCreating(builder);
             var entityTypes = builder.Model.GetEntityTypes();
 
-            // Debugger.Launch();
             RenameTablesAndIds(builder, entityTypes);
 
             // add external id index to user
