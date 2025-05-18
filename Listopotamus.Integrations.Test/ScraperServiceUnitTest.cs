@@ -1,34 +1,20 @@
-﻿using AutoMapper;
-using Listopotamus.ApplicationCore.Services;
+﻿using Listopotamus.ApplicationCore.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Listopotamus.ApplicationCore;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.DTOs;
 
 namespace Listopotamus.Integrations.Test
 {
     [TestClass]
-    public sealed class ScraperServiceUnitTest
+    public sealed class ScraperServiceUnitTest : BaseUnitTest
     {           
         private ScraperService ScraperService { get; set; }
 
         [TestInitialize]
-        public void Initialize()
+        public new async Task InitializeAsync()
         {
-            var mappingConfig = new MapperConfiguration(cfg =>
-            {
-                cfg.AddProfile<AutoMapperProfile>();
-            });
-
-            var serviceCollection = new ServiceCollection();
-            serviceCollection.AddSingleton(mappingConfig.CreateMapper());
-            serviceCollection.TryAddTransient<EbayScraperService>();
-            serviceCollection.TryAddTransient<ScraperService>();
-            
-            var serviceProvider = serviceCollection.BuildServiceProvider();
-
-            this.ScraperService = serviceProvider.GetRequiredService<ScraperService>();
+            await base.InitializeAsync();
+            this.ScraperService = this.ServiceProvider.GetRequiredService<ScraperService>();
         }
 
         private static ScraperRequest GetScraperRequest()
