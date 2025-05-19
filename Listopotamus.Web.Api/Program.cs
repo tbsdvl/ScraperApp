@@ -7,6 +7,7 @@ using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Caching.Distributed;
 using Listopotamus.Infrastructure.Data.Repositories.Identity;
 using Listopotamus.Infrastructure.Security.Entities.Identity;
+using Listopotamus.Infrastructure.Security;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,8 +49,24 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-app.MapIdentityApi<User>();
+// Inser roles into the database
+var roleManaer = app.Services.GetRequiredService<ApplicationRoleManager>();
+
+var roles = UserRoles.GetAll();
+
+foreach (var role in roles)
+{
+    if (!await roleManaer.RoleExistsAsync(role))
+    {
+        var newRole = new Role()
+        {
+            Name = role,
+            NormalizedName = role.ToUpper()
+        };
+        await roleManaer.CreateAsync(newRole);
+    }
+}
+
 
 // Use distributed cache
 app.Lifetime.ApplicationStarted.Register(() =>
