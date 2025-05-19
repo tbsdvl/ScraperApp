@@ -4,10 +4,10 @@
 
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Core.Entities;
-using Listopotamus.Core.Entities.Identity;
 using Listopotamus.Core.Entities.Items;
 using Listopotamus.Core.Entities.Lookups;
 using Listopotamus.Core.Entities.Search;
+using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;

@@ -2,7 +2,7 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using Listopotamus.Core.Entities.Identity;
+using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 
 namespace Listopotamus.Infrastructure.Data.Repositories.Identity

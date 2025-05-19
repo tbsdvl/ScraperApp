@@ -5,7 +5,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Identity;
 
-namespace Listopotamus.Core.Entities.Identity
+namespace Listopotamus.Infrastructure.Security.Entities.Identity
 {
     /// <summary>
     /// Represents a user.

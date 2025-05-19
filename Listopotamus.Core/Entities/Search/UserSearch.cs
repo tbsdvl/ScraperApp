@@ -4,7 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Listopotamus.Core.Entities.Identity;
+using Listopotamus.Infrastructure.Security.Entities.Identity;
 
 namespace Listopotamus.Core.Entities.Search
 {

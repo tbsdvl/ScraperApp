@@ -1,6 +1,5 @@
 ﻿using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.ApplicationCore.Services;
-using Listopotamus.Core.Entities.Identity;
 using Listopotamus.Infrastructure.Data.Repositories.Identity;
 using Listopotamus.Infrastructure.Data.Services;
 using Listopotamus.Infrastructure.Data;
@@ -13,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using AutoMapper;
 using Listopotamus.ApplicationCore;
+using Listopotamus.Infrastructure.Security.Entities.Identity;
 
 namespace Listopotamus.Integrations.Test
 {
@@ -76,7 +76,7 @@ namespace Listopotamus.Integrations.Test
             serviceCollection.AddHttpContextAccessor();
             serviceCollection.AddTransient<IUserContextService, UserContextService>();
             serviceCollection.AddLogging();
-            serviceCollection.AddIdentityCore<Core.Entities.Identity.User>(options =>
+            serviceCollection.AddIdentityCore<Infrastructure.Security.Entities.Identity.User>(options =>
             {
                 options.Password.RequireDigit = false;
                 options.Password.RequiredLength = 6;

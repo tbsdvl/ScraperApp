@@ -2,8 +2,8 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using Listopotamus.Core.Entities.Identity;
 using Listopotamus.Infrastructure.Data.Services;
+using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 

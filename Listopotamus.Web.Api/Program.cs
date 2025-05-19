@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Caching.Cosmos;
 using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.Caching.Distributed;
+using Listopotamus.Infrastructure.Data.Repositories.Identity;
+using Listopotamus.Infrastructure.Security.Entities.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,9 +33,15 @@ builder.Services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
 
 // Add Identity
 builder.Services.AddAuthorization();
-
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddScoped<IRoleValidator<Role>, RoleValidator<Role>>();
+builder.Services.AddScoped<RoleManager<Role>>();
+builder.Services.AddScoped<SignInManager<User>>();
+builder.Services
+    .AddIdentityCore<User>()
+    .AddRoles<Role>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddUserManager<ApplicationUserManager>()
+    .AddRoleManager<ApplicationRoleManager>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -41,7 +49,7 @@ builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-app.MapIdentityApi<IdentityUser>();
+app.MapIdentityApi<User>();
 
 // Use distributed cache
 app.Lifetime.ApplicationStarted.Register(() =>

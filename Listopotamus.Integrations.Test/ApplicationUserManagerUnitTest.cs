@@ -1,4 +1,5 @@
 ﻿using Listopotamus.Infrastructure.Data.Repositories.Identity;
+using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Listopotamus.Integrations.Test
@@ -16,9 +17,9 @@ namespace Listopotamus.Integrations.Test
 
         }
 
-        private static Core.Entities.Identity.User CreateTestUser()
+        private static User CreateTestUser()
         {
-            return new Core.Entities.Identity.User
+            return new User
             {
                 UserName = "testuser",
                 Email = "testuser@example.com",

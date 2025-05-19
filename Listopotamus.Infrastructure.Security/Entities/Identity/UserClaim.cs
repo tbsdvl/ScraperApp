@@ -4,7 +4,7 @@
 
 using Microsoft.AspNetCore.Identity;
 
-namespace Listopotamus.Core.Entities.Identity
+namespace Listopotamus.Infrastructure.Security.Entities.Identity
 {
     /// <summary>
     /// Represents a claim associated with a user in the identity system.

@@ -3,7 +3,7 @@
 // </copyright>
 
 using System.Text.Json;
-using Listopotamus.Core.Entities.Identity;
+using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Microsoft.Extensions.Caching.Distributed;
 
 namespace Listopotamus.Infrastructure.Data.Services
