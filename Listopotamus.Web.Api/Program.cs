@@ -8,6 +8,10 @@ using Microsoft.Extensions.Caching.Distributed;
 using Listopotamus.Infrastructure.Data.Repositories.Identity;
 using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Listopotamus.Infrastructure.Security;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Listopotamus.ApplicationCore.Interfaces;
+using Listopotamus.ApplicationCore.Services;
+using Listopotamus.Infrastructure.Data.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +27,11 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
 // Add the Cosmos DB cache
 builder.Services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
 {
@@ -32,13 +41,17 @@ builder.Services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
     cacheOptions.CreateIfNotExists = true;
 });
 
+// add services?
+builder.Services.AddScoped<IUserContextService, UserContextService>();
+
 // Add Identity
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<IRoleValidator<Role>, RoleValidator<Role>>();
-builder.Services.AddScoped<RoleManager<Role>>();
-builder.Services.AddScoped<SignInManager<User>>();
+builder.Services.TryAddScoped<IRoleValidator<Role>, RoleValidator<Role>>();
+builder.Services.TryAddScoped<RoleManager<Role>>();
+builder.Services.TryAddScoped<SignInManager<User>>();
 builder.Services
     .AddIdentityCore<User>()
+     .AddUserStore<ApplicationUserStore<ApplicationDbContext>>()
     .AddRoles<Role>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddUserManager<ApplicationUserManager>()
@@ -46,24 +59,28 @@ builder.Services
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IDistributedCacheService, DistributedCacheService>();
 
 var app = builder.Build();
 
 // Inser roles into the database
-var roleManaer = app.Services.GetRequiredService<ApplicationRoleManager>();
-
-var roles = UserRoles.GetAll();
-
-foreach (var role in roles)
+using (var scope = app.Services.CreateScope())
 {
-    if (!await roleManaer.RoleExistsAsync(role))
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+    var roles = UserRoles.GetAll();
+
+    foreach (var role in roles)
     {
-        var newRole = new Role()
+        if (!await roleManager.RoleExistsAsync(role))
         {
-            Name = role,
-            NormalizedName = role.ToUpper()
-        };
-        await roleManaer.CreateAsync(newRole);
+            var newRole = new Role()
+            {
+                Name = role,
+                NormalizedName = role.ToUpper()
+            };
+            await roleManager.CreateAsync(newRole);
+        }
     }
 }
 
