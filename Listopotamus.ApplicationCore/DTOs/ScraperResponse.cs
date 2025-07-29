@@ -23,5 +23,10 @@ namespace Listopotamus.ApplicationCore.DTOs
         /// Gets or sets a value indicating whether or not the response succeeded.
         /// </summary>
         public bool Succeeded { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the total results.
+        /// </summary>
+        public int? TotalResults { get; set; } = 0;
     }
 }

@@ -231,7 +231,7 @@ namespace Listopotamus.ApplicationCore.Services
                     TotalSellerReviews = sellerInfo is not null ? GetTotalSellerReviews(sellerInfo.InnerText) : null,
                     SellerRating = sellerInfo is not null ? GetSellerRating(sellerInfo.InnerText) : null,
                     QuantitySold = quantitySold,
-                    Location = location is not null ? location.InnerText.Replace("from ", string.Empty).Trim() : string.Empty,
+                    Location = location is not null ? location.InnerText.Replace("from ", string.Empty).Replace("Located in", string.Empty).Trim() : string.Empty,
                 };
 
                 items.Add(item);
