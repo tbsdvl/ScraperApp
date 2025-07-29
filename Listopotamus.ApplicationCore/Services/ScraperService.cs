@@ -166,6 +166,7 @@ namespace Listopotamus.ApplicationCore.Services
                 return new ScraperResponse()
                 {
                     Items = items,
+                    TotalResults = items.Count,
                     ErrorMessage = ErrorMessages.NoItemsFound,
                 };
             }
@@ -177,6 +178,7 @@ namespace Listopotamus.ApplicationCore.Services
             return new ScraperResponse()
             {
                 Items = items,
+                TotalResults = items.Count,
                 Succeeded = true,
             };
         }
