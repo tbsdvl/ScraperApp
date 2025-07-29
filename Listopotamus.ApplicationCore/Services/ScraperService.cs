@@ -10,6 +10,7 @@ using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Core.Entities.Items;
 using Listopotamus.Resource;
 using Microsoft.Extensions.DependencyInjection;
+using OpenQA.Selenium.Chrome;
 
 namespace Listopotamus.ApplicationCore.Services
 {
@@ -48,14 +49,14 @@ namespace Listopotamus.ApplicationCore.Services
         {
             request.Url = service.GetUrl(request);
 
-            var webUtility = new HtmlWeb()
-            {
-                UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0",
-                UseCookies = true,
-            };
-            var htmlDoc = await webUtility.LoadFromWebAsync(request.Url);
+            var options = new ChromeOptions();
+            options.AddArgument("--headless");
+            using var driver = new ChromeDriver(options);
+            await driver.Navigate().GoToUrlAsync(request.Url);
+            var doc = new HtmlDocument();
+            doc.LoadHtml(driver.PageSource);
 
-            return htmlDoc;
+            return doc;
         }
 
         /// <summary>
