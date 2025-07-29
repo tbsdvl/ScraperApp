@@ -36,8 +36,10 @@ builder.Services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
     cacheOptions.CreateIfNotExists = true;
 });
 
-// add services?
+// add services
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddScoped<IBaseScraperService, ScraperService>();
+builder.Services.AddScoped<IScraperService, EbayScraperService>();
 
 // Add Identity
 builder.Services.AddAuthorization();
@@ -59,7 +61,7 @@ builder.Services.AddScoped<IDistributedCacheService, DistributedCacheService>();
 
 var app = builder.Build();
 
-// Inser roles into the database
+// Insert roles into the database
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
@@ -85,8 +87,7 @@ app.Lifetime.ApplicationStarted.Register(() =>
 {
     var currentTimeUTC = DateTime.UtcNow.ToString();
     byte[] encodedCurrentTimeUTC = System.Text.Encoding.UTF8.GetBytes(currentTimeUTC);
-    var options = new DistributedCacheEntryOptions()
-        .SetSlidingExpiration(TimeSpan.FromSeconds(20));
+    var options = new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromSeconds(20));
     var distributedCache = app.Services.GetService<IDistributedCache>();
     if (distributedCache != null)
     {

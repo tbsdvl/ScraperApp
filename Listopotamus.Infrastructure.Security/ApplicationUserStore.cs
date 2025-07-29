@@ -1,4 +1,4 @@
-﻿// <copyright file="ApplicationUserManager.cs" company="Psybersimian LLC">
+﻿// <copyright file="ApplicationUserStore.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 

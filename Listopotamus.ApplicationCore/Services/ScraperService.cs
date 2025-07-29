@@ -21,7 +21,7 @@ namespace Listopotamus.ApplicationCore.Services
     /// </remarks>
     /// <param name="mapper">The mapper.</param>
     /// <param name="serviceScopeFactory">The service scope factory.</param>
-    public class ScraperService(IMapper mapper, IServiceScopeFactory serviceScopeFactory)
+    public class ScraperService(IMapper mapper, IServiceScopeFactory serviceScopeFactory) : IBaseScraperService
     {
         /// <summary>
         /// Gets the mapper.
@@ -48,7 +48,11 @@ namespace Listopotamus.ApplicationCore.Services
         {
             request.Url = service.GetUrl(request);
 
-            var webUtility = new HtmlWeb();
+            var webUtility = new HtmlWeb()
+            {
+                UserAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:35.0) Gecko/20100101 Firefox/35.0",
+                UseCookies = true,
+            };
             var htmlDoc = await webUtility.LoadFromWebAsync(request.Url);
 
             return htmlDoc;
