@@ -49,13 +49,8 @@ namespace Listopotamus.ApplicationCore.Services
         {
             request.Url = service.GetUrl(request);
 
-            var options = new ChromeOptions();
-            options.AddArgument("--headless");
-            using var driver = new ChromeDriver(options);
-            await driver.Navigate().GoToUrlAsync(request.Url);
-            var doc = new HtmlDocument();
-            doc.LoadHtml(driver.PageSource);
-
+            var webUtility = new HtmlWeb();
+            var doc = await webUtility.LoadFromWebAsync(request.Url);
             return doc;
         }
 
@@ -69,7 +64,7 @@ namespace Listopotamus.ApplicationCore.Services
         {
             return serviceTypeId switch
             {
-                (int)MarketplaceTypeEnum.Ebay => serviceScope.ServiceProvider.GetRequiredService<EbayScraperService>(),
+                (int)MarketplaceTypeEnum.Ebay => serviceScope.ServiceProvider.GetRequiredService<IScraperService>(),
                 _ => null,
             };
         }

@@ -1,6 +1,7 @@
 ﻿// <copyright file="NodePathConstants.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
+
 namespace Listopotamus.ApplicationCore.Constants
 {
     /// <summary>
@@ -16,17 +17,17 @@ namespace Listopotamus.ApplicationCore.Constants
             /// <summary>
             /// Expression for selecting the list of eBay items from the search results.
             /// </summary>
-            public const string ItemsList = "//ul[contains(@class, 'srp-results srp-list clearfix')]/li[contains(@class, 's-item')]";
+            public const string ItemsList = "//ul[contains(@class, 'srp-results srp-list clearfix')]/li[contains(@class, 's-card s-card--horizontal')]";
 
             /// <summary>
             /// Expression for selecting the name of an individual eBay item node.
             /// </summary>
-            public const string ItemName = ".//a[contains(@class, 's-item__link')]";
+            public const string ItemName = ".//a[contains(@class, 'su-link')]";
 
             /// <summary>
             /// Expression for selecting the price of an individual eBay item node.
             /// </summary>
-            public const string ItemPrice = ".//span[contains(@class, 's-item__price')]";
+            public const string ItemPrice = ".//span[contains(@class, 's-card__price')]";
 
             /// <summary>
             /// Expression for selecting the sale date of an individual eBay item node.
@@ -36,7 +37,7 @@ namespace Listopotamus.ApplicationCore.Constants
             /// <summary>
             /// Expression for selecting the condition of an individual eBay item node.
             /// </summary>
-            public const string Condition = ".//span[@class='SECONDARY_INFO']";
+            public const string Condition = ".//span[@class='su-styled-text secondary default']";
 
             /// <summary>
             /// Expression for selecting the total number of bids on an individual eBay item node.
@@ -46,7 +47,7 @@ namespace Listopotamus.ApplicationCore.Constants
             /// <summary>
             /// Expression for selecting the buying format of an individual eBay item node.
             /// </summary>
-            public const string BuyingFormat = "//div[contains(@class, 'su-card-container__attributes')]//span[contains(@class, 'LABEL_CLASS_NAME')]";
+            public const string BuyingFormat = "//div[contains(@class, 'su-card-container__attributes')]//div[contains(@class, 'su-card-container__attributes__primary')]";
 
             /// <summary>
             /// Expression for selecting whether the item has free delivery or not.
@@ -71,7 +72,7 @@ namespace Listopotamus.ApplicationCore.Constants
             /// <summary>
             /// Expression for selecting the seller info of an individual eBay item node.
             /// </summary>
-            public const string SellerInfo = ".//span[@class='s-item__seller-info-text']";
+            public const string SellerInfo = ".//div[contains(@class, 'su-card-container__attributes__secondary')]//div[contains(@class, 's-card__attribute-row')][span and span[contains(text(), '% positive')]]";
 
             /// <summary>
             /// Expression for selecting the quantity sold of an individual eBay item node.
@@ -99,9 +100,9 @@ namespace Listopotamus.ApplicationCore.Constants
             public const string Location = ".//span[@class='s-item__location s-item__itemLocation']";
 
             /// <summary>
-            /// Constant for the free delivery text.
+            /// Expression for selecting the positive feedback percentage of an individual eBay item node.
             /// </summary>
-            public const string FreeDeliveryText = "Free delivery";
+            public const string PositiveFeedbackPercentage = "//div[contains(@class, 'su-card-container__attributes__secondary')]//div[contains(@class, 's-card__attribute-row')][span and span[contains(text(), '% positive')]]";
         }
     }
 }

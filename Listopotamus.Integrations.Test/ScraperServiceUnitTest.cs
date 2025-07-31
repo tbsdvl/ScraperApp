@@ -74,8 +74,8 @@ namespace Listopotamus.Integrations.Test
             var result = await this.ScraperService.GetItemsAsync(request);
 
             // Assert
-            Assert.IsTrue(result.Items.Count > 0, "List of items is empty.");
             Assert.IsTrue(result.Succeeded, "The response failed to return a list of items.");
+            Assert.IsTrue(result.Items.Count > 0, "List of items is empty.");
             Assert.IsTrue(result.Items.First().SaleDate > DateTime.MinValue,
                 "The first item in the list should have a sale date when SoldItemsOnly is true.");
         }

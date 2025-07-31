@@ -28,6 +28,30 @@ namespace Listopotamus.ApplicationCore.Services
         public string ItemsListNodePath => NodePathConstants.Ebay.ItemsList;
 
         /// <summary>
+        /// Extracts the seller name from a seller info.
+        /// </summary>
+        /// <param name="sellerInfoText">The seller info text.</param>
+        /// <returns>The seller name, or an empty string if not found.</returns>
+        private static string GetSellerName(string sellerInfoText)
+        {
+            if (string.IsNullOrWhiteSpace(sellerInfoText))
+            {
+                return string.Empty;
+            }
+
+            // Match everything up to the first occurrence of a percentage (rating) with optional decimal, followed by "positive"
+            var match = Regex.Match(sellerInfoText, @"^(.*?)\s+\d+(\.\d+)?% positive", RegexOptions.IgnoreCase);
+            if (match.Success)
+            {
+                return match.Groups[1].Value.Trim();
+            }
+
+            // Fallback: take everything before the first parenthesis or just the first word
+            var fallback = sellerInfoText.Split('(')[0].Trim();
+            return fallback;
+        }
+
+        /// <summary>
         /// Gets the total seller's reviews.
         /// </summary>
         /// <param name="sellerInfoText">The seller info text.</param>
@@ -212,11 +236,11 @@ namespace Listopotamus.ApplicationCore.Services
 
                 var item = new ItemDto()
                 {
+                    ElementId = id,
                     MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay,
                     CategoryTypeId = request.Query.CategoryTypeId ?? (int)CategoryTypeEnum.AllCategories,
                     LocationTypeId = request.Query.LocationTypeId,
-                    ElementId = id,
-                    Name = name.InnerText.Trim(),
+                    Name = name.InnerText.Replace(EbayConstants.NewListingText.ToUpper(), string.Empty).Trim(),
                     HasUpperCaseName = name.InnerText.All(c => char.IsUpper(c)),
                     MinPrice = priceRange.Count > 0 ? priceRange.First() : priceText.ToDecimalPrice(),
                     MaxPrice = priceRange.LastOrDefault(),
@@ -224,10 +248,10 @@ namespace Listopotamus.ApplicationCore.Services
                     Condition = condition is not null ? condition.InnerText.Trim() : string.Empty,
                     TotalBids = GetNumberOfBids(node.InnerText),
                     BuyingFormat = (int)GetBuyingFormat(node.InnerText),
-                    HasFreeDelivery = node.InnerText.Contains(NodePathConstants.Ebay.FreeDeliveryText, StringComparison.OrdinalIgnoreCase),
+                    HasFreeDelivery = node.InnerText.Contains(EbayConstants.FreeDeliveryText, StringComparison.OrdinalIgnoreCase),
                     TotalWatchers = totalWatchers is not null ? int.Parse(totalWatchers.InnerText.Trim().Split(' ')[0]) : 0,
                     HasOffer = offer is not null,
-                    SellerName = sellerInfo is not null ? sellerInfo.InnerText.Split('(')[0].Trim() : string.Empty,
+                    SellerName = sellerInfo is not null ? GetSellerName(sellerInfo.InnerText) : string.Empty,
                     TotalSellerReviews = sellerInfo is not null ? GetTotalSellerReviews(sellerInfo.InnerText) : null,
                     SellerRating = sellerInfo is not null ? GetSellerRating(sellerInfo.InnerText) : null,
                     QuantitySold = quantitySold,
