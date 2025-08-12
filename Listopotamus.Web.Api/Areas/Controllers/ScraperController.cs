@@ -1,4 +1,4 @@
-﻿// <copyright file="ScraperService.cs" company="Psybersimian LLC">
+﻿// <copyright file="ScraperController.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 

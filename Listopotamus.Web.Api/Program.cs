@@ -1,3 +1,7 @@
+// <copyright file="Program.cs" company="Psybersimian LLC">
+// Copyright (c) Psybersimian LLC. All rights reserved.
+// </copyright>
+
 using Microsoft.EntityFrameworkCore;
 using Listopotamus.ApplicationCore;
 using Listopotamus.Infrastructure.Data;
