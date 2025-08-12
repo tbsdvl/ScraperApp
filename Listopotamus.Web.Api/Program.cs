@@ -43,7 +43,7 @@ builder.Services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
 // add services
 builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddScoped<IBaseScraperService, ScraperService>();
-builder.Services.AddScoped<IScraperService, EbayScraperService>();
+builder.Services.AddScoped<IEbayScraperService, EbayScraperService>();
 
 // Add Identity
 builder.Services.AddAuthorization();
