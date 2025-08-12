@@ -18,7 +18,7 @@ namespace Listopotamus.Infrastructure.Security
     /// </remarks>
     /// <param name="context">The context.</param>
     /// <param name="describer">The error describer.</param>
-    public class ApplicationUserStore<TContext>(TContext context, IdentityErrorDescriber describer = null) : UserStore<User, Role, TContext, int>(context, describer), IApplicationUserStore
+    public class ApplicationUserStore<TContext>(TContext context, IdentityErrorDescriber describer = null) : UserStore<User, Role, TContext, Guid>(context, describer), IApplicationUserStore
         where TContext : DbContext
     {
         /// <summary>

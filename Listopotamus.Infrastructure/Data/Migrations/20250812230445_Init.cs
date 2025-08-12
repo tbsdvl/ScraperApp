@@ -31,8 +31,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 name: "Role",
                 columns: table => new
                 {
-                    RoleId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -46,17 +45,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    Active = table.Column<bool>(type: "bit", nullable: false),
-                    ReportsToUserId = table.Column<int>(type: "int", nullable: true),
-                    UserObjectId = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    NotificationsEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -122,20 +111,20 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RoleClaim",
+                name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    RoleClaimId = table.Column<int>(name: "RoleClaimId", type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RoleClaim", x => x.RoleClaimId);
+                    table.PrimaryKey("PK_AspNetRoleClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoleClaim_Role_RoleId",
+                        name: "FK_AspNetRoleClaims_Role_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Role",
                         principalColumn: "RoleId",
@@ -143,20 +132,20 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserClaim",
+                name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    UserClaimId = table.Column<int>(name: "UserClaimId", type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserClaim", x => x.UserClaimId);
+                    table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserClaim_User_UserId",
+                        name: "FK_AspNetUserClaims_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId",
@@ -164,19 +153,19 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserLogin",
+                name: "AspNetUserLogins",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserLogin", x => new { x.LoginProvider, x.ProviderKey });
+                    table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
                     table.ForeignKey(
-                        name: "FK_UserLogin_User_UserId",
+                        name: "FK_AspNetUserLogins_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId",
@@ -184,23 +173,23 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRole",
+                name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => new { x.UserId, x.RoleId });
+                    table.PrimaryKey("PK_AspNetUserRoles", x => new { x.UserId, x.RoleId });
                     table.ForeignKey(
-                        name: "FK_UserRole_Role_RoleId",
+                        name: "FK_AspNetUserRoles_Role_RoleId",
                         column: x => x.RoleId,
                         principalTable: "Role",
                         principalColumn: "RoleId",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserRole_User_UserId",
+                        name: "FK_AspNetUserRoles_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId",
@@ -208,19 +197,19 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserToken",
+                name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserToken", x => new { x.UserId, x.LoginProvider, x.Name });
+                    table.PrimaryKey("PK_AspNetUserTokens", x => new { x.UserId, x.LoginProvider, x.Name });
                     table.ForeignKey(
-                        name: "FK_UserToken_User_UserId",
+                        name: "FK_AspNetUserTokens_User_UserId",
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId",
@@ -319,7 +308,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 {
                     UserSearchId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     SearchQueryId = table.Column<long>(type: "bigint", nullable: false),
                     SearchDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsNotified = table.Column<bool>(type: "bit", nullable: false),
@@ -371,6 +360,26 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetRoleClaims_RoleId",
+                table: "AspNetRoleClaims",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserClaims_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserLogins_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUserRoles_RoleId",
+                table: "AspNetUserRoles",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CategoryType_MarketplaceTypeId",
                 table: "CategoryType",
                 column: "MarketplaceTypeId");
@@ -380,26 +389,6 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 table: "CategoryType",
                 column: "CategoryTypeId",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IXRoleClaim_RoleId",
-                table: "RoleClaim",
-                column: "RoleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IXUserClaim_UserId",
-                table: "UserClaim",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IXUserLogin_UserId",
-                table: "UserLogin",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IXUserRole_RoleId",
-                table: "UserRole",
-                column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Item_CategoryTypeId",
@@ -484,12 +473,6 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "UCX_ExternalId",
-                table: "User",
-                column: "ExternalId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "User",
                 column: "NormalizedUserName",
@@ -517,19 +500,19 @@ namespace Listopotamus.Infrastructure.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "RoleClaim");
+                name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
-                name: "UserClaim");
+                name: "AspNetUserClaims");
 
             migrationBuilder.DropTable(
-                name: "UserLogin");
+                name: "AspNetUserLogins");
 
             migrationBuilder.DropTable(
-                name: "UserRole");
+                name: "AspNetUserRoles");
 
             migrationBuilder.DropTable(
-                name: "UserToken");
+                name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
                 name: "SearchResultItem");

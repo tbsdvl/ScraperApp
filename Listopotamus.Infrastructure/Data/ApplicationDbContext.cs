@@ -22,7 +22,7 @@ namespace Listopotamus.Infrastructure.Data
     /// </remarks>
     /// <param name="options">The db context options.</param>
     /// <param name="userContextService">The user context service.</param>
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IUserContextService userContextService) : IdentityDbContext<User, Role, int>(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, IUserContextService userContextService) : IdentityDbContext<User, Role, Guid>(options)
     {
         /// <summary>
         /// The system user name.
@@ -124,11 +124,10 @@ namespace Listopotamus.Infrastructure.Data
             RenameTablesAndIds(builder, entityTypes);
 
             // add external id index to user
-            builder.Entity<User>()
-                .HasIndex(x => x.ExternalId)
-                .IsUnique()
-                .HasDatabaseName(DefaultExternalIdIndex);
-
+            // builder.Entity<User>()
+            //    .HasIndex(x => x.ExternalId)
+            //    .IsUnique()
+            //    .HasDatabaseName(DefaultExternalIdIndex);
             AddExternalIndexes(builder, entityTypes);
             AddLookupIndexes(builder, entityTypes);
 
@@ -152,6 +151,11 @@ namespace Listopotamus.Infrastructure.Data
             foreach (var entity in entityTypes)
             {
                 var tableName = entity.ClrType.Name;
+                if (tableName.Contains("Identity"))
+                {
+                    continue;
+                }
+
                 builder.Entity(entity.ClrType).ToTable(tableName);
 
                 var pk = entity.FindPrimaryKey();

@@ -22,145 +22,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Identity.Role", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("RoleId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("NormalizedName")
-                        .IsUnique()
-                        .HasDatabaseName("RoleNameIndex")
-                        .HasFilter("[NormalizedName] IS NOT NULL");
-
-                    b.ToTable("Role", (string)null);
-                });
-
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Identity.User", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("UserId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AccessFailedCount")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("ExternalId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("LockoutEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTimeOffset?>("LockoutEnd")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("NormalizedEmail")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("NormalizedUserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<bool>("NotificationsEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("PhoneNumberConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<int?>("ReportsToUserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("SecurityStamp")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("UpdatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UpdatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserName")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("UserObjectId")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ExternalId")
-                        .IsUnique()
-                        .HasDatabaseName("UCX_ExternalId");
-
-                    b.HasIndex("NormalizedEmail")
-                        .HasDatabaseName("EmailIndex");
-
-                    b.HasIndex("NormalizedUserName")
-                        .IsUnique()
-                        .HasDatabaseName("UserNameIndex")
-                        .HasFilter("[NormalizedUserName] IS NOT NULL");
-
-                    b.ToTable("User", (string)null);
-                });
-
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Items.Item", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Items.Item", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -255,7 +117,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("Item", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.CategoryType", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Lookups.CategoryType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -290,7 +152,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("CategoryType", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.LocationType", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Lookups.LocationType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -325,7 +187,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("LocationType", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Lookups.MarketplaceType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -355,7 +217,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("MarketplaceType", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Search.SearchQuery", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -409,7 +271,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("SearchQuery", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchResultItem", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Search.SearchResultItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -440,7 +302,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("SearchResultItem", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.UserSearch", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Search.UserSearch", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -464,8 +326,8 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Property<long>("SearchQueryId")
                         .HasColumnType("bigint");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -480,12 +342,107 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("UserSearch", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+            modelBuilder.Entity("Listopotamus.Infrastructure.Security.Entities.Identity.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("RoleId");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("Role", (string)null);
+                });
+
+            modelBuilder.Entity("Listopotamus.Infrastructure.Security.Entities.Identity.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("UserId");
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedUserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedEmail")
+                        .HasDatabaseName("EmailIndex");
+
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex")
+                        .HasFilter("[NormalizedUserName] IS NOT NULL");
+
+                    b.ToTable("User", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("IdentityRoleClaim`1Id");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
@@ -495,22 +452,21 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("IdentityRoleClaim`1", (string)null);
+                    b.ToTable("AspNetRoleClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("IdentityUserClaim`1Id");
+                        .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
@@ -520,17 +476,17 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Property<string>("ClaimValue")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IdentityUserClaim`1", (string)null);
+                    b.ToTable("AspNetUserClaims", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -541,35 +497,35 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("IdentityUserLogin`1", (string)null);
+                    b.ToTable("AspNetUserLogins", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("IdentityUserRole`1", (string)null);
+                    b.ToTable("AspNetUserRoles", (string)null);
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LoginProvider")
                         .HasColumnType("nvarchar(450)");
@@ -582,24 +538,24 @@ namespace Listopotamus.Infrastructure.Data.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("IdentityUserToken`1", (string)null);
+                    b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Items.Item", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Items.Item", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.CategoryType", "CategoryType")
+                    b.HasOne("Listopotamus.Core.Entities.Lookups.CategoryType", "CategoryType")
                         .WithMany()
                         .HasForeignKey("CategoryTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.LocationType", "LocationType")
+                    b.HasOne("Listopotamus.Core.Entities.Lookups.LocationType", "LocationType")
                         .WithMany()
                         .HasForeignKey("LocationTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", "MarketplaceType")
+                    b.HasOne("Listopotamus.Core.Entities.Lookups.MarketplaceType", "MarketplaceType")
                         .WithMany()
                         .HasForeignKey("MarketplaceTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -612,9 +568,9 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("MarketplaceType");
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.CategoryType", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Lookups.CategoryType", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", "MarketplaceType")
+                    b.HasOne("Listopotamus.Core.Entities.Lookups.MarketplaceType", "MarketplaceType")
                         .WithMany()
                         .HasForeignKey("MarketplaceTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -623,9 +579,9 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("MarketplaceType");
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.LocationType", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Lookups.LocationType", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", "MarketplaceType")
+                    b.HasOne("Listopotamus.Core.Entities.Lookups.MarketplaceType", "MarketplaceType")
                         .WithMany()
                         .HasForeignKey("MarketplaceTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -634,15 +590,15 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("MarketplaceType");
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Search.SearchQuery", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.CategoryType", "CategoryType")
+                    b.HasOne("Listopotamus.Core.Entities.Lookups.CategoryType", "CategoryType")
                         .WithMany()
                         .HasForeignKey("CategoryTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", "MarketplaceType")
+                    b.HasOne("Listopotamus.Core.Entities.Lookups.MarketplaceType", "MarketplaceType")
                         .WithMany()
                         .HasForeignKey("MarketplaceTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -653,15 +609,15 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("MarketplaceType");
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchResultItem", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Search.SearchResultItem", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Items.Item", "Item")
+                    b.HasOne("Listopotamus.Core.Entities.Items.Item", "Item")
                         .WithMany("SearchResultItems")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", "SearchQuery")
+                    b.HasOne("Listopotamus.Core.Entities.Search.SearchQuery", "SearchQuery")
                         .WithMany("SearchResultItems")
                         .HasForeignKey("SearchQueryId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -672,15 +628,15 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("SearchQuery");
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.UserSearch", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Search.UserSearch", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", "SearchQuery")
+                    b.HasOne("Listopotamus.Core.Entities.Search.SearchQuery", "SearchQuery")
                         .WithMany("UserSearches")
                         .HasForeignKey("SearchQueryId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Identity.User", "User")
+                    b.HasOne("Listopotamus.Infrastructure.Security.Entities.Identity.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -691,63 +647,63 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Identity.Role", null)
+                    b.HasOne("Listopotamus.Infrastructure.Security.Entities.Identity.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Identity.User", null)
+                    b.HasOne("Listopotamus.Infrastructure.Security.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Identity.User", null)
+                    b.HasOne("Listopotamus.Infrastructure.Security.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Identity.Role", null)
+                    b.HasOne("Listopotamus.Infrastructure.Security.Entities.Identity.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Identity.User", null)
+                    b.HasOne("Listopotamus.Infrastructure.Security.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Identity.User", null)
+                    b.HasOne("Listopotamus.Infrastructure.Security.Entities.Identity.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Items.Item", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Items.Item", b =>
                 {
                     b.Navigation("SearchResultItems");
                 });
 
-            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", b =>
+            modelBuilder.Entity("Listopotamus.Core.Entities.Search.SearchQuery", b =>
                 {
                     b.Navigation("SearchResultItems");
 

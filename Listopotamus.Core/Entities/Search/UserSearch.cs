@@ -18,7 +18,7 @@ namespace Listopotamus.Core.Entities.Search
         /// </summary>
         [ForeignKey(nameof(User))]
         [Required]
-        public int? UserId { get; set; }
+        public Guid? UserId { get; set; }
 
         /// <summary>
         /// Gets or sets the search query id.

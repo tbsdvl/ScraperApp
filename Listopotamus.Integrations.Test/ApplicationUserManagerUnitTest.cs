@@ -29,7 +29,7 @@ namespace Listopotamus.Integrations.Test
                 UpdatedBy = "system",
                 UpdatedDate = DateTime.UtcNow,
                 UserObjectId = Guid.NewGuid().ToString(),
-                ExternalId = Guid.NewGuid(),
+                //ExternalId = Guid.NewGuid(),
             };
         }
 
@@ -107,7 +107,7 @@ namespace Listopotamus.Integrations.Test
             await this.UserManager.CreateAsync(user, password, new[] { "User" });
 
             // Act
-            var foundUser = await this.UserManager.FindAsync(user.ExternalId.Value);
+            var foundUser = await this.UserManager.FindAsync(user.Id);
 
             // Assert
             Assert.IsNotNull(foundUser, "User was not found by external ID.");
@@ -123,10 +123,10 @@ namespace Listopotamus.Integrations.Test
             await this.UserManager.CreateAsync(user, password, new[] { "User" });
 
             // Act
-            await this.UserManager.ClearUserCacheAsync(user.ExternalId.ToString());
+            await this.UserManager.ClearUserCacheAsync(user.Id.ToString());
 
             // Assert
-            var cachedUser = await this.UserManager.FindUserByObjectIdAsync(user.ExternalId.ToString());
+            var cachedUser = await this.UserManager.FindUserByObjectIdAsync(user.Id.ToString());
             Assert.IsNull(cachedUser, "User cache was not cleared.");
         }
     }

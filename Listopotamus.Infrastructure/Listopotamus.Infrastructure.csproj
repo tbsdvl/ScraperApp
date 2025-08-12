@@ -29,10 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Data\Migrations\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\Listopotamus.ApplicationCore\Listopotamus.ApplicationCore.csproj" />
     <ProjectReference Include="..\Listopotamus.Core\Listopotamus.Core.csproj" />
   </ItemGroup>

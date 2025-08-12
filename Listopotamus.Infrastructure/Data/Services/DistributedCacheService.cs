@@ -37,7 +37,7 @@ namespace Listopotamus.Infrastructure.Data.Services
         /// <inheritdoc />
         public async Task CacheUserAsync(User user, TimeSpan expiration)
         {
-            var cacheKey = GetCacheKeyForUser(user.UserObjectId);
+            var cacheKey = GetCacheKeyForUser(user.Id.ToString());
 
             var serializedUser = JsonSerializer.Serialize(user);
 

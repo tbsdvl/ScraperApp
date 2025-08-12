@@ -52,11 +52,14 @@ builder.Services.TryAddScoped<RoleManager<Role>>();
 builder.Services.TryAddScoped<SignInManager<User>>();
 builder.Services
     .AddIdentityCore<User>()
-     .AddUserStore<ApplicationUserStore<ApplicationDbContext>>()
+    .AddUserStore<ApplicationUserStore<ApplicationDbContext>>()
     .AddRoles<Role>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddUserManager<ApplicationUserManager>()
     .AddRoleManager<ApplicationRoleManager>();
+
+builder.Services.AddIdentityApiEndpoints<User>()
+    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -64,6 +67,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IDistributedCacheService, DistributedCacheService>();
 
 var app = builder.Build();
+
+app.MapIdentityApi<User>();
 
 // Insert roles into the database
 using (var scope = app.Services.CreateScope())

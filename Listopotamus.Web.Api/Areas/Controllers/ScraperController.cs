@@ -4,6 +4,7 @@
 
 using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Listopotamus.Web.Api.Areas.Controllers
@@ -11,6 +12,7 @@ namespace Listopotamus.Web.Api.Areas.Controllers
     /// <summary>
     /// Represents the scraper controller.
     /// </summary>
+    [Authorize]
     [Area("Scraper")]
     [Route("api/[area]")]
     public class ScraperController : ControllerBase

@@ -117,7 +117,7 @@ namespace Listopotamus.Infrastructure.Data.Repositories.Identity
                 return user;
             }
 
-            user = this.Users.FirstOrDefault(u => u.ExternalId.Equals(externalId));
+            user = this.Users.FirstOrDefault(u => u.Id.Equals(externalId));
             if (user is not null)
             {
                 await this.DistributedCacheService.CacheUserAsync(user, TimeSpan.FromMinutes(30));
