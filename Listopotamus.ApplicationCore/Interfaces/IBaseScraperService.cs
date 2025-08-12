@@ -14,8 +14,8 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// <summary>
         /// Gets a list of items from HTML nodes.
         /// </summary>
-        /// <param name="request">The scraper request.</param>
+        /// <param name="searchCriteria">The search criteria.</param>
         /// <returns>A list of items.</returns>
-        Task<ScraperResponse> GetItemsAsync(ScraperRequest request);
+        Task<ScraperResult> GetItemsAsync(SearchCriteriaModel searchCriteria);
     }
 }

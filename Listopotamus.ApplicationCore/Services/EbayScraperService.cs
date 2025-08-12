@@ -15,8 +15,13 @@ namespace Listopotamus.ApplicationCore.Services
     /// <summary>
     /// Represents the eBay scraper service.
     /// </summary>
-    public class EbayScraperService : IScraperService
+    public class EbayScraperService : IEbayScraperService
     {
+        /// <summary>
+        /// The Maximum number of results per page.
+        /// </summary>
+        private const string MAXRESULTSPERPAGE = "240";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="EbayScraperService"/> class.
         /// </summary>
@@ -141,57 +146,59 @@ namespace Listopotamus.ApplicationCore.Services
         }
 
         /// <inheritdoc />
-        public string GetUrl(ScraperRequest request)
+        public string GetUrl(SearchCriteriaModel searchCriteria)
         {
             var baseUrl = UrlConstants.EBAY;
 
-            if (request.Query.CategoryTypeId.HasValue)
+            if (searchCriteria.Query.CategoryTypeId.HasValue)
             {
-                baseUrl += request.Query.CategoryTypeId + UrlConstants.EBAYINDEX;
+                baseUrl += searchCriteria.Query.CategoryTypeId + UrlConstants.EBAYINDEX;
             }
 
             baseUrl += UrlConstants.EBAYSEARCHQUERY;
 
-            if (!string.IsNullOrWhiteSpace(request.Query.SearchTerm))
+            if (!string.IsNullOrWhiteSpace(searchCriteria.Query.SearchTerm))
             {
-                baseUrl += request.Query.SearchTerm;
+                baseUrl += searchCriteria.Query.SearchTerm;
             }
 
-            if (request.Query.CategoryTypeId.HasValue)
+            if (searchCriteria.Query.CategoryTypeId.HasValue)
             {
-                baseUrl += UrlConstants.EBAYCATEGORY + request.Query.CategoryTypeId;
+                baseUrl += UrlConstants.EBAYCATEGORY + searchCriteria.Query.CategoryTypeId;
             }
 
-            if (request.Query.SoldItemsOnly)
+            if (searchCriteria.Query.SoldItemsOnly)
             {
                 baseUrl += UrlConstants.EBAYSOLDITEMS;
             }
 
-            if (request.Query.PageNumber > 0)
+            if (searchCriteria.Query.PageNumber > 0)
             {
-                baseUrl += UrlConstants.EBAYPAGENUM + request.Query.PageNumber;
+                baseUrl += UrlConstants.EBAYPAGENUM + searchCriteria.Query.PageNumber;
             }
 
-            if (!string.IsNullOrWhiteSpace(request.Query.ZipCode))
+            if (!string.IsNullOrWhiteSpace(searchCriteria.Query.ZipCode))
             {
-                baseUrl += UrlConstants.EBAYZIPCODE + request.Query.ZipCode;
+                baseUrl += UrlConstants.EBAYZIPCODE + searchCriteria.Query.ZipCode;
             }
 
-            if (request.Query.Distance.HasValue)
+            if (searchCriteria.Query.Distance.HasValue)
             {
-                baseUrl += UrlConstants.EBAYDISTANCE + request.Query.Distance;
+                baseUrl += UrlConstants.EBAYDISTANCE + searchCriteria.Query.Distance;
             }
 
-            if (request.Query.LocationTypeId.HasValue)
+            if (searchCriteria.Query.LocationTypeId.HasValue)
             {
-                baseUrl += UrlConstants.EBAYLOCATION + request.Query.LocationTypeId;
+                baseUrl += UrlConstants.EBAYLOCATION + searchCriteria.Query.LocationTypeId;
             }
+
+            baseUrl += UrlConstants.EBAYRESULTSPERPAGE + MAXRESULTSPERPAGE;
 
             return baseUrl;
         }
 
         /// <inheritdoc/>
-        public List<ItemDto> GetItems(ScraperRequest request, List<HtmlNode> nodes)
+        public List<ItemDto> GetItems(SearchCriteriaModel searchCriteria, List<HtmlNode> nodes)
         {
             var items = new List<ItemDto>();
 
@@ -238,8 +245,8 @@ namespace Listopotamus.ApplicationCore.Services
                 {
                     ElementId = id,
                     MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay,
-                    CategoryTypeId = request.Query.CategoryTypeId ?? (int)CategoryTypeEnum.AllCategories,
-                    LocationTypeId = request.Query.LocationTypeId,
+                    CategoryTypeId = searchCriteria.Query.CategoryTypeId ?? (int)CategoryTypeEnum.AllCategories,
+                    LocationTypeId = searchCriteria.Query.LocationTypeId,
                     Name = name.InnerText.Replace(EbayConstants.NewListingText.ToUpper(), string.Empty).Trim(),
                     HasUpperCaseName = name.InnerText.All(c => char.IsUpper(c)),
                     MinPrice = priceRange.Count > 0 ? priceRange.First() : priceText.ToDecimalPrice(),

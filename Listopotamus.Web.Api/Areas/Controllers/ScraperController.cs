@@ -27,12 +27,12 @@ namespace Listopotamus.Web.Api.Areas.Controllers
         /// <summary>
         /// Searches for items based on a search keyword.
         /// </summary>
-        /// <param name="request">The request.</param>
+        /// <param name="searchCriteria">The search criteria.</param>
         /// <returns>The list of found results.</returns>
         [HttpPost]
-        public async Task<IActionResult> Search([FromBody] ScraperRequest request)
+        public async Task<IActionResult> Search([FromBody] SearchCriteriaModel searchCriteria)
         {
-            var results = await this.ScraperService.GetItemsAsync(request);
+            var results = await this.ScraperService.GetItemsAsync(searchCriteria);
             return Ok(results);
         }
     }

@@ -1,13 +1,13 @@
-﻿// <copyright file="ScraperResponse.cs" company="Psybersimian LLC">
+﻿// <copyright file="ScraperResult.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
 namespace Listopotamus.ApplicationCore.DTOs
 {
     /// <summary>
-    /// Represents a scraper response.
+    /// Represents a scraper result.
     /// </summary>
-    public class ScraperResponse
+    public class ScraperResult
     {
         /// <summary>
         /// Gets or sets the list of items.

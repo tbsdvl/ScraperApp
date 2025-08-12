@@ -10,7 +10,6 @@ using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Core.Entities.Items;
 using Listopotamus.Resource;
 using Microsoft.Extensions.DependencyInjection;
-using OpenQA.Selenium.Chrome;
 
 namespace Listopotamus.ApplicationCore.Services
 {
@@ -45,7 +44,7 @@ namespace Listopotamus.ApplicationCore.Services
         /// <param name="request">The scraper request.</param>
         /// <param name="service">The scraper service.</param>
         /// <returns>The page's HTML.</returns>
-        private static async Task<HtmlDocument> GetPageHtmlAsync(ScraperRequest request, IScraperService service)
+        private static async Task<HtmlDocument> GetPageHtmlAsync(SearchCriteriaModel request, IScraperService service)
         {
             request.Url = service.GetUrl(request);
 
@@ -64,7 +63,7 @@ namespace Listopotamus.ApplicationCore.Services
         {
             return serviceTypeId switch
             {
-                (int)MarketplaceTypeEnum.Ebay => serviceScope.ServiceProvider.GetRequiredService<IScraperService>(),
+                (int)MarketplaceTypeEnum.Ebay => serviceScope.ServiceProvider.GetRequiredService<IEbayScraperService>(),
                 _ => null,
             };
         }
@@ -72,23 +71,23 @@ namespace Listopotamus.ApplicationCore.Services
         /// <summary>
         /// Gets a list of item nodes from a page.
         /// </summary>
-        /// <param name="request">The scraper request.</param>
+        /// <param name="searchCriteria">The search criteria.</param>
         /// <param name="service">The scraper service.</param>
         /// <returns>A list of nodes.</returns>
-        private async Task<List<HtmlNode>> GetItemNodesAsync(ScraperRequest request, IScraperService service)
+        private async Task<List<HtmlNode>> GetItemNodesAsync(SearchCriteriaModel searchCriteria, IScraperService service)
         {
             var itemNodes = new List<HtmlNode>();
             var previousItemId = string.Empty;
 
-            if (request.Query.MaxPageNumber.HasValue)
+            if (searchCriteria.Query.MaxPageNumber.HasValue)
             {
-                this.MaxPageNumber = request.Query.MaxPageNumber.Value;
+                this.MaxPageNumber = searchCriteria.Query.MaxPageNumber.Value;
             }
 
             for (int i = 1; i <= this.MaxPageNumber; i++)
             {
-                request.Query.PageNumber = i;
-                var page = await GetPageHtmlAsync(request, service);
+                searchCriteria.Query.PageNumber = i;
+                var page = await GetPageHtmlAsync(searchCriteria, service);
                 var nodes = page.DocumentNode.SelectNodes(service.ItemsListNodePath);
 
                 if (nodes is null || nodes.Count == 0)
@@ -119,14 +118,14 @@ namespace Listopotamus.ApplicationCore.Services
         /// <summary>
         /// Gets a list of items from a page.
         /// </summary>
-        /// <param name="request">The request.</param>
+        /// <param name="searchCriteria">The search criteria.</param>
         /// <returns>The scraper response including a list of items.</returns>
-        public async Task<ScraperResponse> GetItemsAsync(ScraperRequest request)
+        public async Task<ScraperResult> GetItemsAsync(SearchCriteriaModel searchCriteria)
         {
             var items = new List<ItemDto>();
-            if (!request.Query.MarketplaceTypeId.HasValue)
+            if (!searchCriteria.Query.MarketplaceTypeId.HasValue)
             {
-                return new ScraperResponse()
+                return new ScraperResult()
                 {
                     Items = items,
                     ErrorMessage = ErrorMessages.MissingQueryOption,
@@ -134,31 +133,31 @@ namespace Listopotamus.ApplicationCore.Services
             }
 
             using var serviceScope = this.ServiceScopeFactory.CreateScope();
-            var service = GetService(serviceScope, request.Query.MarketplaceTypeId.Value);
+            var service = GetService(serviceScope, searchCriteria.Query.MarketplaceTypeId.Value);
             if (service is null)
             {
-                return new ScraperResponse()
+                return new ScraperResult()
                 {
                     Items = items,
                     ErrorMessage = ErrorMessages.InvalidQueryOptionType,
                 };
             }
 
-            var nodes = await this.GetItemNodesAsync(request, service);
+            var nodes = await this.GetItemNodesAsync(searchCriteria, service);
             if (nodes is null || nodes.Count == 0)
             {
-                return new ScraperResponse()
+                return new ScraperResult()
                 {
                     Items = items,
                     ErrorMessage = ErrorMessages.NoItemsFound,
                 };
             }
 
-            items = service.GetItems(request, nodes);
+            items = service.GetItems(searchCriteria, nodes);
 
             if (items.Count == 0)
             {
-                return new ScraperResponse()
+                return new ScraperResult()
                 {
                     Items = items,
                     TotalResults = items.Count,
@@ -170,7 +169,7 @@ namespace Listopotamus.ApplicationCore.Services
 
             // save the items to the database.
             // then return the response.
-            return new ScraperResponse()
+            return new ScraperResult()
             {
                 Items = items,
                 TotalResults = items.Count,

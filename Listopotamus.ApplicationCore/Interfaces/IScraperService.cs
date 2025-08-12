@@ -22,7 +22,7 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// </summary>
         /// <param name="request">The scraper request.</param>
         /// <returns>The URL.</returns>
-        string GetUrl(ScraperRequest request);
+        string GetUrl(SearchCriteriaModel request);
 
         /// <summary>
         /// Gets a list of items from HTML nodes.
@@ -30,6 +30,6 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// <param name="request">The scraper request.</param>
         /// <param name="nodes">The list of HTML nodes.</param>
         /// <returns>A list of items.</returns>
-        List<ItemDto> GetItems(ScraperRequest request, List<HtmlNode> nodes);
+        List<ItemDto> GetItems(SearchCriteriaModel request, List<HtmlNode> nodes);
     }
 }

@@ -13,5 +13,15 @@ namespace Listopotamus.ApplicationCore.Enums
         /// The All Categories category type value.
         /// </summary>
         AllCategories = 0,
+
+        /// <summary>
+        /// The militaria category type value.
+        /// </summary>
+        Militaria = 13956,
+
+        /// <summary>
+        /// The gun parts category type value.
+        /// </summary>
+        GunParts = 73943,
     }
 }
