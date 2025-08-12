@@ -8,7 +8,7 @@ namespace Listopotamus.Web.Api.Areas.Controllers
     /// Represents the scraper controller.
     /// </summary>
     [Area("Scraper")]
-    [Route("api/[area]/[controller]")]
+    [Route("api/[area]")]
     public class ScraperController : ControllerBase
     {
         private IBaseScraperService ScraperService { get; }
