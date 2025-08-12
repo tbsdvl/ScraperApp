@@ -1,25 +1,27 @@
-﻿using Listopotamus.ApplicationCore.Services;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Enums;
-using Listopotamus.ApplicationCore.DTOs;
+using Listopotamus.ApplicationCore.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
+using System.Globalization;
+using System.Text;
 
 namespace Listopotamus.Integrations.Test
 {
     [TestClass]
     public sealed class ScraperServiceUnitTest : BaseUnitTest
     {           
-        private ScraperService ScraperService { get; set; }
+        private IBaseScraperService ScraperService { get; set; }
 
         [TestInitialize]
         public new async Task InitializeAsync()
         {
             await base.InitializeAsync();
-            this.ScraperService = this.ServiceProvider.GetRequiredService<ScraperService>();
+            this.ScraperService = this.ServiceProvider.GetRequiredService<IBaseScraperService>();
         }
 
-        private static ScraperRequest GetScraperRequest()
+        private static SearchCriteriaModel GetScraperRequest()
         {
-            return new ScraperRequest()
+            return new SearchCriteriaModel()
             {
                 Url = "https://ebay.com",
                 Query = new EbaySearchQueryDto()

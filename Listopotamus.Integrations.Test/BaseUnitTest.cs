@@ -101,8 +101,8 @@ namespace Listopotamus.Integrations.Test
             serviceCollection.AddSingleton(mappingConfig.CreateMapper());
 
             // Add application services
-            serviceCollection.TryAddTransient<EbayScraperService>();
-            serviceCollection.TryAddTransient<ScraperService>();
+            serviceCollection.TryAddTransient<IEbayScraperService, EbayScraperService>();
+            serviceCollection.TryAddTransient<IBaseScraperService, ScraperService>();
 
             this.ServiceProvider = serviceCollection.BuildServiceProvider();
 
