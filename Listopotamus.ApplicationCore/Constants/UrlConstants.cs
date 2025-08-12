@@ -53,5 +53,10 @@ namespace Listopotamus.ApplicationCore.Constants
         /// The eBay category type query param.
         /// </summary>
         public const string EBAYCATEGORY = "&_sacat=";
+
+        /// <summary>
+        /// The eBay results per page query param.
+        /// </summary>
+        public const string EBAYRESULTSPERPAGE = "&_ipg=";
     }
 }
