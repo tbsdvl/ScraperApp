@@ -1,4 +1,8 @@
-﻿using Listopotamus.ApplicationCore.DTOs;
+﻿// <copyright file="ScraperService.cs" company="Psybersimian LLC">
+// Copyright (c) Psybersimian LLC. All rights reserved.
+// </copyright>
+
+using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
