@@ -2,8 +2,6 @@
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
-using System.Globalization;
-using System.Text;
 
 namespace Listopotamus.Integrations.Test
 {
