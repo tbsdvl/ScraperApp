@@ -23,5 +23,10 @@ namespace Listopotamus.ApplicationCore.Enums
         /// The gun parts category type value.
         /// </summary>
         GunParts = 73943,
+
+        /// <summary>
+        /// The skin care category type value.
+        /// </summary>
+        SkinCare = 11863,
     }
 }
