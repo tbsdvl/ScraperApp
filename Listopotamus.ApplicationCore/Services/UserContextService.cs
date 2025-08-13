@@ -25,10 +25,10 @@ namespace Listopotamus.ApplicationCore.Services
         /// <summary>
         /// Gets the user id from the HTTP context.
         /// </summary>
-        /// <returns>The user object id.</returns>
-        public string GetUserId()
+        /// <returns>The user id.</returns>
+        public Guid GetUserId()
         {
-            return this.HttpContextAccessor.HttpContext.User.Claims.GetUserObjectId();
+            return this.HttpContextAccessor.HttpContext.User.Claims.GetUserId();
         }
     }
 }

@@ -36,7 +36,7 @@ namespace Listopotamus.Web.Api.Areas.Controllers
         /// <param name="searchCriteria">The search criteria.</param>
         /// <returns>The list of found results.</returns>
         [HttpPost]
-        public async Task<IActionResult> Search(SearchCriteriaModel searchCriteria)
+        public async Task<IActionResult> Search([FromBody] SearchCriteriaModel searchCriteria)
         {
             var results = await this.ScraperService.GetItemsAsync(searchCriteria);
             return Ok(results);

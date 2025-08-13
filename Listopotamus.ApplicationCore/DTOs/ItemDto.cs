@@ -10,6 +10,11 @@ namespace Listopotamus.ApplicationCore.DTOs
     public class ItemDto
     {
         /// <summary>
+        /// Gets or sets the external identifier.
+        /// </summary>
+        public Guid ExternalId { get; set; }
+
+        /// <summary>
         /// Gets or sets the category type id.
         /// </summary>
         required public int? CategoryTypeId { get; set; }

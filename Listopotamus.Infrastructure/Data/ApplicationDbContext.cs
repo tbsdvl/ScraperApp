@@ -86,7 +86,7 @@ namespace Listopotamus.Infrastructure.Data
         public async Task<int> SaveChangesAsync()
         {
             var currentDate = DateTime.Now;
-            var userName = this.UserContextService.GetUserId() ?? SYSTEM;
+            var userName = this.UserContextService.GetUserId();
 
             foreach (var entry in this.ChangeTracker
                          .Entries()

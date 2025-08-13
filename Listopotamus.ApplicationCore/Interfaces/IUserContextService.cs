@@ -13,6 +13,6 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// Gets the user id.
         /// </summary>
         /// <returns>The user id.</returns>
-        string GetUserId();
+        Guid GetUserId();
     }
 }

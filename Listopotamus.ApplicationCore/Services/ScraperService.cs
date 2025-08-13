@@ -2,13 +2,15 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using AutoMapper;
+using System.Transactions;
 using HtmlAgilityPack;
 using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.Core.Entities.Items;
+using Listopotamus.Core.Entities.Search;
 using Listopotamus.Resource;
+using Listopotamus.Shared.Extensions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Listopotamus.ApplicationCore.Services
@@ -19,19 +21,35 @@ namespace Listopotamus.ApplicationCore.Services
     /// <remarks>
     /// Initializes a new instance of the <see cref="ScraperService"/> class.
     /// </remarks>
-    /// <param name="mapper">The mapper.</param>
     /// <param name="serviceScopeFactory">The service scope factory.</param>
-    public class ScraperService(IMapper mapper, IServiceScopeFactory serviceScopeFactory) : IBaseScraperService
+    /// <param name="httpContext">The http context.</param>
+    /// <param name="searchQueryRepository">The search query repository.</param>
+    /// <param name="userSearchRepository">The user search repository.</param>
+    public class ScraperService(
+        IServiceScopeFactory serviceScopeFactory,
+        IHttpContextAccessor httpContext,
+        ISearchQueryRepository searchQueryRepository,
+        IUserSearchRepository userSearchRepository) : IBaseScraperService
     {
-        /// <summary>
-        /// Gets the mapper.
-        /// </summary>
-        private IMapper Mapper { get; } = mapper;
-
         /// <summary>
         /// Gets the service scope factory.
         /// </summary>
         private IServiceScopeFactory ServiceScopeFactory { get; } = serviceScopeFactory;
+
+        /// <summary>
+        /// Gets the HTTP context accessor.
+        /// </summary>
+        private IHttpContextAccessor Accessor { get; } = httpContext;
+
+        /// <summary>
+        /// Gets the search query repository.
+        /// </summary>
+        private ISearchQueryRepository SearchQueryRepository { get; } = searchQueryRepository;
+
+        /// <summary>
+        /// Gets the user search repository.
+        /// </summary>
+        private IUserSearchRepository UserSearchRepository { get; } = userSearchRepository;
 
         /// <summary>
         /// Gets or sets the maximum page number to scrape.
@@ -41,15 +59,15 @@ namespace Listopotamus.ApplicationCore.Services
         /// <summary>
         /// Gets a page's HTML.
         /// </summary>
-        /// <param name="request">The scraper request.</param>
+        /// <param name="searchCriteria">The scraper request.</param>
         /// <param name="service">The scraper service.</param>
         /// <returns>The page's HTML.</returns>
-        private static async Task<HtmlDocument> GetPageHtmlAsync(SearchCriteriaModel request, IScraperService service)
+        private static async Task<HtmlDocument> GetPageHtmlAsync(SearchCriteriaModel searchCriteria, IScraperService service)
         {
-            request.Url = service.GetUrl(request);
+            searchCriteria.Url = service.GetUrl(searchCriteria);
 
             var webUtility = new HtmlWeb();
-            var doc = await webUtility.LoadFromWebAsync(request.Url);
+            var doc = await webUtility.LoadFromWebAsync(searchCriteria.Url);
             return doc;
         }
 
@@ -143,6 +161,42 @@ namespace Listopotamus.ApplicationCore.Services
                 };
             }
 
+            // create a new search query entity, save it, then tie it to a new user search entity, then save.
+            var options = new TransactionOptions()
+            {
+                IsolationLevel = IsolationLevel.ReadUncommitted,
+            };
+
+            using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
+
+            var searchQuery = new SearchQuery
+            {
+                MarketplaceTypeId = searchCriteria.Query.MarketplaceTypeId!.Value,
+                CategoryTypeId = searchCriteria.Query.CategoryTypeId!.Value,
+                SearchTerm = searchCriteria.Query.SearchTerm?.Trim() ?? string.Empty,
+                PageNumber = searchCriteria.Query.PageNumber ?? 1,
+                ZipCode = string.IsNullOrWhiteSpace(searchCriteria.Query.ZipCode) ? string.Empty : searchCriteria.Query.ZipCode,
+                Distance = searchCriteria.Query.Distance,
+                IsMiles = searchCriteria.Query.IsMiles,
+                ShowSoldOnly = searchCriteria.Query.SoldItemsOnly,
+                MaxPageNumber = searchCriteria.Query.MaxPageNumber ?? this.MaxPageNumber,
+                ExternalId = Guid.NewGuid(),
+            };
+
+            // save the query to the database
+            var savedQuery = await this.SearchQueryRepository.InsertAsync(searchQuery);
+
+            // save the user search
+            var userSearch = new UserSearch
+            {
+                SearchQueryId = savedQuery.Id,
+                UserId = this.Accessor.HttpContext.User.GetUserId(),
+                ExternalId = Guid.NewGuid(),
+                SearchDate = DateTime.Now,
+            };
+
+            var savedUserSearch = await this.UserSearchRepository.InsertAsync(userSearch);
+
             var nodes = await this.GetItemNodesAsync(searchCriteria, service);
             if (nodes is null || nodes.Count == 0)
             {
@@ -153,7 +207,9 @@ namespace Listopotamus.ApplicationCore.Services
                 };
             }
 
-            items = service.GetItems(searchCriteria, nodes);
+            items = await service.GetItemsAsync(savedQuery.Id, searchCriteria, nodes);
+
+            scope.Complete();
 
             if (items.Count == 0)
             {
@@ -165,10 +221,6 @@ namespace Listopotamus.ApplicationCore.Services
                 };
             }
 
-            var itemEntities = this.Mapper.Map<List<Item>>(items);
-
-            // save the items to the database.
-            // then return the response.
             return new ScraperResult()
             {
                 Items = items,

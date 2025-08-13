@@ -3,34 +3,52 @@
 // </copyright>
 
 using System.Text.RegularExpressions;
+using System.Transactions;
+using AutoMapper;
 using HtmlAgilityPack;
 using Listopotamus.ApplicationCore.Constants;
 using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Extensions;
 using Listopotamus.ApplicationCore.Interfaces;
+using Listopotamus.Core.Entities.Items;
+using Listopotamus.Core.Entities.Search;
 
 namespace Listopotamus.ApplicationCore.Services
 {
     /// <summary>
     /// Represents the eBay scraper service.
     /// </summary>
-    public class EbayScraperService : IEbayScraperService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="EbayScraperService"/> class.
+    /// </remarks>
+    /// <param name="mapper">The mapper.</param>
+    /// <param name="itemRepository">The item repository.</param>
+    /// <param name="searchResultItemRepository">The search result item repository.</param>
+    public class EbayScraperService(IMapper mapper, IItemRepository itemRepository, ISearchResultItemRepository searchResultItemRepository) : IEbayScraperService
     {
         /// <summary>
         /// The Maximum number of results per page.
         /// </summary>
         private const string MAXRESULTSPERPAGE = "240";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EbayScraperService"/> class.
-        /// </summary>
-        public EbayScraperService()
-        {
-        }
-
         /// <inheritdoc />
         public string ItemsListNodePath => NodePathConstants.Ebay.ItemsList;
+
+        /// <summary>
+        /// Gets the mapper.
+        /// </summary>
+        private IMapper Mapper { get; } = mapper;
+
+        /// <summary>
+        /// Gets the item repository.
+        /// </summary>
+        private IItemRepository ItemRepository { get; } = itemRepository;
+
+        /// <summary>
+        /// Gets the search result item repository.
+        /// </summary>
+        private ISearchResultItemRepository SearchResultItemRepository { get; } = searchResultItemRepository;
 
         /// <summary>
         /// Extracts the seller name from a seller info.
@@ -198,7 +216,7 @@ namespace Listopotamus.ApplicationCore.Services
         }
 
         /// <inheritdoc/>
-        public List<ItemDto> GetItems(SearchCriteriaModel searchCriteria, List<HtmlNode> nodes)
+        public async Task<List<ItemDto>> GetItemsAsync(long? searchQueryId, SearchCriteriaModel searchCriteria, List<HtmlNode> nodes)
         {
             var items = new List<ItemDto>();
 
@@ -243,6 +261,7 @@ namespace Listopotamus.ApplicationCore.Services
 
                 var item = new ItemDto()
                 {
+                    ExternalId = Guid.NewGuid(),
                     ElementId = id,
                     MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay,
                     CategoryTypeId = searchCriteria.Query.CategoryTypeId ?? (int)CategoryTypeEnum.AllCategories,
@@ -267,6 +286,32 @@ namespace Listopotamus.ApplicationCore.Services
 
                 items.Add(item);
             }
+
+            var itemEntities = this.Mapper.Map<List<Item>>(items);
+
+            // use transaction scope because we have to relate the user search to the search result items.
+            var options = new TransactionOptions()
+            {
+                IsolationLevel = IsolationLevel.ReadUncommitted,
+            };
+
+            using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
+            var savedItems = await this.ItemRepository.InsertAsync(itemEntities);
+
+            var searchResultItems = new List<SearchResultItem>();
+            foreach (var savedItem in savedItems)
+            {
+                var searchResultItem = new SearchResultItem
+                {
+                    SearchQueryId = searchQueryId,
+                    ItemId = savedItem.Id,
+                    ExternalId = Guid.NewGuid(),
+                };
+            }
+
+            await this.SearchResultItemRepository.InsertAsync(searchResultItems);
+
+            scope.Complete();
 
             return items;
         }

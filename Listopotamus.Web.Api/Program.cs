@@ -16,6 +16,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.ApplicationCore.Services;
 using Listopotamus.Infrastructure.Data.Services;
+using Listopotamus.Infrastructure.Data.Repositories.Generic;
+using Listopotamus.Core.Entities.Search;
+using Listopotamus.Infrastructure.Data.Repositories.Scraper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +45,10 @@ builder.Services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
 
 // add services
 builder.Services.AddScoped<IUserContextService, UserContextService>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
+builder.Services.AddScoped<ISearchQueryRepository, SearchQueryRepository>();
+builder.Services.AddScoped<IUserSearchRepository, UserSearchRepository>();
+builder.Services.AddScoped<ISearchResultItemRepository, SearchResultItemRepository>();
 builder.Services.AddScoped<IBaseScraperService, ScraperService>();
 builder.Services.AddScoped<IEbayScraperService, EbayScraperService>();
 

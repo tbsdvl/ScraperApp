@@ -227,6 +227,7 @@
       </svg>
       <h1>Hello, {{ title }}</h1>
       <p>Congratulations! Your app is running. 🎉</p>
+      <img *ngIf="otpauthUri" [src]="'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + otpauthUri" alt="Scan QR">
     </div>
     <div class="divider" role="separator" aria-label="Divider"></div>
     <div class="right-side">

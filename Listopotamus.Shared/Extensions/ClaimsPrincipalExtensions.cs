@@ -15,40 +15,37 @@ namespace Listopotamus.Shared.Extensions
         /// Gets the user object id from the claims.
         /// </summary>
         /// <param name="claims">The user claims.</param>
-        /// <returns>The user object id.</returns>
-        public static string GetUserObjectId(this IEnumerable<Claim>? claims)
+        /// <returns>The user id.</returns>
+        public static Guid GetUserId(this IEnumerable<Claim>? claims)
         {
             if (claims is null)
             {
-                return string.Empty;
+                return Guid.Empty;
             }
 
-            var id = claims.FirstOrDefault(c =>
-                c.Type == "http://schemas.microsoft.com/identity/claims/objectidentifier" ||
-                c.Type == "oid"
-            );
+            var id = claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
             
             if (id is null)
             {
-                return string.Empty;
+                return Guid.Empty;
             }
 
-            return id.Value;
+            return Guid.Parse(id.Value);
         }
 
         /// <summary>
-        /// Gets the user object id from the claims principal.
+        /// Gets the user id from the claims principal.
         /// </summary>
         /// <param name="user">The user.</param>
-        /// <returns>The user object id.</returns>
-        public static string GetUserObjectId(this ClaimsPrincipal user)
+        /// <returns>The user id.</returns>
+        public static Guid GetUserId(this ClaimsPrincipal user)
         {
             if (user is null)
             {
-                return string.Empty;
+                return Guid.Empty;
             }
 
-            return user.Claims.GetUserObjectId();
+            return user.Claims.GetUserId();
         }
     }
 }
