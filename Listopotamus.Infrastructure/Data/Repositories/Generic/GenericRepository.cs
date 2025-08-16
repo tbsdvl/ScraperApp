@@ -5,6 +5,7 @@
 using System.Linq.Expressions;
 using Listopotamus.Core.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Listopotamus.Infrastructure.Data.Repositories.Generic
 {
@@ -41,18 +42,17 @@ namespace Listopotamus.Infrastructure.Data.Repositories.Generic
         /// </summary>
         /// <param name="filter">The expression used to filter entities.</param>
         /// <param name="orderBy">The order by queryable.</param>
-        /// <param name="includeProperties">The properties to include in the query.</param>
+        /// <param name="include">The properties to include in the query.</param>
         /// <param name="asNoTracking">A value indicating whether or not to use tracking.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <typeparam name="TEntity">The entity type.</typeparam>
         /// <returns>The entity or list of entities.</returns>
-        public virtual async Task<List<TEntity>> GetAsync<TEntity>(
+        public virtual async Task<List<TEntity>> GetAsync(
             Expression<Func<TEntity, bool>>? filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-            string includeProperties = "",
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
             bool asNoTracking = true,
             CancellationToken cancellationToken = default)
-            where TEntity : class
         {
             IQueryable<TEntity> query = this.Context.Set<TEntity>();
 
@@ -66,13 +66,9 @@ namespace Listopotamus.Infrastructure.Data.Repositories.Generic
                 query = query.Where(filter);
             }
 
-            if (!string.IsNullOrWhiteSpace(includeProperties))
+            if (include is not null)
             {
-                foreach (var include in includeProperties
-                         .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-                {
-                    query = query.Include(include);
-                }
+                query = include(query);
             }
 
             if (orderBy is not null)

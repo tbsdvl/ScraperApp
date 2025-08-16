@@ -2,8 +2,9 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using System.Linq.Expressions;
 using Listopotamus.Core.Entities;
+using Microsoft.EntityFrameworkCore.Query;
+using System.Linq.Expressions;
 
 namespace Listopotamus.ApplicationCore.Interfaces
 {
@@ -16,17 +17,21 @@ namespace Listopotamus.ApplicationCore.Interfaces
         where TEntity : BaseEntity<TKey>
     {
         /// <summary>
-        /// Gets entities based on an optional filter, order, and included properties.
+        /// Gets an entity or entities from the database based on the specified filter, order, and included properties.
         /// </summary>
-        /// <returns>The list of entities.</returns>
+        /// <param name="filter">The expression used to filter entities.</param>
+        /// <param name="orderBy">The order by queryable.</param>
+        /// <param name="include">The properties to include in the query.</param>
+        /// <param name="asNoTracking">A value indicating whether or not to use tracking.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <typeparam name="TEntity">The entity type.</typeparam>
-        Task<List<TEntity>> GetAsync<TEntity>(
+        /// <returns>The entity or list of entities.</returns>
+        Task<List<TEntity>> GetAsync(
             Expression<Func<TEntity, bool>>? filter = null,
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null,
-            string includeProperties = "",
+            Func<IQueryable<TEntity>, IIncludableQueryable<TEntity, object>>? include = null,
             bool asNoTracking = true,
-            CancellationToken cancellationToken = default)
-            where TEntity : class;
+            CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets an entity by its primary key.

@@ -1,4 +1,4 @@
-﻿// <copyright file="ISearchResultItem.cs" company="Psybersimian LLC">
+﻿// <copyright file="ISearchResultItemRepository.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 

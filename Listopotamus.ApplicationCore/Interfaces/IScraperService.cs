@@ -30,7 +30,8 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// <param name="searchQueryId">The search query id.</param>
         /// <param name="searchCriteriaModel">The search criteria model.</param>
         /// <param name="nodes">The list of HTML nodes.</param>
+        /// <param name="items">The list of items.</param>
         /// <returns>A list of items.</returns>
-        Task<List<ItemDto>> GetItemsAsync(long? searchQueryId, SearchCriteriaModel searchCriteriaModel, List<HtmlNode> nodes);
+        Task<List<ItemDto>> GetItemsAsync(long? searchQueryId, SearchCriteriaModel searchCriteriaModel, List<HtmlNode> nodes, List<ItemDto> items);
     }
 }
