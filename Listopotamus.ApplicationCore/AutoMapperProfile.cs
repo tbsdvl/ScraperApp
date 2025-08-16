@@ -19,7 +19,7 @@ namespace Listopotamus.ApplicationCore
         /// </summary>
         public AutoMapperProfile()
         {
-            this.CreateMap<EbaySearchQueryDto, SearchQueryDto>()
+            this.CreateMap<EbaySearchQueryDto, SearchQueryModel>()
                 .ReverseMap();
 
             this.CreateMap<ItemDto, Item>()
