@@ -20,6 +20,6 @@ namespace Listopotamus.ApplicationCore.DTOs
         /// Gets or sets the query options.
         /// </summary>
         [Required]
-        public SearchQueryDto Query { get; set; }
+        public SearchQueryModel Query { get; set; }
     }
 }

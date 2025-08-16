@@ -9,7 +9,7 @@ namespace Listopotamus.ApplicationCore.DTOs
     /// <summary>
     /// Represents the query options for scraping eBay pages.
     /// </summary>
-    public class EbaySearchQueryDto : SearchQueryDto
+    public class EbaySearchQueryDto : SearchQueryModel
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="EbaySearchQueryDto"/> class.

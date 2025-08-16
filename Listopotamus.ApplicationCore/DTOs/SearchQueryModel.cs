@@ -1,4 +1,4 @@
-﻿// <copyright file="SearchQueryDto.cs" company="Psybersimian LLC">
+﻿// <copyright file="SearchQueryModel.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
@@ -9,7 +9,7 @@ namespace Listopotamus.ApplicationCore.DTOs
     /// <summary>
     /// Represents a search query.
     /// </summary>
-    public class SearchQueryDto
+    public class SearchQueryModel
     {
         /// <summary>
         /// Gets or sets the marketplace type id.
