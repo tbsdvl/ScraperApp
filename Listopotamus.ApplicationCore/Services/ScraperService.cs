@@ -3,6 +3,7 @@
 // </copyright>
 
 using System.Transactions;
+using AutoMapper;
 using HtmlAgilityPack;
 using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Enums;
@@ -11,6 +12,7 @@ using Listopotamus.Core.Entities.Search;
 using Listopotamus.Resource;
 using Listopotamus.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Listopotamus.ApplicationCore.Services
@@ -22,19 +24,30 @@ namespace Listopotamus.ApplicationCore.Services
     /// Initializes a new instance of the <see cref="ScraperService"/> class.
     /// </remarks>
     /// <param name="serviceScopeFactory">The service scope factory.</param>
+    /// <param name="mapper">The mapper.</param>
     /// <param name="httpContext">The http context.</param>
     /// <param name="searchQueryRepository">The search query repository.</param>
+    /// <param name="searchResultItemRepository">The search result item repository.</param>
+    /// <param name="itemRepository">The item repository.</param>
     /// <param name="userSearchRepository">The user search repository.</param>
     public class ScraperService(
         IServiceScopeFactory serviceScopeFactory,
+        IMapper mapper,
         IHttpContextAccessor httpContext,
         ISearchQueryRepository searchQueryRepository,
+        ISearchResultItemRepository searchResultItemRepository,
+        IItemRepository itemRepository,
         IUserSearchRepository userSearchRepository) : IBaseScraperService
     {
         /// <summary>
         /// Gets the service scope factory.
         /// </summary>
         private IServiceScopeFactory ServiceScopeFactory { get; } = serviceScopeFactory;
+
+        /// <summary>
+        /// Gets the mapper.
+        /// </summary>
+        private IMapper Mapper { get; } = mapper;
 
         /// <summary>
         /// Gets the HTTP context accessor.
@@ -45,6 +58,16 @@ namespace Listopotamus.ApplicationCore.Services
         /// Gets the search query repository.
         /// </summary>
         private ISearchQueryRepository SearchQueryRepository { get; } = searchQueryRepository;
+
+        /// <summary>
+        /// Gets the search result item repository.
+        /// </summary>
+        private ISearchResultItemRepository SearchResultItemRepository { get; } = searchResultItemRepository;
+
+        /// <summary>
+        /// Gets the item repository.
+        /// </summary>
+        private IItemRepository ItemRepository { get; } = itemRepository;
 
         /// <summary>
         /// Gets the user search repository.
@@ -161,7 +184,14 @@ namespace Listopotamus.ApplicationCore.Services
                 };
             }
 
-            // create a new search query entity, save it, then tie it to a new user search entity, then save.
+            var existingSearchQueryResults = await this.SearchQueryRepository.GetAsync(
+                x => x.CategoryTypeId == searchCriteria.Query.CategoryTypeId &&
+                x.MarketplaceTypeId == searchCriteria.Query.MarketplaceTypeId &&
+                x.PageNumber == searchCriteria.Query.PageNumber &&
+                x.MaxPageNumber == searchCriteria.Query.MaxPageNumber &&
+                x.ShowSoldOnly == searchCriteria.Query.SoldItemsOnly &&
+                x.SearchTerm.ToLower() == searchCriteria.Query.SearchTerm.ToLower());
+
             var options = new TransactionOptions()
             {
                 IsolationLevel = IsolationLevel.ReadUncommitted,
@@ -169,33 +199,46 @@ namespace Listopotamus.ApplicationCore.Services
 
             using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
 
-            var searchQuery = new SearchQuery
+            SearchQuery searchQuery = new ();
+            if (existingSearchQueryResults.FirstOrDefault() is not null)
             {
-                MarketplaceTypeId = searchCriteria.Query.MarketplaceTypeId!.Value,
-                CategoryTypeId = searchCriteria.Query.CategoryTypeId!.Value,
-                SearchTerm = searchCriteria.Query.SearchTerm?.Trim() ?? string.Empty,
-                PageNumber = searchCriteria.Query.PageNumber ?? 1,
-                ZipCode = string.IsNullOrWhiteSpace(searchCriteria.Query.ZipCode) ? string.Empty : searchCriteria.Query.ZipCode,
-                Distance = searchCriteria.Query.Distance,
-                IsMiles = searchCriteria.Query.IsMiles,
-                ShowSoldOnly = searchCriteria.Query.SoldItemsOnly,
-                MaxPageNumber = searchCriteria.Query.MaxPageNumber ?? this.MaxPageNumber,
-                ExternalId = Guid.NewGuid(),
-            };
+                searchQuery = existingSearchQueryResults.First();
+                var existingSearchResultItems = await this.SearchResultItemRepository.GetAsync(
+                    x => x.SearchQueryId == searchQuery.Id,
+                    include: q => q.Include(x => x.Item));
 
-            // save the query to the database
-            var savedQuery = await this.SearchQueryRepository.InsertAsync(searchQuery);
-
-            // save the user search
-            var userSearch = new UserSearch
+                if (existingSearchResultItems is not null && existingSearchResultItems.Count > 0)
+                {
+                    var existingItems = existingSearchResultItems.Select(x => x.Item).ToList();
+                    items.AddRange(this.Mapper.Map<List<ItemDto>>(existingItems));
+                }
+            }
+            else
             {
-                SearchQueryId = savedQuery.Id,
-                UserId = this.Accessor.HttpContext.User.GetUserId(),
-                ExternalId = Guid.NewGuid(),
-                SearchDate = DateTime.Now,
-            };
+                searchQuery = new SearchQuery
+                {
+                    MarketplaceTypeId = searchCriteria.Query.MarketplaceTypeId!.Value,
+                    CategoryTypeId = searchCriteria.Query.CategoryTypeId!.Value,
+                    SearchTerm = searchCriteria.Query.SearchTerm?.Trim() ?? string.Empty,
+                    PageNumber = searchCriteria.Query.PageNumber ?? 1,
+                    ZipCode = string.IsNullOrWhiteSpace(searchCriteria.Query.ZipCode) ? string.Empty : searchCriteria.Query.ZipCode,
+                    Distance = searchCriteria.Query.Distance,
+                    IsMiles = searchCriteria.Query.IsMiles,
+                    ShowSoldOnly = searchCriteria.Query.SoldItemsOnly,
+                    MaxPageNumber = searchCriteria.Query.MaxPageNumber ?? this.MaxPageNumber,
+                    ExternalId = Guid.NewGuid(),
+                };
+                searchQuery = await this.SearchQueryRepository.InsertAsync(searchQuery);
 
-            var savedUserSearch = await this.UserSearchRepository.InsertAsync(userSearch);
+                var userSearch = new UserSearch
+                {
+                    SearchQueryId = searchQuery.Id,
+                    UserId = this.Accessor.HttpContext.User.GetUserId(),
+                    ExternalId = Guid.NewGuid(),
+                    SearchDate = DateTime.Now,
+                };
+                var savedUserSearch = await this.UserSearchRepository.InsertAsync(userSearch);
+            }
 
             var nodes = await this.GetItemNodesAsync(searchCriteria, service);
             if (nodes is null || nodes.Count == 0)
@@ -207,7 +250,7 @@ namespace Listopotamus.ApplicationCore.Services
                 };
             }
 
-            items = await service.GetItemsAsync(savedQuery.Id, searchCriteria, nodes);
+            items = await service.GetItemsAsync(searchQuery.Id, searchCriteria, nodes, items);
 
             scope.Complete();
 

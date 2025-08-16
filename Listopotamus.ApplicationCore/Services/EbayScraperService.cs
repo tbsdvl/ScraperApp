@@ -216,10 +216,19 @@ namespace Listopotamus.ApplicationCore.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<ItemDto>> GetItemsAsync(long? searchQueryId, SearchCriteriaModel searchCriteria, List<HtmlNode> nodes)
+        public async Task<List<ItemDto>> GetItemsAsync(long? searchQueryId, SearchCriteriaModel searchCriteria, List<HtmlNode> nodes, List<ItemDto> items)
         {
-            var items = new List<ItemDto>();
+            if (items.Count > 0)
+            {
+                nodes = nodes.Where(x => !string.IsNullOrWhiteSpace(x.Id) && !items.Any(i => i.ElementId == x.Id)).ToList();
+            }
 
+            if (nodes.Count == 0)
+            {
+                return items;
+            }
+
+            var newItems = new List<ItemDto>();
             foreach (var node in nodes)
             {
                 var id = node.Id;
@@ -284,10 +293,11 @@ namespace Listopotamus.ApplicationCore.Services
                     Location = location is not null ? location.InnerText.Replace("from ", string.Empty).Replace("Located in", string.Empty).Trim() : string.Empty,
                 };
 
+                newItems.Add(item);
                 items.Add(item);
             }
 
-            var itemEntities = this.Mapper.Map<List<Item>>(items);
+            var itemEntities = this.Mapper.Map<List<Item>>(newItems);
 
             // use transaction scope because we have to relate the user search to the search result items.
             var options = new TransactionOptions()
@@ -307,6 +317,7 @@ namespace Listopotamus.ApplicationCore.Services
                     ItemId = savedItem.Id,
                     ExternalId = Guid.NewGuid(),
                 };
+                searchResultItems.Add(searchResultItem);
             }
 
             await this.SearchResultItemRepository.InsertAsync(searchResultItems);
