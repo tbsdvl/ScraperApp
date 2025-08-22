@@ -5,6 +5,7 @@
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Core.Entities;
 using Listopotamus.Core.Entities.Items;
+using Listopotamus.Core.Entities.Jobs;
 using Listopotamus.Core.Entities.Lookups;
 using Listopotamus.Core.Entities.Search;
 using Listopotamus.Infrastructure.Security.Entities.Identity;
@@ -38,6 +39,11 @@ namespace Listopotamus.Infrastructure.Data
         /// The default lookup value index name.
         /// </summary>
         private const string DefaultLookupValueIndex = "UCX_LookupValue";
+
+        /// <summary>
+        /// The identity table name.
+        /// </summary>
+        private const string IdentityTableName = "Identity";
 
         /// <summary>
         /// Gets or sets the marketplace types.
@@ -75,6 +81,11 @@ namespace Listopotamus.Infrastructure.Data
         public DbSet<Item> Items { get; set; }
 
         /// <summary>
+        /// Gets or sets the scrape jobs.
+        /// </summary>
+        public DbSet<ScrapeJob> ScrapeJobs { get; set; }
+
+        /// <summary>
         /// Gets the user context service.
         /// </summary>
         private IUserContextService UserContextService { get; } = userContextService;
@@ -88,9 +99,11 @@ namespace Listopotamus.Infrastructure.Data
             var currentDate = DateTime.Now;
             var userName = this.UserContextService.GetUserId();
 
-            foreach (var entry in this.ChangeTracker
+            var changedEntries = this.ChangeTracker
                          .Entries()
-                         .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
+                         .Where(e => e.State == EntityState.Added || e.State == EntityState.Modified);
+
+            foreach (var entry in changedEntries)
             {
                 var isAdded = entry.State == EntityState.Added;
 
@@ -123,11 +136,6 @@ namespace Listopotamus.Infrastructure.Data
 
             RenameTablesAndIds(builder, entityTypes);
 
-            // add external id index to user
-            // builder.Entity<User>()
-            //    .HasIndex(x => x.ExternalId)
-            //    .IsUnique()
-            //    .HasDatabaseName(DefaultExternalIdIndex);
             AddExternalIndexes(builder, entityTypes);
             AddLookupIndexes(builder, entityTypes);
 
@@ -151,7 +159,7 @@ namespace Listopotamus.Infrastructure.Data
             foreach (var entity in entityTypes)
             {
                 var tableName = entity.ClrType.Name;
-                if (tableName.Contains("Identity"))
+                if (tableName.Contains(IdentityTableName))
                 {
                     continue;
                 }

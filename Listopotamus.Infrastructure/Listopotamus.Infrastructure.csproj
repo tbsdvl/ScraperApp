@@ -33,4 +33,8 @@
     <ProjectReference Include="..\Listopotamus.Core\Listopotamus.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
+
 </Project>
