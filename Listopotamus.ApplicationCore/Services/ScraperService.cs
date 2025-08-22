@@ -28,7 +28,6 @@ namespace Listopotamus.ApplicationCore.Services
     /// <param name="httpContext">The http context.</param>
     /// <param name="searchQueryRepository">The search query repository.</param>
     /// <param name="searchResultItemRepository">The search result item repository.</param>
-    /// <param name="itemRepository">The item repository.</param>
     /// <param name="userSearchRepository">The user search repository.</param>
     public class ScraperService(
         IServiceScopeFactory serviceScopeFactory,
@@ -36,7 +35,6 @@ namespace Listopotamus.ApplicationCore.Services
         IHttpContextAccessor httpContext,
         ISearchQueryRepository searchQueryRepository,
         ISearchResultItemRepository searchResultItemRepository,
-        IItemRepository itemRepository,
         IUserSearchRepository userSearchRepository) : IBaseScraperService
     {
         /// <summary>
@@ -63,11 +61,6 @@ namespace Listopotamus.ApplicationCore.Services
         /// Gets the search result item repository.
         /// </summary>
         private ISearchResultItemRepository SearchResultItemRepository { get; } = searchResultItemRepository;
-
-        /// <summary>
-        /// Gets the item repository.
-        /// </summary>
-        private IItemRepository ItemRepository { get; } = itemRepository;
 
         /// <summary>
         /// Gets the user search repository.
@@ -157,33 +150,13 @@ namespace Listopotamus.ApplicationCore.Services
         }
 
         /// <summary>
-        /// Gets a list of items from a page.
+        /// Gets a search query.
         /// </summary>
         /// <param name="searchCriteria">The search criteria.</param>
-        /// <returns>The scraper response including a list of items.</returns>
-        public async Task<ScraperResult> GetItemsAsync(SearchCriteriaModel searchCriteria)
+        /// <param name="items">The list of items.</param>
+        /// <returns>The search query.</returns>
+        private async Task<SearchQuery> GetSearchQueryAsync(SearchCriteriaModel searchCriteria, List<ItemDto> items)
         {
-            var items = new List<ItemDto>();
-            if (!searchCriteria.Query.MarketplaceTypeId.HasValue)
-            {
-                return new ScraperResult()
-                {
-                    Items = items,
-                    ErrorMessage = ErrorMessages.MissingQueryOption,
-                };
-            }
-
-            using var serviceScope = this.ServiceScopeFactory.CreateScope();
-            var service = GetService(serviceScope, searchCriteria.Query.MarketplaceTypeId.Value);
-            if (service is null)
-            {
-                return new ScraperResult()
-                {
-                    Items = items,
-                    ErrorMessage = ErrorMessages.InvalidQueryOptionType,
-                };
-            }
-
             var existingSearchQueryResults = await this.SearchQueryRepository.GetAsync(
                 x => x.CategoryTypeId == searchCriteria.Query.CategoryTypeId &&
                 x.MarketplaceTypeId == searchCriteria.Query.MarketplaceTypeId &&
@@ -191,13 +164,6 @@ namespace Listopotamus.ApplicationCore.Services
                 x.MaxPageNumber == searchCriteria.Query.MaxPageNumber &&
                 x.ShowSoldOnly == searchCriteria.Query.SoldItemsOnly &&
                 x.SearchTerm.ToLower() == searchCriteria.Query.SearchTerm.ToLower());
-
-            var options = new TransactionOptions()
-            {
-                IsolationLevel = IsolationLevel.ReadUncommitted,
-            };
-
-            using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
 
             SearchQuery searchQuery = new ();
             if (existingSearchQueryResults.FirstOrDefault() is not null)
@@ -237,8 +203,48 @@ namespace Listopotamus.ApplicationCore.Services
                     ExternalId = Guid.NewGuid(),
                     SearchDate = DateTime.Now,
                 };
-                var savedUserSearch = await this.UserSearchRepository.InsertAsync(userSearch);
+                await this.UserSearchRepository.InsertAsync(userSearch);
             }
+
+            return searchQuery;
+        }
+
+        /// <summary>
+        /// Gets a list of items from a page.
+        /// </summary>
+        /// <param name="searchCriteria">The search criteria.</param>
+        /// <returns>The scraper response including a list of items.</returns>
+        public async Task<ScraperResult> GetItemsAsync(SearchCriteriaModel searchCriteria)
+        {
+            var items = new List<ItemDto>();
+            if (!searchCriteria.Query.MarketplaceTypeId.HasValue)
+            {
+                return new ScraperResult()
+                {
+                    Items = items,
+                    ErrorMessage = ErrorMessages.MissingQueryOption,
+                };
+            }
+
+            using var serviceScope = this.ServiceScopeFactory.CreateScope();
+            var service = GetService(serviceScope, searchCriteria.Query.MarketplaceTypeId.Value);
+            if (service is null)
+            {
+                return new ScraperResult()
+                {
+                    Items = items,
+                    ErrorMessage = ErrorMessages.InvalidQueryOptionType,
+                };
+            }
+
+            var options = new TransactionOptions()
+            {
+                IsolationLevel = IsolationLevel.ReadUncommitted,
+            };
+
+            using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
+
+            var searchQuery = await this.GetSearchQueryAsync(searchCriteria, items);
 
             var nodes = await this.GetItemNodesAsync(searchCriteria, service);
             if (nodes is null || nodes.Count == 0)
