@@ -19,15 +19,20 @@ namespace Listopotamus.Web.Api.Areas.Controllers
     {
         private IBaseScraperService ScraperService { get; }
 
+        private ISearchQueryService SearchQueryService { get; }
+
         /// <summary>
         /// Initializes a new scraper controller.
         /// <param name="scraperService">The scraper service.</param>
+        /// <param name="searchQueryService">The search query service.</param>
         /// </summary>
         public ScraperController(
-            IBaseScraperService scraperService
+            IBaseScraperService scraperService,
+            ISearchQueryService searchQueryService
         )
         {
             this.ScraperService = scraperService;
+            this.SearchQueryService = searchQueryService;
         }
 
         /// <summary>
@@ -38,8 +43,8 @@ namespace Listopotamus.Web.Api.Areas.Controllers
         [HttpPost]
         public async Task<IActionResult> Search([FromBody] SearchCriteriaModel searchCriteria)
         {
-            var results = await this.ScraperService.GetItemsAsync(searchCriteria);
-            return Ok(results);
+            await this.SearchQueryService.CreateAsync(searchCriteria);
+            return Ok();
         }
     }
 }

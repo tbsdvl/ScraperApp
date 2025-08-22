@@ -15,8 +15,7 @@ export class AppComponent {
   }
 
   public encode(): void {
-    "otpauth://totp/listopotamus:test@email.com?secret=MOOLKIWBNNMUTWSC62DOF6L7O37LE2YF&issuer=listopotamus&digits=6&period=30"
-    this.otpauthUri = "otpauth://totp/listopotamus:test@email.com?secret=MOOLKIWBNNMUTWSC62DOF6L7O37LE2YF&issuer=listopotamus&digits=6&period=30";
+    this.otpauthUri = "otpauth://totp/listopotamus:test@email.com?secret=2AWR4A3A2ATHTFPKZB7FFNA4LDFGYI3C&issuer=listopotamus&digits=6&period=30";
     console.log(this.otpauthUri);
   }
 }

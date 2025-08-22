@@ -13,6 +13,7 @@ using Listopotamus.ApplicationCore.Extensions;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Core.Entities.Items;
 using Listopotamus.Core.Entities.Search;
+using Microsoft.AspNetCore.Http;
 
 namespace Listopotamus.ApplicationCore.Services
 {
@@ -25,7 +26,7 @@ namespace Listopotamus.ApplicationCore.Services
     /// <param name="mapper">The mapper.</param>
     /// <param name="itemRepository">The item repository.</param>
     /// <param name="searchResultItemRepository">The search result item repository.</param>
-    public class EbayScraperService(IMapper mapper, IItemRepository itemRepository, ISearchResultItemRepository searchResultItemRepository) : IEbayScraperService
+    public class EbayScraperService(IMapper mapper, IItemRepository itemRepository, ISearchResultItemRepository searchResultItemRepository, IHttpContextAccessor httpContext) : IEbayScraperService
     {
         /// <summary>
         /// The Maximum number of results per page.
@@ -306,6 +307,7 @@ namespace Listopotamus.ApplicationCore.Services
             };
 
             using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
+
             var savedItems = await this.ItemRepository.InsertAsync(itemEntities);
 
             var searchResultItems = new List<SearchResultItem>();

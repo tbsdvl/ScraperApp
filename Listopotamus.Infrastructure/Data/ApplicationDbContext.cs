@@ -97,6 +97,7 @@ namespace Listopotamus.Infrastructure.Data
         public async Task<int> SaveChangesAsync()
         {
             var currentDate = DateTime.Now;
+
             var userName = this.UserContextService.GetUserId();
 
             var changedEntries = this.ChangeTracker
@@ -108,12 +109,12 @@ namespace Listopotamus.Infrastructure.Data
                 var isAdded = entry.State == EntityState.Added;
 
                 SetIfExists(entry, "UpdatedDate", currentDate);
-                SetIfExists(entry, "UpdatedBy", userName);
+                SetIfExists(entry, "UpdatedBy", userName.ToString());
 
                 if (isAdded)
                 {
                     SetIfExists(entry, "CreatedDate", currentDate);
-                    SetIfExists(entry, "CreatedBy", userName);
+                    SetIfExists(entry, "CreatedBy", userName.ToString());
                 }
                 else
                 {

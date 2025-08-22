@@ -10,7 +10,6 @@ using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Core.Entities.Search;
 using Listopotamus.Resource;
-using Listopotamus.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,14 +27,11 @@ namespace Listopotamus.ApplicationCore.Services
     /// <param name="httpContext">The http context.</param>
     /// <param name="searchQueryRepository">The search query repository.</param>
     /// <param name="searchResultItemRepository">The search result item repository.</param>
-    /// <param name="userSearchRepository">The user search repository.</param>
     public class ScraperService(
         IServiceScopeFactory serviceScopeFactory,
         IMapper mapper,
-        IHttpContextAccessor httpContext,
         ISearchQueryRepository searchQueryRepository,
-        ISearchResultItemRepository searchResultItemRepository,
-        IUserSearchRepository userSearchRepository) : IBaseScraperService
+        ISearchResultItemRepository searchResultItemRepository) : IBaseScraperService
     {
         /// <summary>
         /// Gets the service scope factory.
@@ -48,11 +44,6 @@ namespace Listopotamus.ApplicationCore.Services
         private IMapper Mapper { get; } = mapper;
 
         /// <summary>
-        /// Gets the HTTP context accessor.
-        /// </summary>
-        private IHttpContextAccessor Accessor { get; } = httpContext;
-
-        /// <summary>
         /// Gets the search query repository.
         /// </summary>
         private ISearchQueryRepository SearchQueryRepository { get; } = searchQueryRepository;
@@ -61,11 +52,6 @@ namespace Listopotamus.ApplicationCore.Services
         /// Gets the search result item repository.
         /// </summary>
         private ISearchResultItemRepository SearchResultItemRepository { get; } = searchResultItemRepository;
-
-        /// <summary>
-        /// Gets the user search repository.
-        /// </summary>
-        private IUserSearchRepository UserSearchRepository { get; } = userSearchRepository;
 
         /// <summary>
         /// Gets or sets the maximum page number to scrape.
@@ -178,32 +164,6 @@ namespace Listopotamus.ApplicationCore.Services
                     var existingItems = existingSearchResultItems.Select(x => x.Item).ToList();
                     items.AddRange(this.Mapper.Map<List<ItemDto>>(existingItems));
                 }
-            }
-            else
-            {
-                searchQuery = new SearchQuery
-                {
-                    MarketplaceTypeId = searchCriteria.Query.MarketplaceTypeId!.Value,
-                    CategoryTypeId = searchCriteria.Query.CategoryTypeId!.Value,
-                    SearchTerm = searchCriteria.Query.SearchTerm?.Trim() ?? string.Empty,
-                    PageNumber = searchCriteria.Query.PageNumber ?? 1,
-                    ZipCode = string.IsNullOrWhiteSpace(searchCriteria.Query.ZipCode) ? string.Empty : searchCriteria.Query.ZipCode,
-                    Distance = searchCriteria.Query.Distance,
-                    IsMiles = searchCriteria.Query.IsMiles,
-                    ShowSoldOnly = searchCriteria.Query.SoldItemsOnly,
-                    MaxPageNumber = searchCriteria.Query.MaxPageNumber ?? this.MaxPageNumber,
-                    ExternalId = Guid.NewGuid(),
-                };
-                searchQuery = await this.SearchQueryRepository.InsertAsync(searchQuery);
-
-                var userSearch = new UserSearch
-                {
-                    SearchQueryId = searchQuery.Id,
-                    UserId = this.Accessor.HttpContext.User.GetUserId(),
-                    ExternalId = Guid.NewGuid(),
-                    SearchDate = DateTime.Now,
-                };
-                await this.UserSearchRepository.InsertAsync(userSearch);
             }
 
             return searchQuery;

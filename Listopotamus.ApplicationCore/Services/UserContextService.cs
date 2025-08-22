@@ -28,7 +28,15 @@ namespace Listopotamus.ApplicationCore.Services
         /// <returns>The user id.</returns>
         public Guid GetUserId()
         {
-            return this.HttpContextAccessor.HttpContext.User.Claims.GetUserId();
+            var httpContext = this.HttpContextAccessor.HttpContext;
+            if (httpContext is null)
+            {
+                return Guid.Empty;
+            }
+            else
+            {
+                return this.HttpContextAccessor.HttpContext.User.Claims.GetUserId();
+            }
         }
     }
 }

@@ -2,9 +2,9 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using System.Linq.Expressions;
 using Listopotamus.Core.Entities;
 using Microsoft.EntityFrameworkCore.Query;
-using System.Linq.Expressions;
 
 namespace Listopotamus.ApplicationCore.Interfaces
 {

@@ -16,9 +16,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.ApplicationCore.Services;
 using Listopotamus.Infrastructure.Data.Services;
-using Listopotamus.Infrastructure.Data.Repositories.Generic;
-using Listopotamus.Core.Entities.Search;
 using Listopotamus.Infrastructure.Data.Repositories.Scraper;
+using Listopotamus.Infrastructure.Data.Workers;
+using Listopotamus.Infrastructure.Data.Repositories.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,8 +49,12 @@ builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ISearchQueryRepository, SearchQueryRepository>();
 builder.Services.AddScoped<IUserSearchRepository, UserSearchRepository>();
 builder.Services.AddScoped<ISearchResultItemRepository, SearchResultItemRepository>();
+builder.Services.AddScoped<IScrapeJobRepository, ScrapeJobRepository>();
 builder.Services.AddScoped<IBaseScraperService, ScraperService>();
 builder.Services.AddScoped<IEbayScraperService, EbayScraperService>();
+builder.Services.AddScoped<ISearchQueryService, SearchQueryService>();
+builder.Services.AddSingleton<ITaskQueueService, TaskQueueService>();
+builder.Services.AddHostedService<ScrapeWorker>();
 
 // Add Identity
 builder.Services.AddAuthorization();
