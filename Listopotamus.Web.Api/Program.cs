@@ -17,8 +17,9 @@ using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.ApplicationCore.Services;
 using Listopotamus.Infrastructure.Data.Services;
 using Listopotamus.Infrastructure.Data.Repositories.Scraper;
-using Listopotamus.Infrastructure.Data.Workers;
 using Listopotamus.Infrastructure.Data.Repositories.Jobs;
+using Listopotamus.Infrastructure.Services;
+using Listopotamus.Infrastructure.Workers;
 
 var builder = WebApplication.CreateBuilder(args);
 

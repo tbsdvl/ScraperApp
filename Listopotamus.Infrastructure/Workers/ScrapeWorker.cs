@@ -8,12 +8,13 @@ using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.ApplicationCore.Services;
 using Listopotamus.Core.Entities.Jobs;
 using Listopotamus.Core.Entities.Search;
+using Listopotamus.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Listopotamus.Infrastructure.Data.Workers
+namespace Listopotamus.Infrastructure.Workers
 {
     /// <summary>
     /// Represents a scrape worker.

@@ -5,7 +5,7 @@
 using System.Threading.Channels;
 using Listopotamus.ApplicationCore.Interfaces;
 
-namespace Listopotamus.Infrastructure.Data.Services
+namespace Listopotamus.Infrastructure.Services
 {
     /// <summary>
     /// Represents the task queue service.
@@ -25,7 +25,7 @@ namespace Listopotamus.Infrastructure.Data.Services
         /// <returns>A <see cref="Task"/> representing the queuing of a job.</returns>
         public async Task QueueAsync(long scrapeJobId)
         {
-            await this.Channel.Writer.WriteAsync(scrapeJobId);
+            await Channel.Writer.WriteAsync(scrapeJobId);
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Listopotamus.Infrastructure.Data.Services
         /// <returns>The id of the dequeued job.</returns>
         public async Task<long> DequeueAsync(CancellationToken ct)
         {
-            return await this.Channel.Reader.ReadAsync(ct);
+            return await Channel.Reader.ReadAsync(ct);
         }
     }
 

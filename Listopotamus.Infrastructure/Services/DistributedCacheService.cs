@@ -3,10 +3,11 @@
 // </copyright>
 
 using System.Text.Json;
+using Listopotamus.Infrastructure.Data.Services;
 using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Microsoft.Extensions.Caching.Distributed;
 
-namespace Listopotamus.Infrastructure.Data.Services
+namespace Listopotamus.Infrastructure.Services
 {
     /// <summary>
     /// Represents the distributed cache service.
@@ -24,7 +25,7 @@ namespace Listopotamus.Infrastructure.Data.Services
         {
             var cacheKey = GetCacheKeyForUser(objectId);
 
-            var cachedUser = await this.DistributedCache.GetStringAsync(cacheKey);
+            var cachedUser = await DistributedCache.GetStringAsync(cacheKey);
 
             if (string.IsNullOrEmpty(cachedUser))
             {
@@ -46,14 +47,14 @@ namespace Listopotamus.Infrastructure.Data.Services
                 AbsoluteExpirationRelativeToNow = expiration,
             };
 
-            await this.DistributedCache.SetStringAsync(cacheKey, serializedUser, options);
+            await DistributedCache.SetStringAsync(cacheKey, serializedUser, options);
         }
 
         /// <inheritdoc />
         public async Task ClearUserCacheAsync(string objectId)
         {
             var cacheKey = GetCacheKeyForUser(objectId);
-            await this.DistributedCache.RemoveAsync(cacheKey);
+            await DistributedCache.RemoveAsync(cacheKey);
         }
 
         /// <summary>

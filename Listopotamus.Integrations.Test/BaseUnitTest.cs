@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using AutoMapper;
 using Listopotamus.ApplicationCore;
 using Listopotamus.Infrastructure.Security.Entities.Identity;
+using Listopotamus.Infrastructure.Services;
 
 namespace Listopotamus.Integrations.Test
 {

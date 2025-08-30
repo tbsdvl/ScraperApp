@@ -15,7 +15,7 @@ using Listopotamus.Core.Entities.Items;
 using Listopotamus.Core.Entities.Search;
 using Microsoft.AspNetCore.Http;
 
-namespace Listopotamus.Infrastructure.Data.Services
+namespace Listopotamus.Infrastructure.Services
 {
     /// <summary>
     /// Represents the eBay scraper service.
@@ -118,7 +118,7 @@ namespace Listopotamus.Infrastructure.Data.Services
 
             var newItems = ParseItems(filtered, searchCriteria);
             items.AddRange(newItems);
-            await this.InsertSearchResultItemsAsync(searchQueryId, newItems);
+            await InsertSearchResultItemsAsync(searchQueryId, newItems);
 
             return items;
         }
@@ -420,14 +420,14 @@ namespace Listopotamus.Infrastructure.Data.Services
                 return;
             }
 
-            var itemEntities = this.Mapper.Map<List<Item>>(newItems);
+            var itemEntities = Mapper.Map<List<Item>>(newItems);
 
             var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted };
             using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
 
-            var savedItems = await this.ItemRepository.InsertAsync(itemEntities);
+            var savedItems = await ItemRepository.InsertAsync(itemEntities);
             var searchResultItems = CreateSearchResultItems(searchQueryId, savedItems);
-            await this.SearchResultItemRepository.InsertAsync(searchResultItems);
+            await SearchResultItemRepository.InsertAsync(searchResultItems);
 
             scope.Complete();
         }
