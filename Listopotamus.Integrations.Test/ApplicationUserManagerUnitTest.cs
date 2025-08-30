@@ -23,13 +23,6 @@ namespace Listopotamus.Integrations.Test
             {
                 UserName = "testuser",
                 Email = "testuser@example.com",
-                FirstName = "Test",
-                LastName = "User",
-                NotificationsEnabled = true,
-                UpdatedBy = "system",
-                UpdatedDate = DateTime.UtcNow,
-                UserObjectId = Guid.NewGuid().ToString(),
-                //ExternalId = Guid.NewGuid(),
             };
         }
 
@@ -65,8 +58,6 @@ namespace Listopotamus.Integrations.Test
             await this.UserManager.CreateAsync(user, password, roles);
 
             // Act
-            user.FirstName = "Updated";
-            user.LastName = "User";
             var updatedRoles = new[] { "User" };
             var result = await this.UserManager.UpdateAsync(user, updatedRoles);
 
@@ -77,8 +68,6 @@ namespace Listopotamus.Integrations.Test
             {
                 var updatedUser = await this.UserManager.FindAsync(user.UserName);
                 Assert.IsNotNull(updatedUser, "User was not found after update.");
-                Assert.AreEqual(user.FirstName, updatedUser.FirstName, "User first name does not match.");
-                Assert.AreEqual(user.LastName, updatedUser.LastName, "User last name does not match.");
             }
         }
 
