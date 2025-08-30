@@ -15,7 +15,7 @@ using Listopotamus.Core.Entities.Items;
 using Listopotamus.Core.Entities.Search;
 using Microsoft.AspNetCore.Http;
 
-namespace Listopotamus.ApplicationCore.Services
+namespace Listopotamus.Infrastructure.Data.Services
 {
     /// <summary>
     /// Represents the eBay scraper service.
@@ -50,6 +50,78 @@ namespace Listopotamus.ApplicationCore.Services
         /// Gets the search result item repository.
         /// </summary>
         private ISearchResultItemRepository SearchResultItemRepository { get; } = searchResultItemRepository;
+
+        /// <inheritdoc />
+        public string GetUrl(SearchCriteriaModel searchCriteria)
+        {
+            var baseUrl = UrlConstants.EBAY;
+
+            if (searchCriteria.Query.CategoryTypeId.HasValue)
+            {
+                baseUrl += searchCriteria.Query.CategoryTypeId + UrlConstants.EBAYINDEX;
+            }
+
+            baseUrl += UrlConstants.EBAYSEARCHQUERY;
+
+            if (!string.IsNullOrWhiteSpace(searchCriteria.Query.SearchTerm))
+            {
+                baseUrl += searchCriteria.Query.SearchTerm;
+            }
+
+            if (searchCriteria.Query.CategoryTypeId.HasValue)
+            {
+                baseUrl += UrlConstants.EBAYCATEGORY + searchCriteria.Query.CategoryTypeId;
+            }
+
+            if (searchCriteria.Query.SoldItemsOnly)
+            {
+                baseUrl += UrlConstants.EBAYSOLDITEMS;
+            }
+
+            if (searchCriteria.Query.PageNumber > 0)
+            {
+                baseUrl += UrlConstants.EBAYPAGENUM + searchCriteria.Query.PageNumber;
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchCriteria.Query.ZipCode))
+            {
+                baseUrl += UrlConstants.EBAYZIPCODE + searchCriteria.Query.ZipCode;
+            }
+
+            if (searchCriteria.Query.Distance.HasValue)
+            {
+                baseUrl += UrlConstants.EBAYDISTANCE + searchCriteria.Query.Distance;
+            }
+
+            if (searchCriteria.Query.LocationTypeId.HasValue)
+            {
+                baseUrl += UrlConstants.EBAYLOCATION + searchCriteria.Query.LocationTypeId;
+            }
+
+            baseUrl += UrlConstants.EBAYRESULTSPERPAGE + MAXRESULTSPERPAGE;
+
+            return baseUrl;
+        }
+
+        /// <inheritdoc/>
+        public async Task<List<ItemDto>> GetItemsAsync(
+            long? searchQueryId,
+            SearchCriteriaModel searchCriteria,
+            List<HtmlNode> nodes,
+            List<ItemDto> items)
+        {
+            var filtered = FilterNewNodes(nodes, items);
+            if (filtered.Count == 0)
+            {
+                return items;
+            }
+
+            var newItems = ParseItems(filtered, searchCriteria);
+            items.AddRange(newItems);
+            await this.InsertSearchResultItemsAsync(searchQueryId, newItems);
+
+            return items;
+        }
 
         /// <summary>
         /// Extracts the seller name from a seller info.
@@ -358,78 +430,6 @@ namespace Listopotamus.ApplicationCore.Services
             await this.SearchResultItemRepository.InsertAsync(searchResultItems);
 
             scope.Complete();
-        }
-
-        /// <inheritdoc />
-        public string GetUrl(SearchCriteriaModel searchCriteria)
-        {
-            var baseUrl = UrlConstants.EBAY;
-
-            if (searchCriteria.Query.CategoryTypeId.HasValue)
-            {
-                baseUrl += searchCriteria.Query.CategoryTypeId + UrlConstants.EBAYINDEX;
-            }
-
-            baseUrl += UrlConstants.EBAYSEARCHQUERY;
-
-            if (!string.IsNullOrWhiteSpace(searchCriteria.Query.SearchTerm))
-            {
-                baseUrl += searchCriteria.Query.SearchTerm;
-            }
-
-            if (searchCriteria.Query.CategoryTypeId.HasValue)
-            {
-                baseUrl += UrlConstants.EBAYCATEGORY + searchCriteria.Query.CategoryTypeId;
-            }
-
-            if (searchCriteria.Query.SoldItemsOnly)
-            {
-                baseUrl += UrlConstants.EBAYSOLDITEMS;
-            }
-
-            if (searchCriteria.Query.PageNumber > 0)
-            {
-                baseUrl += UrlConstants.EBAYPAGENUM + searchCriteria.Query.PageNumber;
-            }
-
-            if (!string.IsNullOrWhiteSpace(searchCriteria.Query.ZipCode))
-            {
-                baseUrl += UrlConstants.EBAYZIPCODE + searchCriteria.Query.ZipCode;
-            }
-
-            if (searchCriteria.Query.Distance.HasValue)
-            {
-                baseUrl += UrlConstants.EBAYDISTANCE + searchCriteria.Query.Distance;
-            }
-
-            if (searchCriteria.Query.LocationTypeId.HasValue)
-            {
-                baseUrl += UrlConstants.EBAYLOCATION + searchCriteria.Query.LocationTypeId;
-            }
-
-            baseUrl += UrlConstants.EBAYRESULTSPERPAGE + MAXRESULTSPERPAGE;
-
-            return baseUrl;
-        }
-
-        /// <inheritdoc/>
-        public async Task<List<ItemDto>> GetItemsAsync(
-            long? searchQueryId,
-            SearchCriteriaModel searchCriteria,
-            List<HtmlNode> nodes,
-            List<ItemDto> items)
-        {
-            var filtered = FilterNewNodes(nodes, items);
-            if (filtered.Count == 0)
-            {
-                return items;
-            }
-
-            var newItems = ParseItems(filtered, searchCriteria);
-            items.AddRange(newItems);
-            await this.InsertSearchResultItemsAsync(searchQueryId, newItems);
-
-            return items;
         }
     }
 }
