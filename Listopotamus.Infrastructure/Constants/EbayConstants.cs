@@ -2,7 +2,7 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-namespace Listopotamus.ApplicationCore.Constants
+namespace Listopotamus.Infrastructure.Constants
 {
     /// <summary>
     /// Provides a centralized location for constants related to eBay.

@@ -2,7 +2,7 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-namespace Listopotamus.ApplicationCore.Constants
+namespace Listopotamus.Infrastructure.Constants
 {
     /// <summary>
     /// Represents the URL constants.
