@@ -6,7 +6,6 @@ using System.Text.RegularExpressions;
 using System.Transactions;
 using AutoMapper;
 using HtmlAgilityPack;
-using Listopotamus.ApplicationCore.Constants;
 using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Extensions;
