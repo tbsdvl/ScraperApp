@@ -53,24 +53,35 @@ namespace Listopotamus.ApplicationCore.Services
         private ITaskQueueService TaskQueueService { get; } = taskQueueService;
 
         /// <summary>
+        /// Gets an existing search query.
+        /// </summary>
+        /// <param name="searchCriteria">The search query criteria.</param>
+        /// <returns>The existing search query.</returns>
+        public async Task<List<SearchQuery>> GetExistingAsync(SearchCriteriaModel searchCriteria)
+        {
+            return await this.SearchQueryRepository.GetAsync(
+                x => x.CategoryTypeId == searchCriteria.Query.CategoryTypeId &&
+                x.MarketplaceTypeId == searchCriteria.Query.MarketplaceTypeId &&
+                x.PageNumber == searchCriteria.Query.PageNumber &&
+                x.MaxPageNumber == searchCriteria.Query.MaxPageNumber &&
+                x.ShowSoldOnly == searchCriteria.Query.SoldItemsOnly &&
+                x.SearchTerm.Equals(searchCriteria.Query.SearchTerm, StringComparison.OrdinalIgnoreCase));
+        }
+
+        /// <summary>
         /// Creates a search query.
         /// </summary>
         /// <param name="searchCriteria">The search criteria.</param>
         /// <returns>The search query.</returns>
         public async Task CreateAsync(SearchCriteriaModel searchCriteria)
         {
-            var existingSearchQueries = await this.SearchQueryRepository.GetAsync(
-                x => x.CategoryTypeId == searchCriteria.Query.CategoryTypeId &&
-                x.MarketplaceTypeId == searchCriteria.Query.MarketplaceTypeId &&
-                x.PageNumber == searchCriteria.Query.PageNumber &&
-                x.MaxPageNumber == searchCriteria.Query.MaxPageNumber &&
-                x.ShowSoldOnly == searchCriteria.Query.SoldItemsOnly &&
-                x.SearchTerm.ToLower() == searchCriteria.Query.SearchTerm.ToLower());
+            var existingSearchQueries = await this.GetExistingAsync(searchCriteria);
+            var existingSearchQuery = existingSearchQueries.FirstOrDefault();
 
-            SearchQuery searchQuery = new ();
-            if (existingSearchQueries.FirstOrDefault() is not null)
+            var searchQuery = new SearchQuery();
+            if (existingSearchQuery is not null)
             {
-                searchQuery = existingSearchQueries.FirstOrDefault();
+                searchQuery = existingSearchQuery;
             }
             else
             {
@@ -94,13 +105,20 @@ namespace Listopotamus.ApplicationCore.Services
                     SearchQueryId = searchQuery.Id,
                     UserId = this.Accessor.HttpContext.User.GetUserId(),
                     ExternalId = Guid.NewGuid(),
-                    SearchDate = DateTime.Now,
+                    SearchDate = DateTime.UtcNow,
                 };
                 await this.UserSearchRepository.InsertAsync(userSearch);
             }
 
-            ScrapeJob scrapeJob = new ();
-            if (searchQuery is null)
+            var existingJobs = await this.ScrapeJobRepository.GetAsync(x => x.SearchQueryId == searchQuery.Id);
+            var existingScrapeJob = existingJobs.FirstOrDefault();
+
+            var scrapeJob = new ScrapeJob();
+            if (existingScrapeJob is not null)
+            {
+                scrapeJob = existingScrapeJob;
+            }
+            else
             {
                 scrapeJob = new ScrapeJob()
                 {
@@ -110,15 +128,10 @@ namespace Listopotamus.ApplicationCore.Services
                 };
                 scrapeJob = await this.ScrapeJobRepository.InsertAsync(scrapeJob);
             }
-            else
-            {
-                var existingJobs = await this.ScrapeJobRepository.GetAsync(x => x.SearchQueryId == searchQuery.Id);
-                scrapeJob = existingJobs.FirstOrDefault();
-            }
 
             if (!scrapeJob.Id.HasValue)
             {
-                return;
+                return; // return an error
             }
 
             await this.TaskQueueService.QueueAsync(scrapeJob.Id.Value);

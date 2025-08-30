@@ -3,6 +3,7 @@
 // </copyright>
 
 using Listopotamus.ApplicationCore.DTOs;
+using Listopotamus.Core.Entities.Search;
 
 namespace Listopotamus.ApplicationCore.Interfaces
 {
@@ -17,5 +18,12 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// <param name="searchCriteria">The search criteria.</param>
         /// <returns>The search query.</returns>
         Task CreateAsync(SearchCriteriaModel searchCriteria);
+
+        /// <summary>
+        /// Gets an existing search query.
+        /// </summary>
+        /// <param name="searchCriteria">The search query criteria.</param>
+        /// <returns>The existing search query.</returns>
+        Task<List<SearchQuery>> GetExistingAsync(SearchCriteriaModel searchCriteria);
     }
 }

@@ -10,7 +10,6 @@ using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Core.Entities.Search;
 using Listopotamus.Resource;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -24,13 +23,12 @@ namespace Listopotamus.ApplicationCore.Services
     /// </remarks>
     /// <param name="serviceScopeFactory">The service scope factory.</param>
     /// <param name="mapper">The mapper.</param>
-    /// <param name="httpContext">The http context.</param>
-    /// <param name="searchQueryRepository">The search query repository.</param>
+    /// <param name="searchQueryService">The search query service.</param>
     /// <param name="searchResultItemRepository">The search result item repository.</param>
     public class ScraperService(
         IServiceScopeFactory serviceScopeFactory,
         IMapper mapper,
-        ISearchQueryRepository searchQueryRepository,
+        ISearchQueryService searchQueryService,
         ISearchResultItemRepository searchResultItemRepository) : IBaseScraperService
     {
         /// <summary>
@@ -44,9 +42,9 @@ namespace Listopotamus.ApplicationCore.Services
         private IMapper Mapper { get; } = mapper;
 
         /// <summary>
-        /// Gets the search query repository.
+        /// Gets the search query service.
         /// </summary>
-        private ISearchQueryRepository SearchQueryRepository { get; } = searchQueryRepository;
+        private ISearchQueryService SearchQueryService { get; } = searchQueryService;
 
         /// <summary>
         /// Gets the search result item repository.
@@ -116,7 +114,6 @@ namespace Listopotamus.ApplicationCore.Services
                 }
 
                 var firstNode = nodes.FirstOrDefault();
-
                 if (string.IsNullOrWhiteSpace(firstNode?.Id))
                 {
                     break;
@@ -128,7 +125,6 @@ namespace Listopotamus.ApplicationCore.Services
                 }
 
                 previousItemId = firstNode.Id;
-
                 itemNodes.AddRange(nodes);
             }
 
@@ -143,18 +139,13 @@ namespace Listopotamus.ApplicationCore.Services
         /// <returns>The search query.</returns>
         private async Task<SearchQuery> GetSearchQueryAsync(SearchCriteriaModel searchCriteria, List<ItemDto> items)
         {
-            var existingSearchQueryResults = await this.SearchQueryRepository.GetAsync(
-                x => x.CategoryTypeId == searchCriteria.Query.CategoryTypeId &&
-                x.MarketplaceTypeId == searchCriteria.Query.MarketplaceTypeId &&
-                x.PageNumber == searchCriteria.Query.PageNumber &&
-                x.MaxPageNumber == searchCriteria.Query.MaxPageNumber &&
-                x.ShowSoldOnly == searchCriteria.Query.SoldItemsOnly &&
-                x.SearchTerm.ToLower() == searchCriteria.Query.SearchTerm.ToLower());
+            var getExistingSearchQueryResult = await this.SearchQueryService.GetExistingAsync(searchCriteria);
+            var existingSearchQuery = getExistingSearchQueryResult.FirstOrDefault();
 
-            SearchQuery searchQuery = new ();
-            if (existingSearchQueryResults.FirstOrDefault() is not null)
+            var searchQuery = new SearchQuery();
+            if (existingSearchQuery is not null)
             {
-                searchQuery = existingSearchQueryResults.First();
+                searchQuery = getExistingSearchQueryResult.First();
                 var existingSearchResultItems = await this.SearchResultItemRepository.GetAsync(
                     x => x.SearchQueryId == searchQuery.Id,
                     include: q => q.Include(x => x.Item));
@@ -162,7 +153,8 @@ namespace Listopotamus.ApplicationCore.Services
                 if (existingSearchResultItems is not null && existingSearchResultItems.Count > 0)
                 {
                     var existingItems = existingSearchResultItems.Select(x => x.Item).ToList();
-                    items.AddRange(this.Mapper.Map<List<ItemDto>>(existingItems));
+                    var itemDtos = this.Mapper.Map<List<ItemDto>>(existingItems);
+                    items.AddRange(itemDtos);
                 }
             }
 
@@ -205,7 +197,6 @@ namespace Listopotamus.ApplicationCore.Services
             using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
 
             var searchQuery = await this.GetSearchQueryAsync(searchCriteria, items);
-
             var nodes = await this.GetItemNodesAsync(searchCriteria, service);
             if (nodes is null || nodes.Count == 0)
             {

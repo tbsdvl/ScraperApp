@@ -63,14 +63,12 @@ namespace Listopotamus.ApplicationCore.Services
                 return string.Empty;
             }
 
-            // Match everything up to the first occurrence of a percentage (rating) with optional decimal, followed by "positive"
             var match = Regex.Match(sellerInfoText, @"^(.*?)\s+\d+(\.\d+)?% positive", RegexOptions.IgnoreCase);
             if (match.Success)
             {
                 return match.Groups[1].Value.Trim();
             }
 
-            // Fallback: take everything before the first parenthesis or just the first word
             var fallback = sellerInfoText.Split('(')[0].Trim();
             return fallback;
         }
@@ -164,6 +162,204 @@ namespace Listopotamus.ApplicationCore.Services
             return match.Success ? int.Parse(match.Groups[1].Value) : 0;
         }
 
+        /// <summary>
+        /// Filters out nodes that already exist in the items list based on their IDs.
+        /// </summary>
+        /// <param name="nodes">The list of nodes.</param>
+        /// <param name="items">The list of items.</param>
+        /// <returns>The list of filtered nodes.</returns>
+        private static List<HtmlNode> FilterNewNodes(List<HtmlNode> nodes, List<ItemDto> items)
+        {
+            if (items.Count == 0)
+            {
+                return nodes;
+            }
+
+            return nodes
+                .Where(x => !string.IsNullOrWhiteSpace(x.Id) && !items.Any(i => i.ElementId.Equals(x.Id, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+        }
+
+        /// <summary>
+        /// Parses the item nodes into a list of ItemDtos.
+        /// </summary>
+        /// <param name="nodes">The list of notes.</param>
+        /// <param name="criteria">The search criteria.</param>
+        /// <returns>The list of ItemDtos.</returns>
+        private static List<ItemDto> ParseItems(IEnumerable<HtmlNode> nodes, SearchCriteriaModel criteria)
+        {
+            var list = new List<ItemDto>();
+            foreach (var node in nodes)
+            {
+                if (string.IsNullOrWhiteSpace(node.Id))
+                {
+                    continue;
+                }
+
+                var name = node.SelectSingleNode(NodePathConstants.Ebay.ItemName);
+                var price = node.SelectSingleNode(NodePathConstants.Ebay.ItemPrice);
+                if (name is null || price is null)
+                {
+                    continue;
+                }
+
+                var dto = GetItemDto(node, name, price, criteria);
+                if (dto is not null)
+                {
+                    list.Add(dto);
+                }
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Gets an item dto from the node.
+        /// </summary>
+        /// <param name="node">The node.</param>
+        /// <param name="nameNode">The node for the item name.</param>
+        /// <param name="priceNode">The node for the item price.</param>
+        /// <param name="criteria">The search criteria.</param>
+        /// <returns>The item dto.</returns>
+        private static ItemDto GetItemDto(HtmlNode node, HtmlNode nameNode, HtmlNode priceNode, SearchCriteriaModel criteria)
+        {
+            var priceText = priceNode.InnerText.Trim();
+            var priceRange = priceText.Contains("to", StringComparison.OrdinalIgnoreCase)
+                ? priceText.ToPriceRange()
+                : new List<decimal>();
+
+            var conditionNode = node.SelectSingleNode(NodePathConstants.Ebay.Condition);
+            var buyingFormatNode = node.SelectSingleNode(NodePathConstants.Ebay.BuyingFormat);
+            var totalWatchersNode = node.SelectSingleNode(NodePathConstants.Ebay.TotalWatchers);
+            var offerNode = node.SelectSingleNode(NodePathConstants.Ebay.HasOffer);
+            var sellerInfoNode = node.SelectSingleNode(NodePathConstants.Ebay.SellerInfo);
+            var locationNode = node.SelectSingleNode(NodePathConstants.Ebay.Location);
+
+            return new ItemDto
+            {
+                ExternalId = Guid.NewGuid(),
+                ElementId = node.Id,
+                MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay,
+                CategoryTypeId = criteria.Query.CategoryTypeId ?? (int)CategoryTypeEnum.AllCategories,
+                LocationTypeId = criteria.Query.LocationTypeId,
+                Name = nameNode.InnerText.Replace(EbayConstants.NewListingText.ToUpper(), string.Empty).Trim(),
+                HasUpperCaseName = nameNode.InnerText.All(char.IsUpper),
+                MinPrice = priceRange.Count > 0 ? priceRange.First() : priceText.ToDecimalPrice(),
+                MaxPrice = priceRange.LastOrDefault(),
+                SaleDate = GetSoldDate(node.InnerText),
+                Condition = conditionNode?.InnerText.Trim() ?? string.Empty,
+                TotalBids = GetNumberOfBids(node.InnerText),
+                BuyingFormat = (int)GetBuyingFormat(node.InnerText),
+                HasFreeDelivery = node.InnerText.Contains(EbayConstants.FreeDeliveryText, StringComparison.OrdinalIgnoreCase),
+                TotalWatchers = totalWatchersNode is not null ? ParseWatchers(totalWatchersNode.InnerText) : 0,
+                HasOffer = offerNode is not null,
+                SellerName = sellerInfoNode is not null ? GetSellerName(sellerInfoNode.InnerText) : string.Empty,
+                TotalSellerReviews = sellerInfoNode is not null ? GetTotalSellerReviews(sellerInfoNode.InnerText) : null,
+                SellerRating = sellerInfoNode is not null ? GetSellerRating(sellerInfoNode.InnerText) : null,
+                QuantitySold = ParseQuantitySold(node.InnerText),
+                Location = locationNode is not null ? ParseLocation(locationNode.InnerText) : string.Empty,
+            };
+        }
+
+        /// <summary>
+        /// Parses the number of watchers from the inner text of a total watchers node.
+        /// </summary>
+        /// <param name="innerText">The inner text.</param>
+        /// <returns>The number of an item's total watchers.</returns>
+        private static int ParseWatchers(string innerText)
+        {
+            if (string.IsNullOrWhiteSpace(innerText))
+            {
+                return 0;
+            }
+
+            var first = innerText.Trim().Split(' ')[0];
+            return int.TryParse(first, out var n) ? n : 0;
+        }
+
+        /// <summary>
+        /// Parses the location from the inner text of a location node.
+        /// </summary>
+        /// <param name="innerText">The inner text.</param>
+        /// <returns>The item's location.</returns>
+        private static string ParseLocation(string innerText)
+        {
+            if (string.IsNullOrWhiteSpace(innerText))
+            {
+                return string.Empty;
+            }
+
+            return innerText
+                .Replace("from ", string.Empty)
+                .Replace("Located in", string.Empty)
+                .Trim();
+        }
+
+        /// <summary>
+        /// Parses the quantity sold from the specified text.
+        /// </summary>
+        /// <param name="innerText">The inner text.</param>
+        /// <returns>The number for the quantity of sold items.</returns>
+        private static int ParseQuantitySold(string innerText)
+        {
+            var m = Regex.Match(innerText, @"(\d{1,3}(?:,\d{3})*)\s*sold", RegexOptions.IgnoreCase);
+            if (!m.Success)
+            {
+                return 0;
+            }
+
+            var s = m.Groups[1].Value.Replace(",", string.Empty);
+            return int.TryParse(s, out var n) ? n : 0;
+        }
+
+        /// <summary>
+        /// Creates a list of search result items.
+        /// </summary>
+        /// <param name="searchQueryId">The search query id.</param>
+        /// <param name="savedItems">The list of saved items.</param>
+        /// <returns>The list of search result items.</returns>
+        private static List<SearchResultItem> CreateSearchResultItems(long? searchQueryId, List<Item> savedItems)
+        {
+            var list = new List<SearchResultItem>();
+            foreach (var item in savedItems)
+            {
+                var searchResultItem = new SearchResultItem
+                {
+                    SearchQueryId = searchQueryId,
+                    ItemId = item.Id,
+                    ExternalId = Guid.NewGuid(),
+                };
+                list.Add(searchResultItem);
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Saves a list of search results and their associated items.
+        /// </summary>
+        /// <param name="searchQueryId">The seach query id.</param>
+        /// <param name="newItems">The list of new items.</param>
+        /// <returns>A <see cref="Task"/> representing the insertion of the search result items.</returns>
+        private async Task InsertSearchResultItemsAsync(long? searchQueryId, List<ItemDto> newItems)
+        {
+            if (newItems.Count == 0)
+            {
+                return;
+            }
+
+            var itemEntities = this.Mapper.Map<List<Item>>(newItems);
+
+            var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted };
+            using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
+
+            var savedItems = await this.ItemRepository.InsertAsync(itemEntities);
+            var searchResultItems = CreateSearchResultItems(searchQueryId, savedItems);
+            await this.SearchResultItemRepository.InsertAsync(searchResultItems);
+
+            scope.Complete();
+        }
+
         /// <inheritdoc />
         public string GetUrl(SearchCriteriaModel searchCriteria)
         {
@@ -217,114 +413,21 @@ namespace Listopotamus.ApplicationCore.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<ItemDto>> GetItemsAsync(long? searchQueryId, SearchCriteriaModel searchCriteria, List<HtmlNode> nodes, List<ItemDto> items)
+        public async Task<List<ItemDto>> GetItemsAsync(
+            long? searchQueryId,
+            SearchCriteriaModel searchCriteria,
+            List<HtmlNode> nodes,
+            List<ItemDto> items)
         {
-            if (items.Count > 0)
-            {
-                nodes = nodes.Where(x => !string.IsNullOrWhiteSpace(x.Id) && !items.Any(i => i.ElementId == x.Id)).ToList();
-            }
-
-            if (nodes.Count == 0)
+            var filtered = FilterNewNodes(nodes, items);
+            if (filtered.Count == 0)
             {
                 return items;
             }
 
-            var newItems = new List<ItemDto>();
-            foreach (var node in nodes)
-            {
-                var id = node.Id;
-                if (string.IsNullOrWhiteSpace(id))
-                {
-                    continue;
-                }
-
-                var name = node.SelectSingleNode(NodePathConstants.Ebay.ItemName);
-                var price = node.SelectSingleNode(NodePathConstants.Ebay.ItemPrice);
-
-                if (name is null || price is null)
-                {
-                    continue;
-                }
-
-                var priceText = price.InnerText.Trim();
-                var priceRange = new List<decimal>();
-                if (priceText.Contains("to", StringComparison.OrdinalIgnoreCase))
-                {
-                    priceRange = priceText.ToPriceRange();
-                }
-
-                var saleDate = GetSoldDate(node.InnerText);
-                var condition = node.SelectSingleNode(NodePathConstants.Ebay.Condition);
-                var buyingFormat = node.SelectSingleNode(NodePathConstants.Ebay.BuyingFormat);
-                var totalWatchers = node.SelectSingleNode(NodePathConstants.Ebay.TotalWatchers);
-                var offer = node.SelectSingleNode(NodePathConstants.Ebay.HasOffer);
-                var sellerInfo = node.SelectSingleNode(NodePathConstants.Ebay.SellerInfo);
-                var location = node.SelectSingleNode(NodePathConstants.Ebay.Location);
-
-                var quantitySoldMatch = Regex.Match(node.InnerText, @"(\d{1,3}(?:,\d{3})*)\s*sold");
-                var quantitySold = 0;
-                if (quantitySoldMatch.Success)
-                {
-                    var soldText = quantitySoldMatch.Groups[1].Value;
-                    quantitySold = int.Parse(soldText.Replace(",", string.Empty));
-                }
-
-                var item = new ItemDto()
-                {
-                    ExternalId = Guid.NewGuid(),
-                    ElementId = id,
-                    MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay,
-                    CategoryTypeId = searchCriteria.Query.CategoryTypeId ?? (int)CategoryTypeEnum.AllCategories,
-                    LocationTypeId = searchCriteria.Query.LocationTypeId,
-                    Name = name.InnerText.Replace(EbayConstants.NewListingText.ToUpper(), string.Empty).Trim(),
-                    HasUpperCaseName = name.InnerText.All(c => char.IsUpper(c)),
-                    MinPrice = priceRange.Count > 0 ? priceRange.First() : priceText.ToDecimalPrice(),
-                    MaxPrice = priceRange.LastOrDefault(),
-                    SaleDate = saleDate,
-                    Condition = condition is not null ? condition.InnerText.Trim() : string.Empty,
-                    TotalBids = GetNumberOfBids(node.InnerText),
-                    BuyingFormat = (int)GetBuyingFormat(node.InnerText),
-                    HasFreeDelivery = node.InnerText.Contains(EbayConstants.FreeDeliveryText, StringComparison.OrdinalIgnoreCase),
-                    TotalWatchers = totalWatchers is not null ? int.Parse(totalWatchers.InnerText.Trim().Split(' ')[0]) : 0,
-                    HasOffer = offer is not null,
-                    SellerName = sellerInfo is not null ? GetSellerName(sellerInfo.InnerText) : string.Empty,
-                    TotalSellerReviews = sellerInfo is not null ? GetTotalSellerReviews(sellerInfo.InnerText) : null,
-                    SellerRating = sellerInfo is not null ? GetSellerRating(sellerInfo.InnerText) : null,
-                    QuantitySold = quantitySold,
-                    Location = location is not null ? location.InnerText.Replace("from ", string.Empty).Replace("Located in", string.Empty).Trim() : string.Empty,
-                };
-
-                newItems.Add(item);
-                items.Add(item);
-            }
-
-            var itemEntities = this.Mapper.Map<List<Item>>(newItems);
-
-            // use transaction scope because we have to relate the user search to the search result items.
-            var options = new TransactionOptions()
-            {
-                IsolationLevel = IsolationLevel.ReadUncommitted,
-            };
-
-            using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
-
-            var savedItems = await this.ItemRepository.InsertAsync(itemEntities);
-
-            var searchResultItems = new List<SearchResultItem>();
-            foreach (var savedItem in savedItems)
-            {
-                var searchResultItem = new SearchResultItem
-                {
-                    SearchQueryId = searchQueryId,
-                    ItemId = savedItem.Id,
-                    ExternalId = Guid.NewGuid(),
-                };
-                searchResultItems.Add(searchResultItem);
-            }
-
-            await this.SearchResultItemRepository.InsertAsync(searchResultItems);
-
-            scope.Complete();
+            var newItems = ParseItems(filtered, searchCriteria);
+            items.AddRange(newItems);
+            await this.InsertSearchResultItemsAsync(searchQueryId, newItems);
 
             return items;
         }
