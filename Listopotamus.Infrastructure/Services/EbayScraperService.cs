@@ -3,7 +3,6 @@
 // </copyright>
 
 using System.Text.RegularExpressions;
-using AutoMapper;
 using HtmlAgilityPack;
 using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Enums;
