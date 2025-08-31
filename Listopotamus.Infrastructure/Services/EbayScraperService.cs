@@ -3,15 +3,12 @@
 // </copyright>
 
 using System.Text.RegularExpressions;
-using System.Transactions;
 using AutoMapper;
 using HtmlAgilityPack;
 using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Extensions;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.Core.Entities.Items;
-using Listopotamus.Core.Entities.Search;
 using Listopotamus.Infrastructure.Constants;
 using Microsoft.AspNetCore.Http;
 
@@ -24,9 +21,9 @@ namespace Listopotamus.Infrastructure.Services
     /// Initializes a new instance of the <see cref="EbayScraperService"/> class.
     /// </remarks>
     /// <param name="mapper">The mapper.</param>
-    /// <param name="itemRepository">The item repository.</param>
-    /// <param name="searchResultItemRepository">The search result item repository.</param>
-    public class EbayScraperService(IMapper mapper, IItemRepository itemRepository, ISearchResultItemRepository searchResultItemRepository, IHttpContextAccessor httpContext) : IEbayScraperService
+    /// <param name="itemService">The item service.</param>
+    /// <param name="httpContextAccessor">The http context accessor.</param>
+    public class EbayScraperService(IMapper mapper, IItemService itemService, IHttpContextAccessor httpContextAccessor) : IEbayScraperService
     {
         /// <summary>
         /// The Maximum number of results per page.
@@ -37,19 +34,9 @@ namespace Listopotamus.Infrastructure.Services
         public string ItemsListNodePath => NodePathConstants.Ebay.ItemsList;
 
         /// <summary>
-        /// Gets the mapper.
+        /// Gets the item service.
         /// </summary>
-        private IMapper Mapper { get; } = mapper;
-
-        /// <summary>
-        /// Gets the item repository.
-        /// </summary>
-        private IItemRepository ItemRepository { get; } = itemRepository;
-
-        /// <summary>
-        /// Gets the search result item repository.
-        /// </summary>
-        private ISearchResultItemRepository SearchResultItemRepository { get; } = searchResultItemRepository;
+        private IItemService ItemService { get; } = itemService;
 
         /// <inheritdoc />
         public string GetUrl(SearchCriteriaModel searchCriteria)
@@ -110,15 +97,15 @@ namespace Listopotamus.Infrastructure.Services
             List<HtmlNode> nodes,
             List<ItemDto> items)
         {
-            var filtered = FilterNewNodes(nodes, items);
-            if (filtered.Count == 0)
+            var filteredNodes = FilterNewNodes(nodes, items);
+            if (filteredNodes.Count == 0)
             {
                 return items;
             }
 
-            var newItems = ParseItems(filtered, searchCriteria);
+            var newItems = ParseItems(filteredNodes, searchCriteria);
             items.AddRange(newItems);
-            await InsertSearchResultItemsAsync(searchQueryId, newItems);
+            await this.ItemService.CreateAsync(searchQueryId, newItems);
 
             return items;
         }
@@ -260,7 +247,7 @@ namespace Listopotamus.Infrastructure.Services
         /// <returns>The list of ItemDtos.</returns>
         private static List<ItemDto> ParseItems(IEnumerable<HtmlNode> nodes, SearchCriteriaModel criteria)
         {
-            var list = new List<ItemDto>();
+            var items = new List<ItemDto>();
             foreach (var node in nodes)
             {
                 if (string.IsNullOrWhiteSpace(node.Id))
@@ -278,11 +265,11 @@ namespace Listopotamus.Infrastructure.Services
                 var dto = GetItemDto(node, name, price, criteria);
                 if (dto is not null)
                 {
-                    list.Add(dto);
+                    items.Add(dto);
                 }
             }
 
-            return list;
+            return items;
         }
 
         /// <summary>
@@ -382,54 +369,6 @@ namespace Listopotamus.Infrastructure.Services
 
             var s = m.Groups[1].Value.Replace(",", string.Empty);
             return int.TryParse(s, out var n) ? n : 0;
-        }
-
-        /// <summary>
-        /// Creates a list of search result items.
-        /// </summary>
-        /// <param name="searchQueryId">The search query id.</param>
-        /// <param name="savedItems">The list of saved items.</param>
-        /// <returns>The list of search result items.</returns>
-        private static List<SearchResultItem> CreateSearchResultItems(long? searchQueryId, List<Item> savedItems)
-        {
-            var list = new List<SearchResultItem>();
-            foreach (var item in savedItems)
-            {
-                var searchResultItem = new SearchResultItem
-                {
-                    SearchQueryId = searchQueryId,
-                    ItemId = item.Id,
-                    ExternalId = Guid.NewGuid(),
-                };
-                list.Add(searchResultItem);
-            }
-
-            return list;
-        }
-
-        /// <summary>
-        /// Saves a list of search results and their associated items.
-        /// </summary>
-        /// <param name="searchQueryId">The seach query id.</param>
-        /// <param name="newItems">The list of new items.</param>
-        /// <returns>A <see cref="Task"/> representing the insertion of the search result items.</returns>
-        private async Task InsertSearchResultItemsAsync(long? searchQueryId, List<ItemDto> newItems)
-        {
-            if (newItems.Count == 0)
-            {
-                return;
-            }
-
-            var itemEntities = Mapper.Map<List<Item>>(newItems);
-
-            var options = new TransactionOptions { IsolationLevel = IsolationLevel.ReadUncommitted };
-            using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
-
-            var savedItems = await ItemRepository.InsertAsync(itemEntities);
-            var searchResultItems = CreateSearchResultItems(searchQueryId, savedItems);
-            await SearchResultItemRepository.InsertAsync(searchResultItems);
-
-            scope.Complete();
         }
     }
 }
