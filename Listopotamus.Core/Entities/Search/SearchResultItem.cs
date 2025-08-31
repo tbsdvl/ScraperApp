@@ -3,7 +3,6 @@
 // </copyright>
 
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Listopotamus.Core.Entities.Items;
 
 namespace Listopotamus.Core.Entities.Search
@@ -16,14 +15,12 @@ namespace Listopotamus.Core.Entities.Search
         /// <summary>
         /// Gets or sets the search query id.
         /// </summary>
-        [ForeignKey(nameof(SearchQuery))]
         [Required]
         public long? SearchQueryId { get; set; }
 
         /// <summary>
         /// Gets or sets the item id.
         /// </summary>
-        [ForeignKey(nameof(Item))]
         [Required]
         public long? ItemId { get; set; }
 

@@ -3,7 +3,6 @@
 // </copyright>
 
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Listopotamus.Core.Entities.Lookups;
 
 namespace Listopotamus.Core.Entities.Search
@@ -16,7 +15,6 @@ namespace Listopotamus.Core.Entities.Search
         /// <summary>
         /// Gets or sets the marketplace type id.
         /// </summary>
-        [ForeignKey(nameof(MarketplaceType))]
         [Required]
         public int? MarketplaceTypeId { get; set; }
 
@@ -24,7 +22,6 @@ namespace Listopotamus.Core.Entities.Search
         /// Gets or sets the category type id.
         /// </summary>
         [Required]
-        [ForeignKey(nameof(CategoryType))]
         public int? CategoryTypeId { get; set; }
 
         /// <summary>

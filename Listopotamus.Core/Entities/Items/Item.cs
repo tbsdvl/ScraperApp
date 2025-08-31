@@ -3,7 +3,6 @@
 // </copyright>
 
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Listopotamus.Core.Entities.Lookups;
 using Listopotamus.Core.Entities.Search;
 
@@ -17,43 +16,43 @@ namespace Listopotamus.Core.Entities.Items
         /// <summary>
         /// Gets or sets the category type id.
         /// </summary>
-        [ForeignKey(nameof(CategoryType))]
         [Required]
         public int? CategoryTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the marketplace type id.
         /// </summary>
-        [ForeignKey(nameof(MarketplaceType))]
         [Required]
         public int? MarketplaceTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the location type id.
         /// </summary>
-        [ForeignKey(nameof(LocationType))]
-        [Required]
         public int? LocationTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the element id.
         /// </summary>
-        required public string ElementId { get; set; }
+        [Required]
+        public string ElementId { get; set; }
 
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        required public string Name { get; set; }
+        [Required]
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the item name contains all uppercase letters.
         /// </summary>
-        required public bool HasUpperCaseName { get; set; }
+        [Required]
+        public bool HasUpperCaseName { get; set; }
 
         /// <summary>
         /// Gets or sets the min price.
         /// </summary>
-        required public decimal MinPrice { get; set; }
+        [Required]
+        public decimal MinPrice { get; set; }
 
         /// <summary>
         /// Gets or sets the max price.
