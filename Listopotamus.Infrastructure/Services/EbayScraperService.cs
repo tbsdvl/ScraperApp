@@ -20,10 +20,9 @@ namespace Listopotamus.Infrastructure.Services
     /// <remarks>
     /// Initializes a new instance of the <see cref="EbayScraperService"/> class.
     /// </remarks>
-    /// <param name="mapper">The mapper.</param>
     /// <param name="itemService">The item service.</param>
     /// <param name="httpContextAccessor">The http context accessor.</param>
-    public class EbayScraperService(IMapper mapper, IItemService itemService, IHttpContextAccessor httpContextAccessor) : IEbayScraperService
+    public class EbayScraperService(IItemService itemService, IHttpContextAccessor httpContextAccessor) : IEbayScraperService
     {
         /// <summary>
         /// The Maximum number of results per page.
