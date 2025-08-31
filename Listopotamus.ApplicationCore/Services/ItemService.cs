@@ -21,7 +21,7 @@ namespace Listopotamus.ApplicationCore.Services
     /// <param name="itemRepository">The item repository.</param>
     /// <param name="searchResultItemRepository">The search result item repository.</param>
     /// <param name="httpContextAccessor">The http context accessor.</param>
-    public class ItemService(IMapper mapper, IItemRepository itemRepository, ISearchResultItemService searchResultItemService, IHttpContextAccessor httpContext)
+    public class ItemService(IMapper mapper, IItemRepository itemRepository, ISearchResultItemService searchResultItemService, IHttpContextAccessor httpContext) : IItemService
     {
         /// <summary>
         /// Gets the mapper.
@@ -44,7 +44,7 @@ namespace Listopotamus.ApplicationCore.Services
         /// <param name="searchQueryId">The seach query id.</param>
         /// <param name="newItems">The list of new items.</param>
         /// <returns>A <see cref="Task"/> representing the insertion of the search result items.</returns>
-        public async Task CreateAsync(long? searchQueryId, List<ItemDto> newItems)
+        public async Task CreateAsync(long searchQueryId, List<ItemDto> newItems)
         {
             if (newItems.Count == 0)
             {

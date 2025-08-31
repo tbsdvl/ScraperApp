@@ -17,6 +17,6 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// <param name="searchQueryId">The search query id.</param>
         /// <param name="savedItems">The list of saved items.</param>
         /// <returns>The list of search result items.</returns>
-        Task CreateAsync(long? searchQueryId, List<Item> savedItems);
+        Task CreateAsync(long searchQueryId, List<Item> savedItems);
     }
 }

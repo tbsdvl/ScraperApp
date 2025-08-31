@@ -17,6 +17,6 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// <param name="searchQueryId">The seach query id.</param>
         /// <param name="newItems">The list of new items.</param>
         /// <returns>A <see cref="Task"/> representing the insertion of the search result items.</returns>
-        Task CreateAsync(long? searchQueryId, List<ItemDto> newItems);
+        Task CreateAsync(long searchQueryId, List<ItemDto> newItems);
     }
 }

@@ -32,6 +32,6 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// <param name="nodes">The list of HTML nodes.</param>
         /// <param name="items">The list of items.</param>
         /// <returns>A list of items.</returns>
-        Task<List<ItemDto>> GetItemsAsync(long? searchQueryId, SearchCriteriaModel searchCriteriaModel, List<HtmlNode> nodes, List<ItemDto> items);
+        Task<List<ItemDto>> GetItemsAsync(long searchQueryId, SearchCriteriaModel searchCriteriaModel, List<HtmlNode> nodes, List<ItemDto> items);
     }
 }

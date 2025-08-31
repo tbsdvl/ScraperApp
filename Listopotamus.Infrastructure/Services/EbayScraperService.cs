@@ -90,7 +90,7 @@ namespace Listopotamus.Infrastructure.Services
 
         /// <inheritdoc/>
         public async Task<List<ItemDto>> GetItemsAsync(
-            long? searchQueryId,
+            long searchQueryId,
             SearchCriteriaModel searchCriteria,
             List<HtmlNode> nodes,
             List<ItemDto> items)

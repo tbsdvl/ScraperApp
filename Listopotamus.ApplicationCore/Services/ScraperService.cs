@@ -197,6 +197,15 @@ namespace Listopotamus.ApplicationCore.Services
             using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
 
             var searchQuery = await this.GetSearchQueryAsync(searchCriteria, items);
+            if (!searchQuery.Id.HasValue)
+            {
+                return new ScraperResult()
+                {
+                    Items = items,
+                    ErrorMessage = ErrorMessages.InvalidQueryOptionType, // TODO: create new error message
+                }; ;
+            }
+
             var nodes = await this.GetItemNodesAsync(searchCriteria, service);
             if (nodes is null || nodes.Count == 0)
             {
@@ -207,7 +216,7 @@ namespace Listopotamus.ApplicationCore.Services
                 };
             }
 
-            items = await service.GetItemsAsync(searchQuery.Id, searchCriteria, nodes, items);
+            items = await service.GetItemsAsync(searchQuery.Id.Value, searchCriteria, nodes, items);
 
             scope.Complete();
 
