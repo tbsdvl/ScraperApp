@@ -203,7 +203,7 @@ namespace Listopotamus.ApplicationCore.Services
                 {
                     Items = items,
                     ErrorMessage = ErrorMessages.InvalidQueryOptionType, // TODO: create new error message
-                }; ;
+                };
             }
 
             var nodes = await this.GetItemNodesAsync(searchCriteria, service);
