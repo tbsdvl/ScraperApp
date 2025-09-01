@@ -3,11 +3,10 @@
 // </copyright>
 
 using Listopotamus.ApplicationCore.DTOs;
+using Listopotamus.ApplicationCore.Entities.Jobs;
 using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.Core.Entities.Jobs;
-using Listopotamus.Core.Entities.Search;
 using Listopotamus.Shared.Extensions;
 using Microsoft.AspNetCore.Http;
 
