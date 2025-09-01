@@ -51,9 +51,9 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 {
                     ScrapeJobId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    SearchQueryId = table.Column<long>(type: "bigint", nullable: true),
-                    Status = table.Column<int>(type: "int", nullable: true),
-                    Progress = table.Column<int>(type: "int", nullable: false),
+                    SearchQueryId = table.Column<long>(type: "bigint", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Progress = table.Column<int>(type: "int", nullable: true),
                     ErrorMessage = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -295,7 +295,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CategoryTypeId = table.Column<int>(type: "int", nullable: false),
                     MarketplaceTypeId = table.Column<int>(type: "int", nullable: false),
-                    LocationTypeId = table.Column<int>(type: "int", nullable: false),
+                    LocationTypeId = table.Column<int>(type: "int", nullable: true),
                     ElementId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     HasUpperCaseName = table.Column<bool>(type: "bit", nullable: false),
@@ -333,8 +333,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                         name: "FK_Item_LocationType_LocationTypeId",
                         column: x => x.LocationTypeId,
                         principalTable: "LocationType",
-                        principalColumn: "LocationTypeId",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "LocationTypeId");
                     table.ForeignKey(
                         name: "FK_Item_MarketplaceType_MarketplaceTypeId",
                         column: x => x.MarketplaceTypeId,

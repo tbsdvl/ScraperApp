@@ -22,7 +22,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Items.Item", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Items.Item", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -71,7 +71,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LocationTypeId")
+                    b.Property<int?>("LocationTypeId")
                         .HasColumnType("int");
 
                     b.Property<int>("MarketplaceTypeId")
@@ -131,7 +131,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("Item", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Jobs.ScrapeJob", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Jobs.ScrapeJob", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -153,13 +153,13 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Property<Guid>("ExternalId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Progress")
+                    b.Property<int?>("Progress")
                         .HasColumnType("int");
 
-                    b.Property<long?>("SearchQueryId")
+                    b.Property<long>("SearchQueryId")
                         .HasColumnType("bigint");
 
-                    b.Property<int?>("Status")
+                    b.Property<int>("Status")
                         .HasColumnType("int");
 
                     b.Property<string>("UpdatedBy")
@@ -178,7 +178,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("ScrapeJob", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Lookups.CategoryType", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.CategoryType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -227,7 +227,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("CategoryType", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Lookups.LocationType", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.LocationType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -276,7 +276,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("LocationType", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Lookups.MarketplaceType", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -320,7 +320,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("MarketplaceType", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Search.SearchQuery", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -388,7 +388,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("SearchQuery", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Search.SearchResultItem", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchResultItem", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -433,7 +433,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("SearchResultItem", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Search.UserSearch", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.UserSearch", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -686,21 +686,19 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Items.Item", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Items.Item", b =>
                 {
-                    b.HasOne("Listopotamus.Core.Entities.Lookups.CategoryType", "CategoryType")
+                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.CategoryType", "CategoryType")
                         .WithMany()
                         .HasForeignKey("CategoryTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Listopotamus.Core.Entities.Lookups.LocationType", "LocationType")
+                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.LocationType", "LocationType")
                         .WithMany()
-                        .HasForeignKey("LocationTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("LocationTypeId");
 
-                    b.HasOne("Listopotamus.Core.Entities.Lookups.MarketplaceType", "MarketplaceType")
+                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", "MarketplaceType")
                         .WithMany()
                         .HasForeignKey("MarketplaceTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -713,9 +711,9 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("MarketplaceType");
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Lookups.CategoryType", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.CategoryType", b =>
                 {
-                    b.HasOne("Listopotamus.Core.Entities.Lookups.MarketplaceType", "MarketplaceType")
+                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", "MarketplaceType")
                         .WithMany()
                         .HasForeignKey("MarketplaceTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -724,9 +722,9 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("MarketplaceType");
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Lookups.LocationType", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.LocationType", b =>
                 {
-                    b.HasOne("Listopotamus.Core.Entities.Lookups.MarketplaceType", "MarketplaceType")
+                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", "MarketplaceType")
                         .WithMany()
                         .HasForeignKey("MarketplaceTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -735,15 +733,15 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("MarketplaceType");
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Search.SearchQuery", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", b =>
                 {
-                    b.HasOne("Listopotamus.Core.Entities.Lookups.CategoryType", "CategoryType")
+                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.CategoryType", "CategoryType")
                         .WithMany()
                         .HasForeignKey("CategoryTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Listopotamus.Core.Entities.Lookups.MarketplaceType", "MarketplaceType")
+                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", "MarketplaceType")
                         .WithMany()
                         .HasForeignKey("MarketplaceTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -754,15 +752,15 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("MarketplaceType");
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Search.SearchResultItem", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchResultItem", b =>
                 {
-                    b.HasOne("Listopotamus.Core.Entities.Items.Item", "Item")
+                    b.HasOne("Listopotamus.ApplicationCore.Entities.Items.Item", "Item")
                         .WithMany("SearchResultItems")
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Listopotamus.Core.Entities.Search.SearchQuery", "SearchQuery")
+                    b.HasOne("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", "SearchQuery")
                         .WithMany("SearchResultItems")
                         .HasForeignKey("SearchQueryId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -773,9 +771,9 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.Navigation("SearchQuery");
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Search.UserSearch", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.UserSearch", b =>
                 {
-                    b.HasOne("Listopotamus.Core.Entities.Search.SearchQuery", "SearchQuery")
+                    b.HasOne("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", "SearchQuery")
                         .WithMany("UserSearches")
                         .HasForeignKey("SearchQueryId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -843,12 +841,12 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Items.Item", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Items.Item", b =>
                 {
                     b.Navigation("SearchResultItems");
                 });
 
-            modelBuilder.Entity("Listopotamus.Core.Entities.Search.SearchQuery", b =>
+            modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", b =>
                 {
                     b.Navigation("SearchResultItems");
 

@@ -167,7 +167,7 @@ namespace Listopotamus.ApplicationCore.Services
         /// </summary>
         /// <param name="searchCriteria">The search criteria.</param>
         /// <returns>The scraper response including a list of items.</returns>
-        public async Task<Result<List<ItemDto>> GetItemsAsync(SearchCriteriaModel searchCriteria)
+        public async Task<Result<List<ItemDto>>> GetItemsAsync(SearchCriteriaModel searchCriteria)
         {
             var items = new List<ItemDto>();
             if (!searchCriteria.Query.MarketplaceTypeId.HasValue)
@@ -207,7 +207,7 @@ namespace Listopotamus.ApplicationCore.Services
 
             if (items.Count == 0)
             {
-                return Result<ItemDto>.Failure(ErrorMessages.NoItemsFound);
+                return Result<List<ItemDto>>.Failure(ErrorMessages.NoItemsFound);
             }
 
             return Result<List<ItemDto>>.Success(items);

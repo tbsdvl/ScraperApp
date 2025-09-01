@@ -7,7 +7,6 @@ using Listopotamus.ApplicationCore.Entities.Jobs;
 using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.ApplicationCore.Services;
 using Listopotamus.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -84,8 +83,8 @@ namespace Listopotamus.Infrastructure.Workers
 
                 var result = await scraper.GetItemsAsync(criteria);
 
-                job.Status = result.Succeeded ? (int)JobStatusEnum.Succeeded : (int)JobStatusEnum.Failed;
-                job.ErrorMessage = result.Succeeded ? null : result.ErrorMessage;
+                job.Status = result.IsSuccess ? (int)JobStatusEnum.Succeeded : (int)JobStatusEnum.Failed;
+                job.ErrorMessage = result.IsSuccess ? null : result.ErrorMessage;
                 job.Progress = 100;
 
                 await db.SaveChangesAsync(ct);
