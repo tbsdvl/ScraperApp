@@ -2,8 +2,8 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using System.Transactions;
 using Listopotamus.ApplicationCore.DTOs;
-using Listopotamus.ApplicationCore.Entities.Jobs;
 using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
@@ -18,51 +18,90 @@ namespace Listopotamus.Infrastructure.Workers
     /// <summary>
     /// Represents a scrape worker.
     /// </summary>
-    public sealed class ScrapeWorker : BackgroundService
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ScrapeWorker"/> class.
+    /// </remarks>
+    /// <param name="logger">The logger.</param>
+    /// <param name="queue">The queue.</param>
+    /// <param name="scopeFactory">The scope factory.</param>
+    /// <param name="scrapeJobRepository">The scrape job repository.</param>
+    public sealed class ScrapeWorker(
+        ILogger<ScrapeWorker> logger,
+        ITaskQueueService queue,
+        IServiceScopeFactory scopeFactory,
+        IScrapeJobRepository scrapeJobRepository
+            ) : BackgroundService
     {
-        private readonly ILogger<ScrapeWorker> _logger;
-        private readonly ITaskQueueService _queue;
-        private readonly IServiceScopeFactory _scopeFactory;
+        /// <summary>
+        /// The logger.
+        /// </summary>
+        private readonly ILogger<ScrapeWorker> Logger = logger;
 
-        public ScrapeWorker(ILogger<ScrapeWorker> logger,
-                            ITaskQueueService queue,
-                            IServiceScopeFactory scopeFactory)
-        {
-            _logger = logger;
-            _queue = queue;
-            _scopeFactory = scopeFactory;
-        }
+        /// <summary>
+        /// The task queue service.
+        /// </summary>
+        private readonly ITaskQueueService Queue = queue;
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        /// <summary>
+        /// The scope factory.
+        /// </summary>
+        private readonly IServiceScopeFactory ScopeFactory = scopeFactory;
+
+        /// <summary>
+        /// Gets the scrape job repository.
+        /// </summary>
+        private IScrapeJobRepository ScrapeJobRepository { get; } = scrapeJobRepository;
+
+        /// <summary>
+        /// Executes the scrape worker.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the exection of the worker.</returns>
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            _logger.LogInformation("ScrapeWorker started");
-            while (!stoppingToken.IsCancellationRequested)
+            this.Logger.LogInformation("ScrapeWorker started");
+            while (!cancellationToken.IsCancellationRequested)
             {
-                long jobId = await _queue.DequeueAsync(stoppingToken);
-                _ = ProcessJobAsync(jobId, stoppingToken); // do not block loop
+                long jobId = await this.Queue.DequeueAsync(cancellationToken);
+                _ = this.ProcessJobAsync(jobId, cancellationToken); // do not block loop
             }
         }
 
-        private async Task ProcessJobAsync(long jobId, CancellationToken ct)
+        /// <summary>
+        /// Processes a job.
+        /// </summary>
+        /// <param name="jobId">The job id.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A <see cref="Task"/> representing the processing of a job.</returns>
+        private async Task ProcessJobAsync(long jobId, CancellationToken cancellationToken)
         {
-            using var scope = _scopeFactory.CreateScope();
+            using var scopeFactory = this.ScopeFactory.CreateScope();
 
-            var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var scraper = scope.ServiceProvider.GetRequiredService<IBaseScraperService>();
-            var logger = scope.ServiceProvider.GetRequiredService<ILogger<ScrapeWorker>>();
+            var dbContext = scopeFactory.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var scraper = scopeFactory.ServiceProvider.GetRequiredService<IBaseScraperService>();
+            var logger = scopeFactory.ServiceProvider.GetRequiredService<ILogger<ScrapeWorker>>();
 
-            var job = await db.Set<ScrapeJob>().FindAsync(jobId);
-            if (job is null) return;
+            var job = await this.ScrapeJobRepository.GetByIDAsync(jobId);
+            if (job is null)
+            {
+                return;
+            }
+
+            var options = new TransactionOptions()
+            {
+                IsolationLevel = IsolationLevel.ReadUncommitted,
+            };
+            using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
 
             try
             {
                 job.Status = (int)JobStatusEnum.Running;
                 job.CreatedDate = DateTime.UtcNow;
-                await db.SaveChangesAsync(ct);
+                await this.ScrapeJobRepository.UpdateAsync(job);
 
-                var searchQuery = await db.Set<SearchQuery>()
+                var searchQuery = await dbContext.Set<SearchQuery>()
                     .AsNoTracking()
-                    .FirstAsync(x => x.Id == job.SearchQueryId, ct);
+                    .FirstAsync(x => x.Id == job.SearchQueryId, cancellationToken);
 
                 var criteria = new SearchCriteriaModel
                 {
@@ -77,7 +116,6 @@ namespace Listopotamus.Infrastructure.Workers
                         ZipCode = searchQuery.ZipCode,
                         Distance = searchQuery.Distance,
                         IsMiles = searchQuery.IsMiles,
-                        LocationTypeId = (int)LocationTypeEnum.US,
                     },
                 };
 
@@ -86,17 +124,19 @@ namespace Listopotamus.Infrastructure.Workers
                 job.Status = result.IsSuccess ? (int)JobStatusEnum.Succeeded : (int)JobStatusEnum.Failed;
                 job.ErrorMessage = result.IsSuccess ? null : result.ErrorMessage;
                 job.Progress = 100;
+                await this.ScrapeJobRepository.UpdateAsync(job);
 
-                await db.SaveChangesAsync(ct);
+                await dbContext.SaveChangesAsync(cancellationToken);
             }
             catch (Exception ex)
             {
                 logger.LogError(ex, "Scrape job {JobId} failed", jobId);
                 job.Status = (int)JobStatusEnum.Failed;
                 job.ErrorMessage = ex.Message;
-                await db.SaveChangesAsync(ct);
+                await this.ScrapeJobRepository.UpdateAsync(job);
             }
+
+            scope.Complete();
         }
     }
-
 }
