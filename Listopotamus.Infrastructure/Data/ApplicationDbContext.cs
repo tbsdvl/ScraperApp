@@ -2,12 +2,12 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using Listopotamus.ApplicationCore.Entities;
+using Listopotamus.ApplicationCore.Entities.Items;
+using Listopotamus.ApplicationCore.Entities.Jobs;
+using Listopotamus.ApplicationCore.Entities.Lookups;
+using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.Core.Entities;
-using Listopotamus.Core.Entities.Items;
-using Listopotamus.Core.Entities.Jobs;
-using Listopotamus.Core.Entities.Lookups;
-using Listopotamus.Core.Entities.Search;
 using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

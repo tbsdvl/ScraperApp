@@ -3,11 +3,11 @@
 // </copyright>
 
 using Listopotamus.ApplicationCore.DTOs;
+using Listopotamus.ApplicationCore.Entities.Jobs;
+using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.ApplicationCore.Services;
-using Listopotamus.Core.Entities.Jobs;
-using Listopotamus.Core.Entities.Search;
 using Listopotamus.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;

@@ -3,6 +3,7 @@
 // </copyright>
 
 using Listopotamus.ApplicationCore.DTOs;
+using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Core.Entities.Jobs;

@@ -3,7 +3,7 @@
 // </copyright>
 
 using Listopotamus.ApplicationCore.DTOs;
-using Listopotamus.Core.Entities.Search;
+using Listopotamus.ApplicationCore.Entities.Search;
 
 namespace Listopotamus.ApplicationCore.Interfaces
 {

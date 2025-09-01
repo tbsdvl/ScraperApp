@@ -1,15 +1,15 @@
-﻿// <copyright file="CategoryType.cs" company="Psybersimian LLC">
+﻿// <copyright file="LocationType.cs" company="Psybersimian LLC">
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Listopotamus.Core.Entities.Lookups
+namespace Listopotamus.ApplicationCore.Entities.Lookups
 {
     /// <summary>
-    /// Represents a category type.
+    /// Represents a location type.
     /// </summary>
-    public class CategoryType : BaseLookupEntity
+    public class LocationType : BaseLookupEntity
     {
         /// <summary>
         /// Gets or sets the marketplace type id.

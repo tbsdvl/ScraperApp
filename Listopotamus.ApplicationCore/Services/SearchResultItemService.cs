@@ -2,9 +2,9 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using Listopotamus.ApplicationCore.Entities.Items;
+using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.Core.Entities.Items;
-using Listopotamus.Core.Entities.Search;
 using Microsoft.AspNetCore.Http;
 
 namespace Listopotamus.ApplicationCore.Services

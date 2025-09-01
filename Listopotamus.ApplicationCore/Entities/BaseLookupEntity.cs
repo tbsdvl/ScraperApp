@@ -4,7 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Listopotamus.Core.Entities
+namespace Listopotamus.ApplicationCore.Entities
 {
     /// <summary>
     /// Represents the base lookup entity.

@@ -3,7 +3,7 @@
 // </copyright>
 
 using System.Linq.Expressions;
-using Listopotamus.Core.Entities;
+using Listopotamus.ApplicationCore.Entities;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace Listopotamus.ApplicationCore.Interfaces

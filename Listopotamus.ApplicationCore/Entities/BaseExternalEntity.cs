@@ -4,7 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Listopotamus.Core.Entities
+namespace Listopotamus.ApplicationCore.Entities
 {
     /// <summary>
     /// Represents a base external entity.

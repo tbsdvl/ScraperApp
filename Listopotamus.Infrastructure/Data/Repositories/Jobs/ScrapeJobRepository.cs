@@ -2,8 +2,8 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using Listopotamus.ApplicationCore.Entities.Jobs;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.Core.Entities.Jobs;
 using Listopotamus.Infrastructure.Data.Repositories.Generic;
 
 namespace Listopotamus.Infrastructure.Data.Repositories.Jobs

@@ -4,8 +4,8 @@
 
 using AutoMapper;
 using Listopotamus.ApplicationCore.DTOs;
-using Listopotamus.Core.Entities;
-using Listopotamus.Core.Entities.Items;
+using Listopotamus.ApplicationCore.Entities;
+using Listopotamus.ApplicationCore.Entities.Items;
 
 namespace Listopotamus.ApplicationCore
 {

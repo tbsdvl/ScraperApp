@@ -4,7 +4,7 @@
 
 using System.ComponentModel.DataAnnotations;
 
-namespace Listopotamus.Core.Entities.Jobs
+namespace Listopotamus.ApplicationCore.Entities.Jobs
 {
     /// <summary>
     /// Represents a scrape job.

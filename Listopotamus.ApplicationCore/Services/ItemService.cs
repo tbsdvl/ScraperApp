@@ -5,8 +5,8 @@
 using System.Transactions;
 using AutoMapper;
 using Listopotamus.ApplicationCore.DTOs;
+using Listopotamus.ApplicationCore.Entities.Items;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.Core.Entities.Items;
 using Microsoft.AspNetCore.Http;
 
 namespace Listopotamus.ApplicationCore.Services

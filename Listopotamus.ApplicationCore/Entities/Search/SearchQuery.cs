@@ -3,9 +3,9 @@
 // </copyright>
 
 using System.ComponentModel.DataAnnotations;
-using Listopotamus.Core.Entities.Lookups;
+using Listopotamus.ApplicationCore.Entities.Lookups;
 
-namespace Listopotamus.Core.Entities.Search
+namespace Listopotamus.ApplicationCore.Entities.Search
 {
     /// <summary>
     /// Represents a search query.

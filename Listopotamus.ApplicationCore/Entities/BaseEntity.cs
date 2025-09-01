@@ -2,7 +2,7 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-namespace Listopotamus.Core.Entities
+namespace Listopotamus.ApplicationCore.Entities
 {
     /// <summary>
     /// Represents the base entity.

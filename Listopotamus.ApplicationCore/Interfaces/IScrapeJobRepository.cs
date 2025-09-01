@@ -2,7 +2,7 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using Listopotamus.Core.Entities.Jobs;
+using Listopotamus.ApplicationCore.Entities.Jobs;
 
 namespace Listopotamus.ApplicationCore.Interfaces
 {

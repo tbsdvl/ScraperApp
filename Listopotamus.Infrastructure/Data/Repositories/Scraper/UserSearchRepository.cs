@@ -2,8 +2,8 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Interfaces;
-using Listopotamus.Core.Entities.Search;
 using Listopotamus.Infrastructure.Data.Repositories.Generic;
 
 namespace Listopotamus.Infrastructure.Data.Repositories.Scraper

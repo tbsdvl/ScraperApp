@@ -5,7 +5,7 @@
 using System.ComponentModel.DataAnnotations;
 using Listopotamus.Infrastructure.Security.Entities.Identity;
 
-namespace Listopotamus.Core.Entities.Search
+namespace Listopotamus.ApplicationCore.Entities.Search
 {
     /// <summary>
     /// Represents a user search.

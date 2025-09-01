@@ -3,10 +3,10 @@
 // </copyright>
 
 using System.ComponentModel.DataAnnotations;
-using Listopotamus.Core.Entities.Lookups;
-using Listopotamus.Core.Entities.Search;
+using Listopotamus.ApplicationCore.Entities.Lookups;
+using Listopotamus.ApplicationCore.Entities.Search;
 
-namespace Listopotamus.Core.Entities.Items
+namespace Listopotamus.ApplicationCore.Entities.Items
 {
     /// <summary>
     /// Represents an item.
