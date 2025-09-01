@@ -16,15 +16,15 @@ namespace Listopotamus.Core
         /// <param name="isSuccess">True if the operation succeeded; otherwise false.</param>
         /// <param name="error">The error information for a failed result, or <see cref="Error.None"/> on success.</param>
         /// <param name="content">The content value produced by the operation.</param>
-        private Result(bool isSuccess, Error error, T content)
+        private Result(bool isSuccess, string error, T content)
         {
-            if ((isSuccess && error != Error.None) || (!isSuccess && error == Error.None))
+            if ((isSuccess && !string.IsNullOrWhiteSpace(error)) || (!isSuccess && string.IsNullOrWhiteSpace(error)))
             {
                 throw new ArgumentException("Invalid error", nameof(error));
             }
 
             this.IsSuccess = isSuccess;
-            this.Error = error;
+            this.ErrorMessage = error;
             this.Content = content;
         }
 
@@ -41,7 +41,7 @@ namespace Listopotamus.Core
         /// <summary>
         /// Gets the error information associated with the result.
         /// </summary>
-        public Error Error { get; }
+        public string ErrorMessage { get; }
 
         /// <summary>
         /// Gets the content value returned by the operation.
@@ -53,13 +53,13 @@ namespace Listopotamus.Core
         /// </summary>
         /// <param name="content">The content to include in the result.</param>
         /// <returns>A successful <see cref="Result{T}"/> containing the content.</returns>
-        public static Result<T> Success(T content) => new (true, Error.None, content);
+        public static Result<T> Success(T content) => new (true, string.Empty, content);
 
         /// <summary>
         /// Creates a failure result with the specified error.
         /// </summary>
         /// <param name="error">The error that caused the failure.</param>
         /// <returns>A failed <see cref="Result{T}"/> with no content.</returns>
-        public static Result<T> Failure(Error error) => new (false, error, default!);
+        public static Result<T> Failure(string error) => new (false, error, default!);
     }
 }

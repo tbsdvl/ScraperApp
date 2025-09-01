@@ -3,6 +3,7 @@
 // </copyright>
 
 using Listopotamus.ApplicationCore.DTOs;
+using Listopotamus.Core;
 
 namespace Listopotamus.ApplicationCore.Interfaces
 {
@@ -16,6 +17,6 @@ namespace Listopotamus.ApplicationCore.Interfaces
         /// </summary>
         /// <param name="searchCriteria">The search criteria.</param>
         /// <returns>A list of items.</returns>
-        Task<ScraperResult> GetItemsAsync(SearchCriteriaModel searchCriteria);
+        Task<Result<List<ItemDto>>> GetItemsAsync(SearchCriteriaModel searchCriteria);
     }
 }

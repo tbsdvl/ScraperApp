@@ -9,6 +9,7 @@ using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
+using Listopotamus.Core;
 using Listopotamus.Resource;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -166,27 +167,19 @@ namespace Listopotamus.ApplicationCore.Services
         /// </summary>
         /// <param name="searchCriteria">The search criteria.</param>
         /// <returns>The scraper response including a list of items.</returns>
-        public async Task<ScraperResult> GetItemsAsync(SearchCriteriaModel searchCriteria)
+        public async Task<Result<List<ItemDto>> GetItemsAsync(SearchCriteriaModel searchCriteria)
         {
             var items = new List<ItemDto>();
             if (!searchCriteria.Query.MarketplaceTypeId.HasValue)
             {
-                return new ScraperResult()
-                {
-                    Items = items,
-                    ErrorMessage = ErrorMessages.MissingQueryOption,
-                };
+                return Result<List<ItemDto>>.Failure(ErrorMessages.MissingQueryOption);
             }
 
             using var serviceScope = this.ServiceScopeFactory.CreateScope();
             var service = GetService(serviceScope, searchCriteria.Query.MarketplaceTypeId.Value);
             if (service is null)
             {
-                return new ScraperResult()
-                {
-                    Items = items,
-                    ErrorMessage = ErrorMessages.InvalidQueryOptionType,
-                };
+                return Result<List<ItemDto>>.Failure(ErrorMessages.InvalidQueryOptionType);
             }
 
             var options = new TransactionOptions()
@@ -199,21 +192,13 @@ namespace Listopotamus.ApplicationCore.Services
             var searchQuery = await this.GetSearchQueryAsync(searchCriteria, items);
             if (!searchQuery.Id.HasValue)
             {
-                return new ScraperResult()
-                {
-                    Items = items,
-                    ErrorMessage = ErrorMessages.InvalidQueryOptionType, // TODO: create new error message
-                };
+                return Result<List<ItemDto>>.Failure(ErrorMessages.InvalidQueryOptionType);
             }
 
             var nodes = await this.GetItemNodesAsync(searchCriteria, service);
             if (nodes is null || nodes.Count == 0)
             {
-                return new ScraperResult()
-                {
-                    Items = items,
-                    ErrorMessage = ErrorMessages.NoItemsFound,
-                };
+                return Result<List<ItemDto>>.Failure(ErrorMessages.NoItemsFound);
             }
 
             items = await service.GetItemsAsync(searchQuery.Id.Value, searchCriteria, nodes, items);
@@ -222,20 +207,10 @@ namespace Listopotamus.ApplicationCore.Services
 
             if (items.Count == 0)
             {
-                return new ScraperResult()
-                {
-                    Items = items,
-                    TotalResults = items.Count,
-                    ErrorMessage = ErrorMessages.NoItemsFound,
-                };
+                return Result<ItemDto>.Failure(ErrorMessages.NoItemsFound);
             }
 
-            return new ScraperResult()
-            {
-                Items = items,
-                TotalResults = items.Count,
-                Succeeded = true,
-            };
+            return Result<List<ItemDto>>.Success(items);
         }
     }
 }
