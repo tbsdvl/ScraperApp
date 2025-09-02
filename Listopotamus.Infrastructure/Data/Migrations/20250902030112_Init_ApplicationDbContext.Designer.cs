@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Listopotamus.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250901054445_Init_ApplicationDbContext")]
+    [Migration("20250902030112_Init_ApplicationDbContext")]
     partial class Init_ApplicationDbContext
     {
         /// <inheritdoc />
@@ -190,6 +190,9 @@ namespace Listopotamus.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("Code")
+                        .HasColumnType("int");
+
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -228,6 +231,19 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.HasIndex("MarketplaceTypeId");
 
                     b.ToTable("CategoryType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = 73943,
+                            CreatedBy = "SYSTEM",
+                            Description = "The Gun Parts category type.",
+                            LookupValue = "Gun Parts",
+                            MarketplaceTypeId = 1,
+                            Name = "Gun Parts",
+                            UpdatedBy = "SYSTEM"
+                        });
                 });
 
             modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.LocationType", b =>
@@ -277,6 +293,18 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     b.HasIndex("MarketplaceTypeId");
 
                     b.ToTable("LocationType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedBy = "SYSTEM",
+                            Description = "The USA location type.",
+                            LookupValue = "USA",
+                            MarketplaceTypeId = 1,
+                            Name = "USA",
+                            UpdatedBy = "SYSTEM"
+                        });
                 });
 
             modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", b =>
@@ -321,6 +349,17 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                         .HasDatabaseName("UCX_LookupValue");
 
                     b.ToTable("MarketplaceType", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedBy = "SYSTEM",
+                            Description = "The Ebay marketplace type.",
+                            LookupValue = "Ebay",
+                            Name = "Ebay",
+                            UpdatedBy = "SYSTEM"
+                        });
                 });
 
             modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", b =>

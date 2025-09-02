@@ -98,6 +98,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                     CategoryTypeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     MarketplaceTypeId = table.Column<int>(type: "int", nullable: false),
+                    Code = table.Column<int>(type: "int", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -406,6 +407,21 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                         principalColumn: "SearchQueryId",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.InsertData(
+                table: "MarketplaceType",
+                columns: new[] { "MarketplaceTypeId", "CreatedBy", "CreatedDate", "Description", "LookupValue", "Name", "UpdatedBy", "UpdatedDate" },
+                values: new object[] { 1, "SYSTEM", null, "The Ebay marketplace type.", "Ebay", "Ebay", "SYSTEM", null });
+
+            migrationBuilder.InsertData(
+                table: "CategoryType",
+                columns: new[] { "CategoryTypeId", "Code", "CreatedBy", "CreatedDate", "Description", "LookupValue", "MarketplaceTypeId", "Name", "UpdatedBy", "UpdatedDate" },
+                values: new object[] { 1, 73943, "SYSTEM", null, "The Gun Parts category type.", "Gun Parts", 1, "Gun Parts", "SYSTEM", null });
+
+            migrationBuilder.InsertData(
+                table: "LocationType",
+                columns: new[] { "LocationTypeId", "CreatedBy", "CreatedDate", "Description", "LookupValue", "MarketplaceTypeId", "Name", "UpdatedBy", "UpdatedDate" },
+                values: new object[] { 1, "SYSTEM", null, "The USA location type.", "USA", 1, "USA", "SYSTEM", null });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

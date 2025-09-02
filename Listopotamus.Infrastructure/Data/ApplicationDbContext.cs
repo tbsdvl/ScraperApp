@@ -8,6 +8,7 @@ using Listopotamus.ApplicationCore.Entities.Jobs;
 using Listopotamus.ApplicationCore.Entities.Lookups;
 using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Interfaces;
+using Listopotamus.Infrastructure.Data.Seed;
 using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -139,6 +140,8 @@ namespace Listopotamus.Infrastructure.Data
 
             AddExternalIndexes(builder, entityTypes);
             AddLookupIndexes(builder, entityTypes);
+
+            Seeder.SeedData(builder);
 
             // turn off cascading deletes
             foreach (var entityType in builder.Model.GetEntityTypes())
