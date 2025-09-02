@@ -19,10 +19,9 @@ namespace Listopotamus.ApplicationCore.Entities.Search
         public int? MarketplaceTypeId { get; set; }
 
         /// <summary>
-        /// Gets or sets the category type id.
+        /// Gets or sets the category type code.
         /// </summary>
-        [Required]
-        public int? CategoryTypeId { get; set; }
+        public int? CategoryTypeCode { get; set; }
 
         /// <summary>
         /// Gets or sets the search term.
@@ -75,10 +74,5 @@ namespace Listopotamus.ApplicationCore.Entities.Search
         /// Gets or sets the marketplace type.
         /// </summary>
         public MarketplaceType MarketplaceType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the category type.
-        /// </summary>
-        public CategoryType CategoryType { get; set; }
     }
 }

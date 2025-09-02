@@ -18,10 +18,10 @@ namespace Listopotamus.ApplicationCore.DTOs
         public int? MarketplaceTypeId { get; set; }
 
         /// <summary>
-        /// Gets or sets the category type id.
+        /// Gets or sets the category type code.
         /// </summary>
         [Required]
-        public int? CategoryTypeId { get; set; }
+        public int? CategoryTypeCode { get; set; }
 
         /// <summary>
         /// Gets or sets the location type id.

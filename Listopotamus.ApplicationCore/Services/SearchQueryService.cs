@@ -60,7 +60,7 @@ namespace Listopotamus.ApplicationCore.Services
         public async Task<List<SearchQuery>> GetExistingAsync(SearchCriteriaModel searchCriteria)
         {
             return await this.SearchQueryRepository.GetAsync(
-                x => x.CategoryTypeId == searchCriteria.Query.CategoryTypeId &&
+                x => x.CategoryTypeCode == searchCriteria.Query.CategoryTypeCode &&
                 x.MarketplaceTypeId == searchCriteria.Query.MarketplaceTypeId &&
                 x.PageNumber == searchCriteria.Query.PageNumber &&
                 x.MaxPageNumber == searchCriteria.Query.MaxPageNumber &&
@@ -88,7 +88,7 @@ namespace Listopotamus.ApplicationCore.Services
                 searchQuery = new SearchQuery
                 {
                     MarketplaceTypeId = searchCriteria.Query.MarketplaceTypeId!.Value,
-                    CategoryTypeId = searchCriteria.Query.CategoryTypeId!.Value,
+                    CategoryTypeCode = searchCriteria.Query.CategoryTypeCode!.Value,
                     SearchTerm = searchCriteria.Query.SearchTerm?.Trim() ?? string.Empty,
                     PageNumber = searchCriteria.Query.PageNumber ?? 1,
                     ZipCode = string.IsNullOrWhiteSpace(searchCriteria.Query.ZipCode) ? string.Empty : searchCriteria.Query.ZipCode,

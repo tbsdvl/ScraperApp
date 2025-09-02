@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Listopotamus.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250902030112_Init_ApplicationDbContext")]
+    [Migration("20250902033339_Init_ApplicationDbContext")]
     partial class Init_ApplicationDbContext
     {
         /// <inheritdoc />
@@ -371,7 +371,7 @@ namespace Listopotamus.Infrastructure.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
-                    b.Property<int>("CategoryTypeId")
+                    b.Property<int?>("CategoryTypeCode")
                         .HasColumnType("int");
 
                     b.Property<string>("CreatedBy")
@@ -418,8 +418,6 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryTypeId");
 
                     b.HasIndex("ExternalId")
                         .IsUnique()
@@ -777,19 +775,11 @@ namespace Listopotamus.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Listopotamus.ApplicationCore.Entities.Search.SearchQuery", b =>
                 {
-                    b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.CategoryType", "CategoryType")
-                        .WithMany()
-                        .HasForeignKey("CategoryTypeId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.HasOne("Listopotamus.ApplicationCore.Entities.Lookups.MarketplaceType", "MarketplaceType")
                         .WithMany()
                         .HasForeignKey("MarketplaceTypeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("CategoryType");
 
                     b.Navigation("MarketplaceType");
                 });

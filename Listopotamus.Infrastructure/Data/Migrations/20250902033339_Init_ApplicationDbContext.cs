@@ -145,6 +145,38 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "SearchQuery",
+                columns: table => new
+                {
+                    SearchQueryId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    MarketplaceTypeId = table.Column<int>(type: "int", nullable: false),
+                    CategoryTypeCode = table.Column<int>(type: "int", nullable: true),
+                    SearchTerm = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    PageNumber = table.Column<int>(type: "int", nullable: false),
+                    ZipCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Distance = table.Column<int>(type: "int", nullable: true),
+                    IsMiles = table.Column<bool>(type: "bit", nullable: false),
+                    ShowSoldOnly = table.Column<bool>(type: "bit", nullable: false),
+                    MaxPageNumber = table.Column<int>(type: "int", nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SearchQuery", x => x.SearchQueryId);
+                    table.ForeignKey(
+                        name: "FK_SearchQuery_MarketplaceType_MarketplaceTypeId",
+                        column: x => x.MarketplaceTypeId,
+                        principalTable: "MarketplaceType",
+                        principalColumn: "MarketplaceTypeId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -247,44 +279,6 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                         column: x => x.UserId,
                         principalTable: "User",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "SearchQuery",
-                columns: table => new
-                {
-                    SearchQueryId = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    MarketplaceTypeId = table.Column<int>(type: "int", nullable: false),
-                    CategoryTypeId = table.Column<int>(type: "int", nullable: false),
-                    SearchTerm = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PageNumber = table.Column<int>(type: "int", nullable: false),
-                    ZipCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Distance = table.Column<int>(type: "int", nullable: true),
-                    IsMiles = table.Column<bool>(type: "bit", nullable: false),
-                    ShowSoldOnly = table.Column<bool>(type: "bit", nullable: false),
-                    MaxPageNumber = table.Column<int>(type: "int", nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ExternalId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_SearchQuery", x => x.SearchQueryId);
-                    table.ForeignKey(
-                        name: "FK_SearchQuery_CategoryType_CategoryTypeId",
-                        column: x => x.CategoryTypeId,
-                        principalTable: "CategoryType",
-                        principalColumn: "CategoryTypeId",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_SearchQuery_MarketplaceType_MarketplaceTypeId",
-                        column: x => x.MarketplaceTypeId,
-                        principalTable: "MarketplaceType",
-                        principalColumn: "MarketplaceTypeId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -506,11 +500,6 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_SearchQuery_CategoryTypeId",
-                table: "SearchQuery",
-                column: "CategoryTypeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_SearchQuery_MarketplaceTypeId",
                 table: "SearchQuery",
                 column: "MarketplaceTypeId");
@@ -606,10 +595,10 @@ namespace Listopotamus.Infrastructure.Data.Migrations
                 name: "User");
 
             migrationBuilder.DropTable(
-                name: "LocationType");
+                name: "CategoryType");
 
             migrationBuilder.DropTable(
-                name: "CategoryType");
+                name: "LocationType");
 
             migrationBuilder.DropTable(
                 name: "MarketplaceType");

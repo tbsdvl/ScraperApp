@@ -41,9 +41,9 @@ namespace Listopotamus.Infrastructure.Services
         {
             var baseUrl = UrlConstants.EBAY;
 
-            if (searchCriteria.Query.CategoryTypeId.HasValue)
+            if (searchCriteria.Query.CategoryTypeCode.HasValue)
             {
-                baseUrl += searchCriteria.Query.CategoryTypeId + UrlConstants.EBAYINDEX;
+                baseUrl += searchCriteria.Query.CategoryTypeCode + UrlConstants.EBAYINDEX;
             }
 
             baseUrl += UrlConstants.EBAYSEARCHQUERY;
@@ -53,9 +53,9 @@ namespace Listopotamus.Infrastructure.Services
                 baseUrl += searchCriteria.Query.SearchTerm;
             }
 
-            if (searchCriteria.Query.CategoryTypeId.HasValue)
+            if (searchCriteria.Query.CategoryTypeCode.HasValue)
             {
-                baseUrl += UrlConstants.EBAYCATEGORY + searchCriteria.Query.CategoryTypeId;
+                baseUrl += UrlConstants.EBAYCATEGORY + searchCriteria.Query.CategoryTypeCode;
             }
 
             if (searchCriteria.Query.SoldItemsOnly)
@@ -297,7 +297,7 @@ namespace Listopotamus.Infrastructure.Services
                 ExternalId = Guid.NewGuid(),
                 ElementId = node.Id,
                 MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay,
-                CategoryTypeId = criteria.Query.CategoryTypeId ?? (int)CategoryTypeEnum.AllCategories,
+                CategoryTypeId = criteria.Query.CategoryTypeCode ?? (int)CategoryTypeEnum.AllCategories,
                 LocationTypeId = criteria.Query.LocationTypeId,
                 Name = nameNode.InnerText.Replace(EbayConstants.NewListingText.ToUpper(), string.Empty).Trim(),
                 HasUpperCaseName = nameNode.InnerText.All(char.IsUpper),
