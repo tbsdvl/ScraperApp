@@ -65,7 +65,7 @@ namespace Listopotamus.ApplicationCore.Services
                 x.PageNumber == searchCriteria.Query.PageNumber &&
                 x.MaxPageNumber == searchCriteria.Query.MaxPageNumber &&
                 x.ShowSoldOnly == searchCriteria.Query.SoldItemsOnly &&
-                x.SearchTerm.Equals(searchCriteria.Query.SearchTerm, StringComparison.OrdinalIgnoreCase));
+                x.SearchTerm.ToLower() == searchCriteria.Query.SearchTerm.ToLower());
         }
 
         /// <summary>

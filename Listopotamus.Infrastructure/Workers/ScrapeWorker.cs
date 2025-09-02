@@ -4,11 +4,9 @@
 
 using System.Transactions;
 using Listopotamus.ApplicationCore.DTOs;
-using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -24,13 +22,11 @@ namespace Listopotamus.Infrastructure.Workers
     /// <param name="logger">The logger.</param>
     /// <param name="queue">The queue.</param>
     /// <param name="scopeFactory">The scope factory.</param>
-    /// <param name="scrapeJobRepository">The scrape job repository.</param>
     public sealed class ScrapeWorker(
         ILogger<ScrapeWorker> logger,
         ITaskQueueService queue,
-        IServiceScopeFactory scopeFactory,
-        IScrapeJobRepository scrapeJobRepository
-            ) : BackgroundService
+        IServiceScopeFactory scopeFactory
+    ) : BackgroundService
     {
         /// <summary>
         /// The logger.
@@ -46,11 +42,6 @@ namespace Listopotamus.Infrastructure.Workers
         /// The scope factory.
         /// </summary>
         private readonly IServiceScopeFactory ScopeFactory = scopeFactory;
-
-        /// <summary>
-        /// Gets the scrape job repository.
-        /// </summary>
-        private IScrapeJobRepository ScrapeJobRepository { get; } = scrapeJobRepository;
 
         /// <summary>
         /// Executes the scrape worker.
@@ -78,10 +69,12 @@ namespace Listopotamus.Infrastructure.Workers
             using var scopeFactory = this.ScopeFactory.CreateScope();
 
             var dbContext = scopeFactory.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var searchQueryRepository = scopeFactory.ServiceProvider.GetRequiredService<ISearchQueryRepository>();
+            var scrapeJobRepository = scopeFactory.ServiceProvider.GetRequiredService<IScrapeJobRepository>();
             var scraper = scopeFactory.ServiceProvider.GetRequiredService<IBaseScraperService>();
             var logger = scopeFactory.ServiceProvider.GetRequiredService<ILogger<ScrapeWorker>>();
 
-            var job = await this.ScrapeJobRepository.GetByIDAsync(jobId);
+            var job = await scrapeJobRepository.GetByIDAsync(jobId);
             if (job is null)
             {
                 return;
@@ -97,11 +90,15 @@ namespace Listopotamus.Infrastructure.Workers
             {
                 job.Status = (int)JobStatusEnum.Running;
                 job.CreatedDate = DateTime.UtcNow;
-                await this.ScrapeJobRepository.UpdateAsync(job);
+                await scrapeJobRepository.UpdateAsync(job);
 
-                var searchQuery = await dbContext.Set<SearchQuery>()
-                    .AsNoTracking()
-                    .FirstAsync(x => x.Id == job.SearchQueryId, cancellationToken);
+                var searchQueries = await searchQueryRepository.GetAsync(x => x.Id == job.SearchQueryId, cancellationToken: cancellationToken);
+                var searchQuery = searchQueries.FirstOrDefault();
+
+                if (searchQuery is null)
+                {
+                    return;
+                }
 
                 var criteria = new SearchCriteriaModel
                 {
@@ -124,7 +121,7 @@ namespace Listopotamus.Infrastructure.Workers
                 job.Status = result.IsSuccess ? (int)JobStatusEnum.Succeeded : (int)JobStatusEnum.Failed;
                 job.ErrorMessage = result.IsSuccess ? null : result.ErrorMessage;
                 job.Progress = 100;
-                await this.ScrapeJobRepository.UpdateAsync(job);
+                await scrapeJobRepository.UpdateAsync(job);
 
                 await dbContext.SaveChangesAsync(cancellationToken);
             }
@@ -133,7 +130,7 @@ namespace Listopotamus.Infrastructure.Workers
                 logger.LogError(ex, "Scrape job {JobId} failed", jobId);
                 job.Status = (int)JobStatusEnum.Failed;
                 job.ErrorMessage = ex.Message;
-                await this.ScrapeJobRepository.UpdateAsync(job);
+                await scrapeJobRepository.UpdateAsync(job);
             }
 
             scope.Complete();
