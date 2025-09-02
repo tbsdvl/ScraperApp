@@ -1,4 +1,8 @@
-﻿namespace Listopotamus.Infrastructure.Security
+﻿// <copyright file="UserRoles.cs" company="Psybersimian LLC">
+// Copyright (c) Psybersimian LLC. All rights reserved.
+// </copyright>
+
+namespace Listopotamus.Infrastructure.Security
 {
     /// <summary>
     /// Represents the user roles.

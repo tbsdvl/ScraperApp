@@ -12,8 +12,7 @@ namespace Listopotamus.Integrations.Test
     {           
         private IBaseScraperService ScraperService { get; set; }
 
-        [TestInitialize]
-        public new async Task InitializeAsync()
+        public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
             this.ScraperService = this.ServiceProvider.GetRequiredService<IBaseScraperService>();

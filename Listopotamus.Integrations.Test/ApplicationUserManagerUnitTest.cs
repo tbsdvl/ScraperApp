@@ -9,8 +9,7 @@ namespace Listopotamus.Integrations.Test
     {
         private ApplicationUserManager UserManager { get; set; }
 
-        [TestInitialize]
-        public new async Task InitializeAsync()
+        public override async Task InitializeAsync()
         {
             await base.InitializeAsync();
             this.UserManager = this.ServiceProvider.GetRequiredService<ApplicationUserManager>();

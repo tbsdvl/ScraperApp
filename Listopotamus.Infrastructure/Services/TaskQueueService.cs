@@ -25,7 +25,7 @@ namespace Listopotamus.Infrastructure.Services
         /// <returns>A <see cref="Task"/> representing the queuing of a job.</returns>
         public async Task QueueAsync(long scrapeJobId)
         {
-            await Channel.Writer.WriteAsync(scrapeJobId);
+            await this.Channel.Writer.WriteAsync(scrapeJobId);
         }
 
         /// <summary>
@@ -35,8 +35,7 @@ namespace Listopotamus.Infrastructure.Services
         /// <returns>The id of the dequeued job.</returns>
         public async Task<long> DequeueAsync(CancellationToken ct)
         {
-            return await Channel.Reader.ReadAsync(ct);
+            return await this.Channel.Reader.ReadAsync(ct);
         }
     }
-
 }

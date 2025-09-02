@@ -18,7 +18,7 @@ using Listopotamus.Infrastructure.Services;
 namespace Listopotamus.Integrations.Test
 {
     [TestClass]
-    public class BaseUnitTest
+    public abstract class BaseUnitTest
     {
         public IServiceProvider ServiceProvider { get; private set; }
 
@@ -28,8 +28,16 @@ namespace Listopotamus.Integrations.Test
 
         private string ContainerName { get; set; }
 
+        /// <summary>
+        /// Initialize the test.
+        /// </summary>
         [TestInitialize]
-        public async Task InitializeAsync()
+        public async Task BaseTestInitializeAsync()
+        {
+            await InitializeAsync();
+        }
+
+        public virtual async Task InitializeAsync()
         {
             var isLocalDevelopment = string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable("BUILD_BUILDID"));
             var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", false);
