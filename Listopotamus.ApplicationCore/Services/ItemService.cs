@@ -19,9 +19,8 @@ namespace Listopotamus.ApplicationCore.Services
     /// </remarks>
     /// <param name="mapper">The mapper.</param>
     /// <param name="itemRepository">The item repository.</param>
-    /// <param name="searchResultItemRepository">The search result item repository.</param>
     /// <param name="httpContextAccessor">The http context accessor.</param>
-    public class ItemService(IMapper mapper, IItemRepository itemRepository, ISearchResultItemService searchResultItemService, IHttpContextAccessor httpContext) : IItemService
+    public class ItemService(IMapper mapper, IItemRepository itemRepository, ISearchResultItemService searchResultItemService, IHttpContextAccessor httpContextAccessor) : IItemService
     {
         /// <summary>
         /// Gets the mapper.
