@@ -54,6 +54,8 @@ builder.Services.AddScoped<IScrapeJobRepository, ScrapeJobRepository>();
 builder.Services.AddScoped<IBaseScraperService, ScraperService>();
 builder.Services.AddScoped<IEbayScraperService, EbayScraperService>();
 builder.Services.AddScoped<ISearchQueryService, SearchQueryService>();
+builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<ISearchResultItemService, SearchResultItemService>();
 builder.Services.AddSingleton<ITaskQueueService, TaskQueueService>();
 builder.Services.AddHostedService<ScrapeWorker>();
 
