@@ -5,6 +5,7 @@
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
 using Listopotamus.ApplicationCore.DTOs;
+using Listopotamus.ApplicationCore.Entities.Lookups;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Extensions;
 using Listopotamus.ApplicationCore.Interfaces;
@@ -21,7 +22,8 @@ namespace Listopotamus.Infrastructure.Services
     /// </remarks>
     /// <param name="itemService">The item service.</param>
     /// <param name="httpContextAccessor">The http context accessor.</param>
-    public class EbayScraperService(IItemService itemService, IHttpContextAccessor httpContextAccessor) : IEbayScraperService
+    /// <param name="lookupService">The lookupService.</param>
+    public class EbayScraperService(IItemService itemService, IHttpContextAccessor httpContextAccessor, ILookupService lookupService) : IEbayScraperService
     {
         /// <summary>
         /// The Maximum number of results per page.
@@ -36,14 +38,19 @@ namespace Listopotamus.Infrastructure.Services
         /// </summary>
         private IItemService ItemService { get; } = itemService;
 
+        /// <summary>
+        /// Gets the lookup service.
+        /// </summary>
+        private ILookupService LookupService { get; } = lookupService;
+
         /// <inheritdoc />
         public string GetUrl(SearchCriteriaModel searchCriteria)
         {
             var baseUrl = UrlConstants.EBAY;
 
-            if (searchCriteria.Query.CategoryTypeCode.HasValue)
+            if (searchCriteria.Query.CategoryCode.HasValue)
             {
-                baseUrl += searchCriteria.Query.CategoryTypeCode + UrlConstants.EBAYINDEX;
+                baseUrl += searchCriteria.Query.CategoryCode + UrlConstants.EBAYINDEX;
             }
 
             baseUrl += UrlConstants.EBAYSEARCHQUERY;
@@ -53,9 +60,9 @@ namespace Listopotamus.Infrastructure.Services
                 baseUrl += searchCriteria.Query.SearchTerm;
             }
 
-            if (searchCriteria.Query.CategoryTypeCode.HasValue)
+            if (searchCriteria.Query.CategoryCode.HasValue)
             {
-                baseUrl += UrlConstants.EBAYCATEGORY + searchCriteria.Query.CategoryTypeCode;
+                baseUrl += UrlConstants.EBAYCATEGORY + searchCriteria.Query.CategoryCode;
             }
 
             if (searchCriteria.Query.SoldItemsOnly)
@@ -101,7 +108,15 @@ namespace Listopotamus.Infrastructure.Services
                 return items;
             }
 
-            var newItems = ParseItems(filteredNodes, searchCriteria);
+            var getCategoryTypesResult = await this.LookupService.GetCategoryTypesAsync();
+            if (!getCategoryTypesResult.IsSuccess)
+            {
+                return items;
+            }
+
+            var categoryType = getCategoryTypesResult.Content.FirstOrDefault(x => x.LookupValue == searchCriteria.Query.CategoryCode.ToString());
+
+            var newItems = ParseItems(filteredNodes, searchCriteria, categoryType);
             items.AddRange(newItems);
             await this.ItemService.CreateAsync(searchQueryId, newItems);
 
@@ -242,10 +257,12 @@ namespace Listopotamus.Infrastructure.Services
         /// </summary>
         /// <param name="nodes">The list of notes.</param>
         /// <param name="criteria">The search criteria.</param>
+        /// <param name="categoryType">The categoryType.</param>
         /// <returns>The list of ItemDtos.</returns>
-        private static List<ItemDto> ParseItems(IEnumerable<HtmlNode> nodes, SearchCriteriaModel criteria)
+        private static List<ItemDto> ParseItems(IEnumerable<HtmlNode> nodes, SearchCriteriaModel criteria, CategoryType? categoryType)
         {
             var items = new List<ItemDto>();
+
             foreach (var node in nodes)
             {
                 if (string.IsNullOrWhiteSpace(node.Id))
@@ -263,6 +280,15 @@ namespace Listopotamus.Infrastructure.Services
                 var dto = GetItemDto(node, name, price, criteria);
                 if (dto is not null)
                 {
+                    if (categoryType is null)
+                    {
+                        dto.CategoryTypeId = (int)CategoryTypeEnum.AllCategories;
+                    }
+                    else
+                    {
+                        dto.CategoryTypeId = categoryType.Id;
+                    }
+
                     items.Add(dto);
                 }
             }
@@ -297,7 +323,6 @@ namespace Listopotamus.Infrastructure.Services
                 ExternalId = Guid.NewGuid(),
                 ElementId = node.Id,
                 MarketplaceTypeId = (int)MarketplaceTypeEnum.Ebay,
-                CategoryTypeId = criteria.Query.CategoryTypeCode ?? (int)CategoryTypeEnum.AllCategories,
                 LocationTypeId = criteria.Query.LocationTypeId,
                 Name = nameNode.InnerText.Replace(EbayConstants.NewListingText.ToUpper(), string.Empty).Trim(),
                 HasUpperCaseName = nameNode.InnerText.All(char.IsUpper),

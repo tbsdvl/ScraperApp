@@ -17,7 +17,7 @@ namespace Listopotamus.ApplicationCore.Entities.Items
         /// Gets or sets the category type code.
         /// </summary>
         [Required]
-        public int? CategoryTypeCode { get; set; }
+        public int? CategoryTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the marketplace type id.
@@ -128,6 +128,11 @@ namespace Listopotamus.ApplicationCore.Entities.Items
         /// Gets or sets the marketplace type.
         /// </summary>
         public MarketplaceType MarketplaceType { get; set; }
+
+        /// <summary>
+        /// Gets or sets the category type.
+        /// </summary>
+        public CategoryType CategoryType { get; set; }
 
         /// <summary>
         /// Gets or sets the location type.

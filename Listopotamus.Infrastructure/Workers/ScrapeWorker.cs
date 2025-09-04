@@ -105,7 +105,7 @@ namespace Listopotamus.Infrastructure.Workers
                     Query = new SearchQueryModel
                     {
                         MarketplaceTypeId = searchQuery.MarketplaceTypeId,
-                        CategoryTypeCode = searchQuery.CategoryTypeCode,
+                        CategoryCode = searchQuery.CategoryTypeId,
                         SearchTerm = searchQuery.SearchTerm,
                         PageNumber = searchQuery.PageNumber,
                         MaxPageNumber = searchQuery.MaxPageNumber,

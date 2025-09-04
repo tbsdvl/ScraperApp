@@ -20,7 +20,8 @@ namespace Listopotamus.ApplicationCore.Services
         ISearchQueryRepository searchQueryRepository,
         IUserSearchRepository userSearchRepository,
         IScrapeJobRepository scrapeJobRepository,
-        ITaskQueueService taskQueueService) : ISearchQueryService
+        ITaskQueueService taskQueueService,
+        ILookupService lookupService) : ISearchQueryService
     {
         /// <summary>
         /// Gets or sets the maximum page number to scrape.
@@ -53,6 +54,11 @@ namespace Listopotamus.ApplicationCore.Services
         private ITaskQueueService TaskQueueService { get; } = taskQueueService;
 
         /// <summary>
+        /// Gets the lookup service.
+        /// </summary>
+        private ILookupService LookupService { get; } = lookupService;
+
+        /// <summary>
         /// Gets an existing search query.
         /// </summary>
         /// <param name="searchCriteria">The search query criteria.</param>
@@ -60,7 +66,7 @@ namespace Listopotamus.ApplicationCore.Services
         public async Task<List<SearchQuery>> GetExistingAsync(SearchCriteriaModel searchCriteria)
         {
             return await this.SearchQueryRepository.GetAsync(
-                x => x.CategoryTypeCode == searchCriteria.Query.CategoryTypeCode &&
+                x => x.CategoryType.LookupValue == searchCriteria.Query.CategoryCode.ToString() &&
                 x.MarketplaceTypeId == searchCriteria.Query.MarketplaceTypeId &&
                 x.PageNumber == searchCriteria.Query.PageNumber &&
                 x.MaxPageNumber == searchCriteria.Query.MaxPageNumber &&
@@ -85,10 +91,22 @@ namespace Listopotamus.ApplicationCore.Services
             }
             else
             {
+                var getCategoryTypesResult = await this.LookupService.GetCategoryTypesAsync();
+                if (!getCategoryTypesResult.IsSuccess)
+                {
+                    return;
+                }
+
+                var categoryType = getCategoryTypesResult.Content.FirstOrDefault(x => x.LookupValue == searchCriteria.Query.CategoryCode.ToString());
+                if (categoryType is null)
+                {
+                    return;
+                }
+
                 searchQuery = new SearchQuery
                 {
                     MarketplaceTypeId = searchCriteria.Query.MarketplaceTypeId!.Value,
-                    CategoryTypeCode = searchCriteria.Query.CategoryTypeCode!.Value,
+                    CategoryTypeId = categoryType.Id,
                     SearchTerm = searchCriteria.Query.SearchTerm?.Trim() ?? string.Empty,
                     PageNumber = searchCriteria.Query.PageNumber ?? 1,
                     ZipCode = string.IsNullOrWhiteSpace(searchCriteria.Query.ZipCode) ? string.Empty : searchCriteria.Query.ZipCode,

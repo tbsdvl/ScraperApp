@@ -95,7 +95,7 @@ namespace Listopotamus.Integrations.Test
             // Arrange
             var request = GetScraperRequest();
             request.Query.SearchTerm = "gun parts"; // configure search term
-            request.Query.CategoryTypeCode = (int)CategoryTypeEnum.GunParts; // configure category
+            request.Query.CategoryCode = (int)CategoryTypeEnum.GunParts; // configure category
             request.Query.MaxPageNumber = 200;
             request.Query.LocationTypeId = null;
             request.Query.SoldItemsOnly = true;

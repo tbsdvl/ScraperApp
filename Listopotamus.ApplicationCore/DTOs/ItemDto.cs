@@ -17,37 +17,37 @@ namespace Listopotamus.ApplicationCore.DTOs
         /// <summary>
         /// Gets or sets the category type id.
         /// </summary>
-        required public int? CategoryTypeId { get; set; }
+        public int? CategoryTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the marketplace type id.
         /// </summary>
-        required public int? MarketplaceTypeId { get; set; }
+        public int? MarketplaceTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the location type id.
         /// </summary>
-        required public int? LocationTypeId { get; set; }
+        public int? LocationTypeId { get; set; }
 
         /// <summary>
         /// Gets or sets the element id.
         /// </summary>
-        required public string ElementId { get; set; }
+        public string ElementId { get; set; }
 
         /// <summary>
         /// Gets or sets the name.
         /// </summary>
-        required public string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the item name contains all uppercase letters.
         /// </summary>
-        required public bool HasUpperCaseName { get; set; }
+        public bool HasUpperCaseName { get; set; }
 
         /// <summary>
         /// Gets or sets the min price.
         /// </summary>
-        required public decimal MinPrice { get; set; }
+        public decimal MinPrice { get; set; }
 
         /// <summary>
         /// Gets or sets the max price.

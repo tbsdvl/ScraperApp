@@ -20,6 +20,7 @@ using Listopotamus.Infrastructure.Data.Repositories.Scraper;
 using Listopotamus.Infrastructure.Data.Repositories.Jobs;
 using Listopotamus.Infrastructure.Services;
 using Listopotamus.Infrastructure.Workers;
+using Listopotamus.Infrastructure.Data.Repositories.Lookup;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,17 +46,23 @@ builder.Services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
 });
 
 // add services
-builder.Services.AddScoped<IUserContextService, UserContextService>();
+
+// Repositories
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ISearchQueryRepository, SearchQueryRepository>();
 builder.Services.AddScoped<IUserSearchRepository, UserSearchRepository>();
 builder.Services.AddScoped<ISearchResultItemRepository, SearchResultItemRepository>();
 builder.Services.AddScoped<IScrapeJobRepository, ScrapeJobRepository>();
+builder.Services.AddScoped<ILookupRepository, LookupRepository>();
+
+// Services
+builder.Services.AddScoped<IUserContextService, UserContextService>();
 builder.Services.AddScoped<IBaseScraperService, ScraperService>();
 builder.Services.AddScoped<IEbayScraperService, EbayScraperService>();
 builder.Services.AddScoped<ISearchQueryService, SearchQueryService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddScoped<ISearchResultItemService, SearchResultItemService>();
+builder.Services.AddScoped<ILookupService, LookupService>();
 builder.Services.AddSingleton<ITaskQueueService, TaskQueueService>();
 builder.Services.AddHostedService<ScrapeWorker>();
 
