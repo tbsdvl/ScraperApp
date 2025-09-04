@@ -18,12 +18,6 @@ namespace Listopotamus.ApplicationCore.Entities.Lookups
         public int MarketplaceTypeId { get; set; }
 
         /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        [Required]
-        public int Code { get; set; }
-
-        /// <summary>
         /// Gets or sets the marketplace type.
         /// </summary>
         public MarketplaceType MarketplaceType { get; set; }
