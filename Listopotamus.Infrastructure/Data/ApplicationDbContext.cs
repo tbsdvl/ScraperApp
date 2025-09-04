@@ -143,6 +143,8 @@ namespace Listopotamus.Infrastructure.Data
 
             Seeder.SeedData(builder);
 
+            builder.Entity<SearchQuery>().Navigation(x => x.CategoryType);
+
             // turn off cascading deletes
             foreach (var entityType in builder.Model.GetEntityTypes())
             {

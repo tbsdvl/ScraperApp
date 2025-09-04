@@ -73,6 +73,7 @@ namespace Listopotamus.Infrastructure.Workers
             var scrapeJobRepository = scopeFactory.ServiceProvider.GetRequiredService<IScrapeJobRepository>();
             var scraper = scopeFactory.ServiceProvider.GetRequiredService<IBaseScraperService>();
             var logger = scopeFactory.ServiceProvider.GetRequiredService<ILogger<ScrapeWorker>>();
+            var lookupService = scopeFactory.ServiceProvider.GetRequiredService<ILookupService>();
 
             var job = await scrapeJobRepository.GetByIDAsync(jobId);
             if (job is null)
@@ -100,12 +101,22 @@ namespace Listopotamus.Infrastructure.Workers
                     return;
                 }
 
+                var getCategoryTypesResult = await lookupService.GetCategoryTypesAsync();
+                if (!getCategoryTypesResult.IsSuccess)
+                {
+                    return;
+                }
+
+                var categoryType = getCategoryTypesResult.Content.FirstOrDefault(x => x.Id == searchQuery.CategoryTypeId);
+
+                int.TryParse(categoryType.LookupValue, out var categoryTypeId);
+
                 var criteria = new SearchCriteriaModel
                 {
                     Query = new SearchQueryModel
                     {
                         MarketplaceTypeId = searchQuery.MarketplaceTypeId,
-                        CategoryCode = searchQuery.CategoryTypeId,
+                        CategoryCode = categoryTypeId,
                         SearchTerm = searchQuery.SearchTerm,
                         PageNumber = searchQuery.PageNumber,
                         MaxPageNumber = searchQuery.MaxPageNumber,
