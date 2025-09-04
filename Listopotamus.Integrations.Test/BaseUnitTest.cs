@@ -14,6 +14,9 @@ using AutoMapper;
 using Listopotamus.ApplicationCore;
 using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Listopotamus.Infrastructure.Services;
+using Listopotamus.Infrastructure.Data.Repositories.Scraper;
+using Listopotamus.Infrastructure.Data.Repositories.Jobs;
+using Listopotamus.Infrastructure.Data.Repositories.Lookup;
 
 namespace Listopotamus.Integrations.Test
 {
@@ -112,6 +115,17 @@ namespace Listopotamus.Integrations.Test
             // Add application services
             serviceCollection.TryAddTransient<IEbayScraperService, EbayScraperService>();
             serviceCollection.TryAddTransient<IBaseScraperService, ScraperService>();
+            serviceCollection.TryAddTransient<ISearchQueryRepository, SearchQueryRepository>();
+            serviceCollection.TryAddTransient<IUserSearchRepository, UserSearchRepository>();
+            serviceCollection.TryAddTransient<IScrapeJobRepository, ScrapeJobRepository>();
+            serviceCollection.TryAddTransient<ILookupRepository, LookupRepository>();
+            serviceCollection.TryAddTransient<ISearchResultItemRepository, SearchResultItemRepository>();
+            serviceCollection.TryAddTransient<IItemRepository, ItemRepository>();
+            serviceCollection.TryAddTransient<ISearchQueryService, SearchQueryService>();
+            serviceCollection.TryAddTransient<ITaskQueueService, TaskQueueService>();
+            serviceCollection.TryAddTransient<ILookupService, LookupService>();
+            serviceCollection.TryAddTransient<IItemService, ItemService>();
+            serviceCollection.TryAddTransient<ISearchResultItemService, SearchResultItemService>();
 
             this.ServiceProvider = serviceCollection.BuildServiceProvider();
 
