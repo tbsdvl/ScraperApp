@@ -1,0 +1,15 @@
+﻿// <copyright file="ISearchResultItemRepository.cs" company="Psybersimian LLC">
+// Copyright (c) Psybersimian LLC. All rights reserved.
+// </copyright>
+
+using Listopotamus.ApplicationCore.Entities.Search;
+
+namespace Listopotamus.ApplicationCore.Interfaces
+{
+    /// <summary>
+    /// Represents the interface for the search result item repository.
+    /// </summary>
+    public interface ISearchResultItemRepository : IGenericRepository<SearchResultItem, long?>
+    {
+    }
+}

@@ -1,0 +1,25 @@
+﻿// <copyright file="ApplicationUserStore.cs" company="Psybersimian LLC">
+// Copyright (c) Psybersimian LLC. All rights reserved.
+// </copyright>
+
+using Listopotamus.Infrastructure.Security.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace Listopotamus.Infrastructure.Security
+{
+    /// <summary>
+    /// The application user store repository.
+    /// </summary>
+    /// <typeparam name="TContext">The type of the context.</typeparam>
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ApplicationUserStore{TContext}"/> class.
+    /// </remarks>
+    /// <param name="context">The context.</param>
+    /// <param name="describer">The error describer.</param>
+    public class ApplicationUserStore<TContext>(TContext context, IdentityErrorDescriber? describer = null) : UserStore<User, Role, TContext, Guid>(context, describer), IApplicationUserStore
+        where TContext : DbContext
+    {
+    }
+}
