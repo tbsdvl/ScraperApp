@@ -9,7 +9,7 @@ namespace Listopotamus.Core
     /// </summary>
     /// <param name="code">The error code.</param>
     /// <param name="description">The error description.</param>
-    public sealed record Error(string code, string description)
+    public sealed class Error(string code, string description)
     {
         /// <summary>
         /// The none error (no error).

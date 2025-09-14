@@ -108,8 +108,15 @@ namespace Listopotamus.Infrastructure.Workers
                 }
 
                 var categoryType = getCategoryTypesResult.Content.FirstOrDefault(x => x.Id == searchQuery.CategoryTypeId);
+                if (categoryType is null)
+                {
+                    return;
+                }
 
-                int.TryParse(categoryType.LookupValue, out var categoryTypeId);
+                if (!int.TryParse(categoryType.LookupValue, out var categoryTypeId))
+                {
+                    return;
+                }
 
                 var criteria = new SearchCriteriaModel
                 {
