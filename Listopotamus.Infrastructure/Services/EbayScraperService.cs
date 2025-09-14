@@ -4,10 +4,10 @@
 
 using System.Text.RegularExpressions;
 using HtmlAgilityPack;
+using Listopotamus.ApplicationCore;
 using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Entities.Lookups;
 using Listopotamus.ApplicationCore.Enums;
-using Listopotamus.ApplicationCore.Extensions;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Infrastructure.Constants;
 using Microsoft.AspNetCore.Http;

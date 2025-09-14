@@ -2,9 +2,7 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using System.Globalization;
-
-namespace Listopotamus.ApplicationCore.Extensions
+namespace Listopotamus.ApplicationCore
 {
     /// <summary>
     /// Represents string extension methods.
@@ -28,7 +26,7 @@ namespace Listopotamus.ApplicationCore.Extensions
                 return result;
             }
 
-            throw new FormatException("Invalid price format.");
+            return 0;
         }
 
         /// <summary>
