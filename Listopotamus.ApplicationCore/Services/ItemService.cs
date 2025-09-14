@@ -7,7 +7,6 @@ using AutoMapper;
 using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Entities.Items;
 using Listopotamus.ApplicationCore.Interfaces;
-using Microsoft.AspNetCore.Http;
 
 namespace Listopotamus.ApplicationCore.Services
 {
@@ -19,8 +18,7 @@ namespace Listopotamus.ApplicationCore.Services
     /// </remarks>
     /// <param name="mapper">The mapper.</param>
     /// <param name="itemRepository">The item repository.</param>
-    /// <param name="httpContextAccessor">The http context accessor.</param>
-    public class ItemService(IMapper mapper, IItemRepository itemRepository, ISearchResultItemService searchResultItemService, IHttpContextAccessor httpContextAccessor) : IItemService
+    public class ItemService(IMapper mapper, IItemRepository itemRepository, ISearchResultItemService searchResultItemService) : IItemService
     {
         /// <summary>
         /// Gets the mapper.
