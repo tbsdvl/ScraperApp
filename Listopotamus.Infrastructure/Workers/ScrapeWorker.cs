@@ -2,7 +2,6 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using System.Transactions;
 using Listopotamus.ApplicationCore.DTOs;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
@@ -71,7 +70,7 @@ namespace Listopotamus.Infrastructure.Workers
             var dbContext = scopeFactory.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             var searchQueryRepository = scopeFactory.ServiceProvider.GetRequiredService<ISearchQueryRepository>();
             var scrapeJobRepository = scopeFactory.ServiceProvider.GetRequiredService<IScrapeJobRepository>();
-            var scraper = scopeFactory.ServiceProvider.GetRequiredService<IBaseScraperService>();
+            var scraperService = scopeFactory.ServiceProvider.GetRequiredService<IBaseScraperService>();
             var logger = scopeFactory.ServiceProvider.GetRequiredService<ILogger<ScrapeWorker>>();
             var lookupService = scopeFactory.ServiceProvider.GetRequiredService<ILookupService>();
 
@@ -80,12 +79,6 @@ namespace Listopotamus.Infrastructure.Workers
             {
                 return;
             }
-
-            var options = new TransactionOptions()
-            {
-                IsolationLevel = IsolationLevel.ReadUncommitted,
-            };
-            using var scope = new TransactionScope(TransactionScopeOption.Required, options, TransactionScopeAsyncFlowOption.Enabled);
 
             try
             {
@@ -108,8 +101,15 @@ namespace Listopotamus.Infrastructure.Workers
                 }
 
                 var categoryType = getCategoryTypesResult.Content.FirstOrDefault(x => x.Id == searchQuery.CategoryTypeId);
+                if (categoryType is null)
+                {
+                    return;
+                }
 
-                int.TryParse(categoryType.LookupValue, out var categoryTypeId);
+                if (!int.TryParse(categoryType.LookupValue, out var categoryTypeId))
+                {
+                    return;
+                }
 
                 var criteria = new SearchCriteriaModel
                 {
@@ -127,7 +127,7 @@ namespace Listopotamus.Infrastructure.Workers
                     },
                 };
 
-                var result = await scraper.GetItemsAsync(criteria);
+                var result = await scraperService.GetItemsAsync(criteria);
 
                 job.Status = result.IsSuccess ? (int)JobStatusEnum.Succeeded : (int)JobStatusEnum.Failed;
                 job.ErrorMessage = result.IsSuccess ? null : result.ErrorMessage;
@@ -143,8 +143,6 @@ namespace Listopotamus.Infrastructure.Workers
                 job.ErrorMessage = ex.Message;
                 await scrapeJobRepository.UpdateAsync(job);
             }
-
-            scope.Complete();
         }
     }
 }

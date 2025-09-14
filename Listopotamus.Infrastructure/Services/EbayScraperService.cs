@@ -10,7 +10,6 @@ using Listopotamus.ApplicationCore.Entities.Lookups;
 using Listopotamus.ApplicationCore.Enums;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.Infrastructure.Constants;
-using Microsoft.AspNetCore.Http;
 
 namespace Listopotamus.Infrastructure.Services
 {
@@ -21,9 +20,8 @@ namespace Listopotamus.Infrastructure.Services
     /// Initializes a new instance of the <see cref="EbayScraperService"/> class.
     /// </remarks>
     /// <param name="itemService">The item service.</param>
-    /// <param name="httpContextAccessor">The http context accessor.</param>
     /// <param name="lookupService">The lookupService.</param>
-    public class EbayScraperService(IItemService itemService, IHttpContextAccessor httpContextAccessor, ILookupService lookupService) : IEbayScraperService
+    public class EbayScraperService(IItemService itemService, ILookupService lookupService) : IEbayScraperService
     {
         /// <summary>
         /// The Maximum number of results per page.

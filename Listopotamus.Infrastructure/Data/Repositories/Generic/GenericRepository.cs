@@ -28,7 +28,7 @@ namespace Listopotamus.Infrastructure.Data.Repositories.Generic
         private DbSet<TEntity> DbSet;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GenericRepository{TEntity}"/> class.
+        /// Initializes a new instance of the <see cref="GenericRepository{TEntity, TKey}"/> class.
         /// </summary>
         /// <param name="context">The application database context.</param>
         public GenericRepository(ApplicationDbContext context)
@@ -86,7 +86,12 @@ namespace Listopotamus.Infrastructure.Data.Repositories.Generic
         /// <returns>The entity.</returns>
         public async Task<TEntity> GetByIDAsync(TKey id)
         {
-            return await this.Context.Set<TEntity>().AsNoTracking().Where(e => e.Id.Equals(id)).FirstOrDefaultAsync();
+            var entity = await this.Context.Set<TEntity>()
+                .AsNoTracking()
+                .Where(e => e.Id != null && e.Id.Equals(id))
+                .FirstOrDefaultAsync();
+
+            return entity is null ? throw new KeyNotFoundException($"Entity {id} not found.") : entity;
         }
 
         /// <summary>

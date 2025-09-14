@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <NoWarn>SA0001, CS8625, SA1009</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

@@ -5,7 +5,6 @@
 using Listopotamus.ApplicationCore.Entities.Items;
 using Listopotamus.ApplicationCore.Entities.Search;
 using Listopotamus.ApplicationCore.Interfaces;
-using Microsoft.AspNetCore.Http;
 
 namespace Listopotamus.ApplicationCore.Services
 {
@@ -16,8 +15,7 @@ namespace Listopotamus.ApplicationCore.Services
     /// Initializes a new instance of the <see cref="SearchResultItemService"/> class.
     /// </remarks>
     /// <param name="searchResultItemRepository">The search result item repository.</param>
-    /// <param name="httpContextAccessor">The http context accessor.</param>
-    public class SearchResultItemService(ISearchResultItemRepository searchResultItemRepository, IHttpContextAccessor httpContextAccessor) : ISearchResultItemService
+    public class SearchResultItemService(ISearchResultItemRepository searchResultItemRepository) : ISearchResultItemService
     {
         /// <summary>
         /// Gets the search result item repository.

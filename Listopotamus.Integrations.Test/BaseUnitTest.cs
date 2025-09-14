@@ -61,7 +61,12 @@ namespace Listopotamus.Integrations.Test
                 .WithConnectionModeDirect()
                 .Build();
 
-            this.DatabaseName = config["DistributedCache:CosmosCacheDatabase"];
+            this.DatabaseName = config["DistributedCache:CosmosCacheDatabase"] ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(this.DatabaseName))
+            {
+                throw new Exception("Cosmos Database Name is missing");
+            }
+
             var database = await this.CosmosClient.CreateDatabaseIfNotExistsAsync(config["DistributedCache:CosmosCacheDatabase"]);
             await database.Database.CreateContainerIfNotExistsAsync(
                 new ContainerProperties
