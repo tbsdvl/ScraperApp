@@ -4,7 +4,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { LogoutComponent } from './components/logout/logout.component';
 import { TwoFaSetupComponent } from './components/twofa-setup/twofa-setup.component';
 import { TwoFaVerifyComponent } from './components/twofa-verify/twofa-verify.component';
-import { AuthGuard } from './guards/auth.guard';
+import { AuthGuard } from '../guards/auth.guard';
 
 export const AUTH_ROUTES: Routes = [
   { path: 'login', component: LoginComponent },

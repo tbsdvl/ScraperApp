@@ -4,9 +4,16 @@ import { TokenService } from '../services/token.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
-  constructor(private tokens: TokenService, private router: Router) {}
-  canActivate(): boolean | UrlTree {
-    if (this.tokens.accessToken) return true;
+  constructor(
+    private tokens: TokenService,
+    private router: Router,
+  ) {}
+
+  public canActivate(): boolean | UrlTree {
+    if (this.tokens.accessToken) {
+      return true;
+    }
+
     return this.router.parseUrl('/login');
   }
 }

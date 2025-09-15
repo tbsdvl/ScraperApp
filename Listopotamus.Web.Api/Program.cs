@@ -79,8 +79,35 @@ builder.Services
     .AddUserManager<ApplicationUserManager>()
     .AddRoleManager<ApplicationRoleManager>();
 
-builder.Services.AddIdentityApiEndpoints<User>()
+builder.Services
+    .AddIdentityApiEndpoints<User>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.ConfigureApplicationCookie(o =>
+{
+    o.Cookie.HttpOnly = true;
+    o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    // If frontend is on a different origin: use None; otherwise Lax is safer.
+    // o.Cookie.SameSite = SameSiteMode.Lax; // or SameSiteMode.None for cross-site + HTTPS
+    o.SlidingExpiration = true;
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("spa", p => p
+        .WithOrigins("https://your-angular-origin")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials());
+});
+
+// Antiforgery for cookie-authenticated API writes from Angular
+builder.Services.AddAntiforgery(o =>
+{
+    // Angular reads 'XSRF-TOKEN' cookie and sends 'X-XSRF-TOKEN' header by default
+    o.Cookie.Name = "XSRF-TOKEN";
+    o.HeaderName = "X-XSRF-TOKEN";
+});
 
 // Add AutoMapper
 builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
@@ -88,6 +115,8 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IDistributedCacheService, DistributedCacheService>();
 
 var app = builder.Build();
+
+app.UseCors("spa");
 
 app.MapIdentityApi<User>();
 

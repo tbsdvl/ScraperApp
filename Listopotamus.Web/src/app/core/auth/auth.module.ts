@@ -12,7 +12,8 @@ import { TwoFaSetupComponent } from './components/twofa-setup/twofa-setup.compon
 import { TwoFaVerifyComponent } from './components/twofa-verify/twofa-verify.component';
 import { LoginMenuComponent } from './components/login-menu/login-menu.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
+import { AuthStateService } from './services/auth-state.service';
 
 @NgModule({
   declarations: [
@@ -33,9 +34,10 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
   providers: [
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
+      useClass: CredentialsInterceptor,
       multi: true,
     },
+    AuthStateService,
   ],
   exports: [LoginMenuComponent],
 })

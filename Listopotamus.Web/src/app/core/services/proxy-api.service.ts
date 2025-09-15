@@ -7,20 +7,26 @@ import { Observable } from 'rxjs';
 export class ProxyApiService {
   private base = environment.proxyApiBaseUrl;
   constructor(private http: HttpClient) {}
-  
+
   public get<T>(path: string): Observable<T> {
-    return this.http.get<T>(`${this.base}${path}`);
+    return this.http.get<T>(`${this.base}${path}`, { withCredentials: true });
   }
 
-  public post<T>(path: string, body: any): Observable<T> {
-    return this.http.post<T>(`${this.base}${path}`, body);
+  public post<T>(path: string, b: any): Observable<T> {
+    return this.http.post<T>(`${this.base}${path}`, b, {
+      withCredentials: true,
+    });
   }
 
-  public put<T>(path: string, body: any): Observable<T> {
-    return this.http.put<T>(`${this.base}${path}`, body);
+  public put<T>(path: string, b: any): Observable<T> {
+    return this.http.put<T>(`${this.base}${path}`, b, {
+      withCredentials: true,
+    });
   }
 
   public delete<T>(path: string): Observable<T> {
-    return this.http.delete<T>(`${this.base}${path}`);
+    return this.http.delete<T>(`${this.base}${path}`, {
+      withCredentials: true,
+    });
   }
 }
