@@ -18,11 +18,13 @@ export class AuthGuard implements CanActivate {
       }));
   }
 
-  public canActivate(): Observable<boolean | UrlTree> {
+  public canActivate(): Observable<boolean> {
     return this.isSignedIn()
       .pipe(map((result) => {
         if (!result) {
-          return this.router.parseUrl('/login');
+          this.router.parseUrl('/login');
+
+          return false;
         }
 
         return true;
