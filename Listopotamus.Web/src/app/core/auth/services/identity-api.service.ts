@@ -1,26 +1,31 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environment';
 import { TokenService } from './auth.service';
+import { environment } from '../../../../environment';
+import { Observable } from 'rxjs';
 
-export interface LoginRequest {
+export interface LoginModel {
   email: string;
   password: string;
-  twoFactorCode?: string; // when 2FA enabled
-  twoFactorRecoveryCode?: string; // alternative
+  twoFactorCode?: string;
+  twoFactorRecoveryCode?: string;
 }
 
-export interface RegisterRequest {
+export interface RegisterModel {
   email: string;
   password: string;
 }
 
-export interface ManageInfo {
+export interface ManageInfoModel {
   email: string;
   isEmailConfirmed: boolean;
   isTwoFactorEnabled: boolean;
   authenticatorKey?: string;
   recoveryCodesLeft?: number;
+}
+
+export interface ManageInfoResultModel {
+  email: string;
 }
 
 export interface TwoFaCommand {
@@ -30,23 +35,23 @@ export interface TwoFaCommand {
     | 'Disable'
     | 'GenerateRecoveryCodes'
     | 'ResetAuthenticator';
-  twoFactorCode?: string; // required when enabling
+  twoFactorCode?: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class IdentityApiService {
-  private base = environment.identityApiBaseUrl; // e.g., '' or '/identity'
+  private base = environment.identityApiBaseUrl;
 
   constructor(private http: HttpClient, private tokens: TokenService) {}
 
-  register(req: RegisterRequest) {
+  public register(req: RegisterModel): Observable<Object> {
     return this.http.post(`${this.base}/register`, req, {
       withCredentials: false,
     });
   }
 
   // services/identity-api.service.ts
-  login(req: LoginRequest) {
+  public login(req: LoginModel): Observable<Object> {
     const params = new HttpParams().set('useCookies', 'true');
     return this.http.post(`${this.base}/login`, req, {
       params,
@@ -54,17 +59,17 @@ export class IdentityApiService {
     });
   }
 
-  logout() {
+  public logout(): Observable<Object> {
     return this.http.post(`${this.base}/logout`, {}, { withCredentials: true });
   }
 
-  getManageInfo() {
-    return this.http.get<ManageInfo>(`${this.base}/manage/info`, {
+  public getManageInfo(): Observable<ManageInfoResultModel> {
+    return this.http.get<ManageInfoModel>(`${this.base}/manage/info`, {
       withCredentials: true,
     });
   }
 
-  twoFa(cmd: TwoFaCommand) {
+  public twoFa(cmd: TwoFaCommand): Observable<Object> {
     return this.http.post(`${this.base}/manage/2fa`, cmd, {
       withCredentials: true,
     });

@@ -1,19 +1,31 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router, UrlTree } from '@angular/router';
-import { TokenService } from '../services/token.service';
+import { IdentityApiService } from '../services/identity-api.service';
+import { map, Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
   constructor(
-    private tokens: TokenService,
     private router: Router,
+    private authService: IdentityApiService
   ) {}
 
-  public canActivate(): boolean | UrlTree {
-    if (this.tokens.accessToken) {
-      return true;
-    }
+  private isSignedIn(): Observable<boolean> {
+    return this.authService.getManageInfo()
+      .pipe(map((result) => {
+        const valid = !!(result && result.email && result.email.length > 0);
+        return valid;
+      }));
+  }
 
-    return this.router.parseUrl('/login');
+  public canActivate(): Observable<boolean | UrlTree> {
+    return this.isSignedIn()
+      .pipe(map((result) => {
+        if (!result) {
+          return this.router.parseUrl('/login');
+        }
+
+        return true;
+      }));
   }
 }
