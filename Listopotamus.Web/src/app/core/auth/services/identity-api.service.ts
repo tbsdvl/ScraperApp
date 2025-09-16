@@ -1,6 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { TokenService } from './auth.service';
 import { environment } from '../../../../environment';
 import { Observable } from 'rxjs';
 import { RegisterModel } from '../models/register.model';
@@ -13,7 +12,7 @@ import { TwoFaCommand } from '../commands/two-fa.command';
 export class IdentityApiService {
   private base = environment.identityApiBaseUrl;
 
-  constructor(private http: HttpClient, private tokens: TokenService) {}
+  constructor(private http: HttpClient) {}
 
   public register(req: RegisterModel): Observable<Object> {
     return this.http.post(`${this.base}/register`, req, {
@@ -21,7 +20,6 @@ export class IdentityApiService {
     });
   }
 
-  // services/identity-api.service.ts
   public login(req: LoginModel): Observable<Object> {
     const params = new HttpParams().set('useCookies', 'true');
     return this.http.post(`${this.base}/login`, req, {
