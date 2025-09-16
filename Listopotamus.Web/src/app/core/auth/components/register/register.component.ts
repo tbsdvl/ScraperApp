@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { BaseIdentityComponent } from '../base-identity/base-identity.component';
 
 @Component({
@@ -6,10 +6,8 @@ import { BaseIdentityComponent } from '../base-identity/base-identity.component'
   templateUrl: './register.component.html',
   standalone: false,
 })
-export class RegisterComponent extends BaseIdentityComponent implements OnInit {
+export class RegisterComponent extends BaseIdentityComponent {
   constructor() {
     super();
   }
-
-  public ngOnInit(): void {}
 }
