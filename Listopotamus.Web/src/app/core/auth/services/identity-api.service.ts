@@ -14,15 +14,15 @@ export class IdentityApiService {
 
   constructor(private http: HttpClient) {}
 
-  public register(req: RegisterModel): Observable<Object> {
-    return this.http.post(`${this.base}/register`, req, {
+  public register(body: RegisterModel): Observable<Object> {
+    return this.http.post(`${this.base}/register`, body, {
       withCredentials: false,
     });
   }
 
-  public login(req: LoginModel): Observable<Object> {
+  public login(body: LoginModel): Observable<Object> {
     const params = new HttpParams().set('useCookies', 'true');
-    return this.http.post(`${this.base}/login`, req, {
+    return this.http.post(`${this.base}/login`, body, {
       params,
       withCredentials: true,
     });
