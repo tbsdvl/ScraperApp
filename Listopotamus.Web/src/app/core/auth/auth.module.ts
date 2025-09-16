@@ -3,17 +3,16 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { QRCodeModule } from 'angularx-qrcode';
-
-import { AUTH_ROUTES } from './auth.routes';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
 import { LogoutComponent } from './components/logout/logout.component';
-import { TwoFaSetupComponent } from './components/twofa-setup/twofa-setup.component';
-import { TwoFaVerifyComponent } from './components/twofa-verify/twofa-verify.component';
-import { LoginMenuComponent } from './components/login-menu/login-menu.component';
+import { TwoFaSetupComponent } from './components/two-factor-auth/two-fa-setup/two-fa-setup.component';
+import { TwoFaVerifyComponent } from './components/two-factor-auth/two-fa-verify/two-fa-verify.component';
+
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
 import { AuthStateService } from './services/auth-state.service';
+import { AUTH_ROUTES } from './routes/auth.routes';
 
 @NgModule({
   declarations: [
@@ -22,7 +21,7 @@ import { AuthStateService } from './services/auth-state.service';
     LogoutComponent,
     TwoFaSetupComponent,
     TwoFaVerifyComponent,
-    LoginMenuComponent,
+    LoginComponent,
   ],
   imports: [
     CommonModule,
@@ -39,6 +38,6 @@ import { AuthStateService } from './services/auth-state.service';
     },
     AuthStateService,
   ],
-  exports: [LoginMenuComponent],
+  exports: [LoginComponent],
 })
 export class AuthModule {}
