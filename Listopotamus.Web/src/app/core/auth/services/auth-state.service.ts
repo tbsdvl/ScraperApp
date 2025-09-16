@@ -9,7 +9,7 @@ export class AuthStateService {
   isAuth$ = this._isAuth.asObservable();
 
   constructor(private http: HttpClient) {}
-  
+
   public refresh() {
     return this.http
       .get<ManageInfoModel>('/identity/manage/info', { withCredentials: true })

@@ -11,16 +11,17 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   private isSignedIn(): Observable<boolean> {
-    return this.authService.getManageInfo()
-      .pipe(map((result) => {
+    return this.authService.getManageInfo().pipe(
+      map((result) => {
         const valid = !!(result && result.email && result.email.length > 0);
         return valid;
-      }));
+      })
+    );
   }
 
   public canActivate(): Observable<boolean> {
-    return this.isSignedIn()
-      .pipe(map((result) => {
+    return this.isSignedIn().pipe(
+      map((result) => {
         if (!result) {
           this.router.parseUrl('/login');
 
@@ -28,6 +29,7 @@ export class AuthGuard implements CanActivate {
         }
 
         return true;
-      }));
+      })
+    );
   }
 }

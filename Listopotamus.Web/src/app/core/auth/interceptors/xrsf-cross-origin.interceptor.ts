@@ -12,7 +12,7 @@ export class XsrfCrossOriginInterceptor implements HttpInterceptor {
     const m = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
     return m ? decodeURIComponent(m[1]) : null;
   }
-  
+
   public intercept(req: HttpRequest<any>, next: HttpHandler) {
     const isCrossApi =
       req.url.startsWith(environment.identityApiBaseUrl) ||
