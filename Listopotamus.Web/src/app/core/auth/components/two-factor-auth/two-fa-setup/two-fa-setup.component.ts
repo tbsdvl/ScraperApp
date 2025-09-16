@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 @Component({
   selector: 'app-two-fa-setup',
   templateUrl: './two-fa-setup.component.html',
-  styleUrls: ['./two-fa-setup.component.css'],
+  standalone: false,
 })
 export class TwoFaSetupComponent implements OnInit {
   constructor() {}
