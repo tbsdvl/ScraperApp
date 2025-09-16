@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
-import { Observable, Subject, takeUntil } from 'rxjs';
+import { MonoTypeOperatorFunction, Observable, Subject, takeUntil } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { ProxyApiService } from '../../services/proxy-api.service';
 import { NotificationService } from '../../services/notification.service';
@@ -45,8 +45,8 @@ export abstract class BaseComponent implements OnInit, OnDestroy {
     return operation.pipe(finalize(() => this.stopLoading()));
   }
 
-  protected takeUntilDestroyed<T>(source: Observable<T>): Observable<T> {
-    return source.pipe(takeUntil(this.destroy$));
+  protected takeUntilDestroyed<T>(): MonoTypeOperatorFunction<T> {
+    return takeUntil(this.destroy$);
   }
 
   protected navigate(
