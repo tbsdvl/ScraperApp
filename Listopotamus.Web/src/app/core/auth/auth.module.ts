@@ -12,6 +12,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
 import { AuthStateService } from './services/auth-state.service';
 import { AUTH_ROUTES } from './routes/auth.routes';
+import { QRCodeComponent } from 'angularx-qrcode';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { AUTH_ROUTES } from './routes/auth.routes';
     LoginComponent,
   ],
   imports: [
+    QRCodeComponent,
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
