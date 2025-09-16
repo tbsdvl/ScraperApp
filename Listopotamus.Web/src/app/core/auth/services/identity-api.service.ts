@@ -3,40 +3,11 @@ import { Injectable } from '@angular/core';
 import { TokenService } from './auth.service';
 import { environment } from '../../../../environment';
 import { Observable } from 'rxjs';
-
-export interface LoginModel {
-  email: string;
-  password: string;
-  twoFactorCode?: string;
-  twoFactorRecoveryCode?: string;
-}
-
-export interface RegisterModel {
-  email: string;
-  password: string;
-}
-
-export interface ManageInfoModel {
-  email: string;
-  isEmailConfirmed: boolean;
-  isTwoFactorEnabled: boolean;
-  authenticatorKey?: string;
-  recoveryCodesLeft?: number;
-}
-
-export interface ManageInfoResultModel {
-  email: string;
-}
-
-export interface TwoFaCommand {
-  action:
-    | 'GenerateQrCode'
-    | 'Enable'
-    | 'Disable'
-    | 'GenerateRecoveryCodes'
-    | 'ResetAuthenticator';
-  twoFactorCode?: string;
-}
+import { RegisterModel } from '../models/register.model';
+import { LoginModel } from '../models/login.model';
+import { ManageInfoResultModel } from '../models/manage-info-result.model';
+import { ManageInfoModel } from '../models/manage-info.model';
+import { TwoFaCommand } from '../commands/two-fa.command';
 
 @Injectable({ providedIn: 'root' })
 export class IdentityApiService {
