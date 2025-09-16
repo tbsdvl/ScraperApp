@@ -1,1 +1,5 @@
-<p>login works!</p>
+<app-login-form (formSubmit)="onSubmit($event)">
+  <button formActions type="submit" [disabled]="isLoading">
+    {{ isLoading ? 'Signing in…' : 'Sign in' }}
+  </button>
+</app-login-form>

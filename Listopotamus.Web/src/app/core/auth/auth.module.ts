@@ -13,6 +13,7 @@ import { CredentialsInterceptor } from './interceptors/credentials.interceptor';
 import { AuthStateService } from './services/auth-state.service';
 import { AUTH_ROUTES } from './routes/auth.routes';
 import { QRCodeComponent } from 'angularx-qrcode';
+import { LoginFormComponent } from './components/login/login-form/login-form.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,7 @@ import { QRCodeComponent } from 'angularx-qrcode';
     LogoutComponent,
     TwoFaSetupComponent,
     TwoFaVerifyComponent,
-    LoginComponent,
+    LoginFormComponent,
   ],
   imports: [
     QRCodeComponent,

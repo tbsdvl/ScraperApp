@@ -8,7 +8,7 @@ import { ModelFormGroup } from '../../models/model-form-group.model';
   selector: 'app-base-form',
   template: '',
 })
-export abstract class BaseFormComponent<TValue extends Record<string, unknown> = Record<string, unknown>>
+export abstract class BaseFormComponent<TValue>
   extends BaseComponent
   implements OnInit
 {
@@ -54,18 +54,18 @@ export abstract class BaseFormComponent<TValue extends Record<string, unknown> =
   }
 
   protected getValue(): TValue {
-    return this.form.getRawValue();
+    return this.form.getRawValue() as TValue;
   }
 
   protected patchFormValue(
-    value: Partial<TValue>,
+    value: Partial<unknown>,
     options?: { emitEvent?: boolean }
   ): void {
     this.form.patchValue(value, options);
   }
 
-  protected resetForm(value?: Partial<TValue>): void {
-    this.form.reset(value);
+  protected resetForm(): void {
+    this.form.reset();
     this.submitted = false;
   }
 
