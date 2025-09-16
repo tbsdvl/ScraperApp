@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, tap } from 'rxjs';
-import { ManageInfo } from './identity-api.service';
+import { BehaviorSubject, catchError, of, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { ManageInfoModel } from '../models/manage-info.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthStateService {
@@ -11,7 +11,7 @@ export class AuthStateService {
   constructor(private http: HttpClient) {}
   refresh() {
     return this.http
-      .get<ManageInfo>('/identity/manage/info', { withCredentials: true })
+      .get<ManageInfoModel>('/identity/manage/info', { withCredentials: true })
       .pipe(
         tap((_) => this._isAuth.next(true)),
         catchError((_) => {
