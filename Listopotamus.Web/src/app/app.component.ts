@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
+  selector: "app-root",
+  templateUrl: "./app.component.html",
   standalone: false,
-  styleUrl: './app.component.css'
+  styleUrl: "./app.component.css"
 })
 export class AppComponent {
   otpauthUri!: string;
-  title = 'Listopotamus';
+  title = "Listopotamus";
 
   constructor() {
     this.encode();
