@@ -1,12 +1,13 @@
-import { Routes } from "@angular/router";
+import { RouterModule, Routes } from "@angular/router";
 import { AuthGuard } from "../guards/auth.guard";
 import { LoginComponent } from "../components/login/login.component";
 import { RegisterComponent } from "../components/register/register.component";
 import { LogoutComponent } from "../components/logout/logout.component";
 import { TwoFaSetupComponent } from "../components/two-factor-auth/two-fa-setup/two-fa-setup.component";
 import { TwoFaVerifyComponent } from "../components/two-factor-auth/two-fa-verify/two-fa-verify.component";
+import { NgModule } from "@angular/core";
 
-export const AUTH_ROUTES: Routes = [
+const routes: Routes = [
   { path: "login", component: LoginComponent },
   { path: "register", component: RegisterComponent },
   { path: "logout", component: LogoutComponent, canActivate: [AuthGuard] },
@@ -21,3 +22,9 @@ export const AUTH_ROUTES: Routes = [
     canActivate: [AuthGuard],
   },
 ];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule],
+})
+export class AuthRoutingModule {};

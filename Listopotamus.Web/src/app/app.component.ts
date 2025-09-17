@@ -7,8 +7,8 @@ import { Component } from "@angular/core";
   styleUrl: "./app.component.css"
 })
 export class AppComponent {
-  otpauthUri!: string;
-  title = "Listopotamus";
+  public otpauthUri!: string;
+  public title = "Listopotamus";
 
   constructor() {
     this.encode();

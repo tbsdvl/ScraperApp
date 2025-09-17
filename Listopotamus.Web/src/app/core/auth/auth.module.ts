@@ -11,9 +11,9 @@ import { TwoFaVerifyComponent } from "./components/two-factor-auth/two-fa-verify
 import { HTTP_INTERCEPTORS } from "@angular/common/http";
 import { CredentialsInterceptor } from "./interceptors/credentials.interceptor";
 import { AuthStateService } from "./services/auth-state.service";
-import { AUTH_ROUTES } from "./routes/auth.routes";
 import { QRCodeComponent } from "angularx-qrcode";
 import { LoginFormComponent } from "./components/login/login-form/login-form.component";
+import { AuthRoutingModule } from "./routes/auth-routing.module";
 
 @NgModule({
   declarations: [
@@ -29,7 +29,7 @@ import { LoginFormComponent } from "./components/login/login-form/login-form.com
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule.forChild(AUTH_ROUTES),
+    AuthRoutingModule,
   ],
   providers: [
     {
