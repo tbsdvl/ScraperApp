@@ -4,9 +4,10 @@ import { environment } from "../../../../environment";
 import { Observable } from "rxjs";
 import { RegisterModel } from "../models/register.model";
 import { LoginModel } from "../models/login.model";
-import { ManageInfoResultModel } from "../models/manage-info-result.model";
+import { Manage2FAInfoModel } from "../models/manage-2fa-info.model";
 import { ManageInfoModel } from "../models/manage-info.model";
 import { TwoFaCommand } from "../commands/two-fa.command";
+import { Manage2FAModel } from "../models/manage-2fa.model";
 
 @Injectable({ providedIn: "root" })
 export class IdentityApiService {
@@ -32,8 +33,14 @@ export class IdentityApiService {
     return this.http.post(`${this.base}/logout`, {}, { withCredentials: true });
   }
 
-  public getManageInfo(): Observable<ManageInfoResultModel> {
+  public getManageInfo(): Observable<ManageInfoModel> {
     return this.http.get<ManageInfoModel>(`${this.base}/manage/info`, {
+      withCredentials: true,
+    });
+  }
+
+  public manage2FA(body: Manage2FAModel | {}): Observable<Manage2FAInfoModel> {
+    return this.http.post<Manage2FAInfoModel>(`${this.base}/manage/2fa`, body, {
       withCredentials: true,
     });
   }

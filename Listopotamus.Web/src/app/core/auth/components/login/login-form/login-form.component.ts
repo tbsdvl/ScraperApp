@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { Validators } from "@angular/forms";
 
 import { LoginModel } from "../../../models/login.model";
@@ -11,6 +11,7 @@ import { ModelFormGroup } from "../../../../models/model-form-group.model";
   standalone: false,
 })
 export class LoginFormComponent extends BaseFormComponent<LoginModel> {
+  @Input() public showTwoFactorCodeControl!: boolean;
   @Output() public formSubmit = new EventEmitter<LoginModel>();
 
   protected override buildForm(): ModelFormGroup<LoginModel> {

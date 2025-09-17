@@ -25,6 +25,18 @@
     </p>
   </div>
 
+  <div *ngIf="showTwoFactorCodeControl" class="form-field" [class.invalid]="isControlInvalid('twoFactorCode')">
+    <label for="login-two-factor">Two Factor Code</label>
+    <input
+      id="login-two-factor"
+      type="password"
+      formControlName="twoFactorCode"
+    />
+    <p class="error" *ngIf="hasError('twoFactorCode', 'required')">
+      Two Factor Code is required.
+    </p>
+  </div>
+
   <div class="form-actions">
     <ng-content select="[formActions]"></ng-content>
   </div>

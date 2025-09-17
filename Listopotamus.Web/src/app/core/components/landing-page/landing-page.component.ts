@@ -29,6 +29,9 @@ export class LandingPageComponent extends BaseComponent {
           } else {
             this.navigate(["login"]);
           }
+        },
+        error: () => {
+          this.navigate(["login"]);
         }
       })
   }

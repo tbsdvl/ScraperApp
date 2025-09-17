@@ -9,7 +9,7 @@ import { AuthModule } from "./auth/auth.module";
     DashboardComponent,
   ],
   imports: [
-    AuthModule
+    AuthModule,
   ],
   exports: [
     LandingPageComponent,

@@ -1,4 +1,4 @@
-<app-login-form (formSubmit)="onSubmit($event)">
+<app-login-form (formSubmit)="onSubmit($event)" [showTwoFactorCodeControl]="showTwoFactorCodeControl">
   <button formActions type="submit" [disabled]="isLoading">
     {{ isLoading ? 'Signing in…' : 'Sign in' }}
   </button>

@@ -9,6 +9,22 @@ import { BaseIdentityComponent } from "../base-identity/base-identity.component"
   standalone: false,
 })
 export class LoginComponent extends BaseIdentityComponent {
+  public showTwoFactorCodeControl: boolean = false;
+
+  public override ngOnInit(): void {
+    this.identityApiService.manage2FA({})
+      .subscribe({
+        next: (result) => {
+          if (result.isTwoFactorEnabled) {
+            this.showTwoFactorCodeControl = true;
+          }
+        },
+        error: () => {
+          
+        }
+      })
+  }
+
   public onSubmit(model: LoginModel): void {
     this.withLoading(this.identityApiService.login(model))
       .pipe(this.takeUntilDestroyed())

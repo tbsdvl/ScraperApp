@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "ScraperApp": {
+    "Listopotamus.Web": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -69,15 +69,17 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "ScraperApp:build:production"
+              "buildTarget": "Listopotamus.Web:build:production"
             },
             "development": {
-              "buildTarget": "ScraperApp:build:development"
+              "buildTarget": "Listopotamus.Web:build:development"
             }
           },
           "defaultConfiguration": "development",
           "options": {
-            "port": 62516
+            "port": 62516,
+            "proxyConfig": "proxy.conf.json",
+            "ssl": true
           }
         },
         "extract-i18n": {
