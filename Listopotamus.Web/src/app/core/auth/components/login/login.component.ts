@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component } from "@angular/core";
 
-import { LoginModel } from '../../models/login.model';
-import { BaseIdentityComponent } from '../base-identity/base-identity.component';
+import { LoginModel } from "../../models/login.model";
+import { BaseIdentityComponent } from "../base-identity/base-identity.component";
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
+  selector: "app-login",
+  templateUrl: "./login.component.html",
   standalone: false,
 })
 export class LoginComponent extends BaseIdentityComponent {
@@ -14,10 +14,10 @@ export class LoginComponent extends BaseIdentityComponent {
       .pipe(this.takeUntilDestroyed())
       .subscribe({
         next: () => {
-          this.notifySuccess('Signed in successfully.');
+          this.notifySuccess("Signed in successfully.");
         },
         error: (error) => {
-          this.handleError(error, 'Unable to sign in.');
+          this.handleError(error, "Unable to sign in.");
         },
       });
   }

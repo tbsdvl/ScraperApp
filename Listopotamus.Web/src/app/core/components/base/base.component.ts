@@ -1,13 +1,13 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
-import { MonoTypeOperatorFunction, Observable, Subject, takeUntil } from 'rxjs';
-import { finalize } from 'rxjs/operators';
-import { ProxyApiService } from '../../services/proxy-api.service';
-import { NotificationService } from '../../services/notification.service';
+import { Component, inject, OnDestroy, OnInit } from "@angular/core";
+import { ActivatedRoute, NavigationExtras, Router } from "@angular/router";
+import { MonoTypeOperatorFunction, Observable, Subject, takeUntil } from "rxjs";
+import { finalize } from "rxjs/operators";
+import { ProxyApiService } from "../../services/proxy-api.service";
+import { NotificationService } from "../../services/notification.service";
 
 @Component({
-  selector: 'app-base',
-  template: ''
+  selector: "app-base",
+  template: ""
 })
 export abstract class BaseComponent implements OnInit, OnDestroy {
   protected readonly proxyService = inject(ProxyApiService);
@@ -66,7 +66,7 @@ export abstract class BaseComponent implements OnInit, OnDestroy {
 
   protected handleError(
     error: unknown,
-    fallbackMessage = 'An unexpected error occurred.'
+    fallbackMessage = "An unexpected error occurred."
   ): void {
     console.error(error);
     this.notificationService.showError(fallbackMessage, error);

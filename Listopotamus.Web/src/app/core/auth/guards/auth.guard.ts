@@ -1,9 +1,9 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { IdentityApiService } from '../services/identity-api.service';
-import { map, Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { CanActivate, Router } from "@angular/router";
+import { IdentityApiService } from "../services/identity-api.service";
+import { map, Observable } from "rxjs";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class AuthGuard implements CanActivate {
   constructor(
     private router: Router,
@@ -23,7 +23,7 @@ export class AuthGuard implements CanActivate {
     return this.isSignedIn().pipe(
       map((result) => {
         if (!result) {
-          this.router.parseUrl('/login');
+          this.router.parseUrl("/login");
 
           return false;
         }

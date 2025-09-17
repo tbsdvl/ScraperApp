@@ -1,9 +1,9 @@
-import { Component } from '@angular/core';
-import { BaseIdentityComponent } from '../base-identity/base-identity.component';
+import { Component } from "@angular/core";
+import { BaseIdentityComponent } from "../base-identity/base-identity.component";
 
 @Component({
-  selector: 'app-logout',
-  templateUrl: './logout.component.html',
+  selector: "app-logout",
+  templateUrl: "./logout.component.html",
   standalone: false,
 })
 export class LogoutComponent extends BaseIdentityComponent {

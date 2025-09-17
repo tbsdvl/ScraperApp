@@ -2,9 +2,9 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-} from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { environment } from '../../../../environment';
+} from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { environment } from "../../../../environment";
 
 @Injectable()
 export class XsrfCrossOriginInterceptor implements HttpInterceptor {
@@ -18,9 +18,9 @@ export class XsrfCrossOriginInterceptor implements HttpInterceptor {
       req.url.startsWith(environment.identityApiBaseUrl) ||
       req.url.startsWith(environment.proxyApiBaseUrl);
     if (!isCrossApi) return next.handle(req);
-    const token = this.getCookie('XSRF-TOKEN'); // server sets this
+    const token = this.getCookie("XSRF-TOKEN"); // server sets this
     return next.handle(
-      token ? req.clone({ setHeaders: { 'X-XSRF-TOKEN': token } }) : req
+      token ? req.clone({ setHeaders: { "X-XSRF-TOKEN": token } }) : req
     );
   }
 }

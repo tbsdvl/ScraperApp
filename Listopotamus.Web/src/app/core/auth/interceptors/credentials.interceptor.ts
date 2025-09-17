@@ -2,9 +2,9 @@ import {
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-} from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { environment } from '../../../../environment';
+} from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { environment } from "../../../../environment";
 
 @Injectable()
 export class CredentialsInterceptor implements HttpInterceptor {

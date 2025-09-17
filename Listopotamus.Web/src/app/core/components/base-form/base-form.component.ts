@@ -1,12 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { AbstractControl, FormBuilder, ValidationErrors } from '@angular/forms';
+import { Component, inject, OnInit } from "@angular/core";
+import { AbstractControl, FormBuilder, ValidationErrors } from "@angular/forms";
 
-import { BaseComponent } from '../base/base.component';
-import { ModelFormGroup } from '../../models/model-form-group.model';
+import { BaseComponent } from "../base/base.component";
+import { ModelFormGroup } from "../../models/model-form-group.model";
 
 @Component({
-  selector: 'app-base-form',
-  template: '',
+  selector: "app-base-form",
+  template: "",
 })
 export abstract class BaseFormComponent<TValue>
   extends BaseComponent
@@ -50,7 +50,7 @@ export abstract class BaseFormComponent<TValue>
   }
 
   protected getInvalidSubmitMessage(): string | null {
-    return 'Please correct the errors in the form before continuing.';
+    return "Please correct the errors in the form before continuing.";
   }
 
   protected getValue(): TValue {

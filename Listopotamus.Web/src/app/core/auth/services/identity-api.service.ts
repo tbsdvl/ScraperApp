@@ -1,14 +1,14 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { environment } from '../../../../environment';
-import { Observable } from 'rxjs';
-import { RegisterModel } from '../models/register.model';
-import { LoginModel } from '../models/login.model';
-import { ManageInfoResultModel } from '../models/manage-info-result.model';
-import { ManageInfoModel } from '../models/manage-info.model';
-import { TwoFaCommand } from '../commands/two-fa.command';
+import { HttpClient, HttpParams } from "@angular/common/http";
+import { Injectable } from "@angular/core";
+import { environment } from "../../../../environment";
+import { Observable } from "rxjs";
+import { RegisterModel } from "../models/register.model";
+import { LoginModel } from "../models/login.model";
+import { ManageInfoResultModel } from "../models/manage-info-result.model";
+import { ManageInfoModel } from "../models/manage-info.model";
+import { TwoFaCommand } from "../commands/two-fa.command";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class IdentityApiService {
   private base = environment.identityApiBaseUrl;
 
@@ -21,7 +21,7 @@ export class IdentityApiService {
   }
 
   public login(body: LoginModel): Observable<Object> {
-    const params = new HttpParams().set('useCookies', 'true');
+    const params = new HttpParams().set("useCookies", "true");
     return this.http.post(`${this.base}/login`, body, {
       params,
       withCredentials: true,
