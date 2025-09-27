@@ -1,6 +1,7 @@
-const PROXY_CONFIG = [{
+{
   "/identity": {
     "target": "https://localhost:7112",
+    "pathRewrite": {"^/identity" : ""},
     "secure": false,
     "changeOrigin": true,
     "logLevel": "debug",
@@ -8,6 +9,4 @@ const PROXY_CONFIG = [{
       "Connection": "keep-alive"
     }
   }
-}];
-
-module.exports = PROXY_CONFIG;
+}

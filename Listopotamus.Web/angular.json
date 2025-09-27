@@ -78,10 +78,10 @@
           "defaultConfiguration": "development",
           "options": {
             "port": 62516,
-            "proxyConfig": "proxy.conf.js",
+            "proxyConfig": "proxy.conf.json",
             "ssl": true,
-            "sslKey": "certs/listopotamus-web.key",
-            "sslCert": "certs/listopotamus-web.cert"
+            "sslKey": "./certs/listopotamus-web.key",
+            "sslCert": "./certs/listopotamus-web.cert"
           }
         },
         "extract-i18n": {

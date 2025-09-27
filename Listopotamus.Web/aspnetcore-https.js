@@ -3,10 +3,9 @@ const { existsSync, mkdirSync } = require('fs');
 const { resolve, join } = require('path');
 const { spawnSync } = require('child_process');
 
-const certName = process.argv.find(a => a.startsWith('--name='))?.split('=')[1] ?? 'listopotamus-web';
 const certFolder = resolve(__dirname, 'certs');
-const certPath = join(certFolder, `localhost-cert.pem`);
-const keyPath = join(certFolder, `$localhost-key.pem`);
+const certPath = join(certFolder, `listopotamus-web.cert`);
+const keyPath = join(certFolder, `$listopotamus-web.key`);
 
 if (!existsSync(certFolder)) {
   mkdirSync(certFolder, { recursive: true });
