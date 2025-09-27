@@ -9,6 +9,7 @@ import { BaseIdentityComponent } from "../base-identity/base-identity.component"
   standalone: false,
 })
 export class LoginComponent extends BaseIdentityComponent {
+  public loaded = false;
   public showTwoFactorCodeControl: boolean = false;
 
   public override ngOnInit(): void {
@@ -16,9 +17,7 @@ export class LoginComponent extends BaseIdentityComponent {
       .pipe(this.takeUntilDestroyed())
       .subscribe({
         next: (result) => {
-          if (result.isTwoFactorEnabled) {
-            this.showTwoFactorCodeControl = true;
-          }
+          this.navigate([""]);
         },
         error: () => {
           
