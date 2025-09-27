@@ -43,3 +43,6 @@ Thumbs.db
 
 # Codex Patches
 /patches
+
+# Local Certificates
+/certs
