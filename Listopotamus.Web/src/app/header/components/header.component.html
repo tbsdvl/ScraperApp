@@ -1,0 +1,52 @@
+<ng-container *ngIf="!isLoading">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" routerLink="/">Listopotamus</a>
+      
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+          <!-- Links for all users -->
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/" routerLinkActive="active">
+              Landing Page
+            </a>
+          </li>
+          
+          <!-- Links for authenticated users -->
+          <li class="nav-item" *ngIf="isLoggedIn">
+            <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+              Dashboard
+            </a>
+          </li>
+        </ul>
+        
+        <ul class="navbar-nav">
+          <!-- Links for unauthenticated users -->
+          <li class="nav-item" *ngIf="!isLoggedIn">
+            <a class="nav-link" routerLink="/login" routerLinkActive="active">
+              Login
+            </a>
+          </li>
+          
+          <li class="nav-item" *ngIf="!isLoggedIn">
+            <a class="nav-link" routerLink="/registration" routerLinkActive="active">
+              Register
+            </a>
+          </li>
+          
+          <!-- Links for authenticated users -->
+          <li class="nav-item" *ngIf="isLoggedIn">
+            <a class="nav-link" routerLink="/logout" routerLinkActive="active">
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</ng-container>

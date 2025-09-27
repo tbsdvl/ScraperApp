@@ -10,9 +10,15 @@ import {
 } from "@angular/common/http";
 import { XsrfCrossOriginInterceptor } from "./core/auth/interceptors/xrsf-cross-origin.interceptor";
 import { CoreModule } from "./core/core.module";
+import { DashboardComponent } from "./dashboard/components/dashboard.component";
+import { LandingPageComponent } from "./landing-page/components/landing-page.component";
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    DashboardComponent,
+    LandingPageComponent,
+    AppComponent,
+  ],
   imports: [
     CoreModule,
     BrowserModule,

@@ -1,0 +1,5 @@
+<app-registration-form *ngIf="!isLoading" (formSubmit)="onSubmit($event)">
+  <button formActions type="submit">
+    {{ "Register" }}
+  </button>
+</app-registration-form>

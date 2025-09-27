@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../../../environment";
 import { Observable } from "rxjs";
-import { RegisterModel } from "../models/register.model";
+import { RegistrationModel } from "../models/registration.model";
 import { LoginModel } from "../models/login.model";
 import { Manage2FAInfoModel } from "../models/manage-2fa-info.model";
 import { ManageInfoModel } from "../models/manage-info.model";
@@ -15,7 +15,7 @@ export class IdentityApiService {
 
   constructor(private http: HttpClient) {}
 
-  public register(body: RegisterModel): Observable<Object> {
+  public register(body: RegistrationModel): Observable<Object> {
     return this.http.post(`${this.base}/register`, body, {
       withCredentials: false,
     });

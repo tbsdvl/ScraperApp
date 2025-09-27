@@ -12,7 +12,8 @@ export class LoginComponent extends BaseIdentityComponent {
   public showTwoFactorCodeControl: boolean = false;
 
   public override ngOnInit(): void {
-    this.identityApiService.manage2FA({})
+    this.withLoading(this.identityApiService.manage2FA({}))
+      .pipe(this.takeUntilDestroyed())
       .subscribe({
         next: (result) => {
           if (result.isTwoFactorEnabled) {
@@ -22,7 +23,7 @@ export class LoginComponent extends BaseIdentityComponent {
         error: () => {
           
         }
-      })
+      });
   }
 
   public onSubmit(model: LoginModel): void {
@@ -32,9 +33,7 @@ export class LoginComponent extends BaseIdentityComponent {
         next: () => {
           this.notifySuccess("Signed in successfully.");
         },
-        error: (error) => {
-          this.handleError(error, "Unable to sign in.");
-        },
+        error: error => this.handleError(error, "Unable to sign in."),
       });
   }
 }

@@ -1,6 +1,6 @@
 import { Component } from "@angular/core";
-import { BaseComponent } from "../base/base.component";
-import { IdentityApiService } from "../../auth/services/identity-api.service";
+import { BaseComponent } from "../../core/components/base/base.component";
+import { IdentityApiService } from "../../core/auth/services/identity-api.service";
 
 @Component({
   selector: "app-landing-page",
@@ -25,7 +25,8 @@ export class LandingPageComponent extends BaseComponent {
       .subscribe({
         next: (result) => {
           if (result.email) {
-            this.navigate(["dashboard"]);
+            // this.navigate(["dashboard"]);
+            this.notifySuccess("At the dashboard");
           } else {
             this.navigate(["login"]);
           }
