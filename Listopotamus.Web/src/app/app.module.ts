@@ -12,11 +12,13 @@ import { XsrfCrossOriginInterceptor } from "./core/auth/interceptors/xrsf-cross-
 import { CoreModule } from "./core/core.module";
 import { DashboardComponent } from "./dashboard/components/dashboard.component";
 import { LandingPageComponent } from "./landing-page/components/landing-page.component";
+import { HeaderComponent } from "./header/components/header.component";
 
 @NgModule({
   declarations: [
     DashboardComponent,
     LandingPageComponent,
+    HeaderComponent,
     AppComponent,
   ],
   imports: [
