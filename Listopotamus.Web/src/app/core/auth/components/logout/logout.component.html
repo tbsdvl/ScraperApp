@@ -1,1 +1,19 @@
-<p>logout works!</p>
+<section class="logout">
+  <h1>Sign out</h1>
+
+  <p *ngIf="isLoading" class="logout__status">Signing you out…</p>
+
+  <ng-container *ngIf="!isLoading">
+    <p *ngIf="lastAttemptFailed" class="logout__status logout__status--error">
+      We couldn't sign you out. Please try again.
+    </p>
+
+    <p *ngIf="!lastAttemptFailed" class="logout__status">
+      Confirm that you want to sign out of your account.
+    </p>
+
+    <button type="button" class="btn btn-primary" (click)="onSignOut()" [disabled]="isLoading">
+      {{ hasAttempted ? "Try again" : "Sign out" }}
+    </button>
+  </ng-container>
+</section>

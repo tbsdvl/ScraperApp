@@ -1,6 +1,8 @@
 import { Component } from "@angular/core";
 import { BaseIdentityComponent } from "../base-identity/base-identity.component";
 import { RegistrationModel } from "../../models/registration.model";
+import { catchError, of } from "rxjs";
+import { HttpErrorResponse } from "@angular/common/http";
 
 @Component({
   selector: "app-registration",
@@ -13,15 +15,23 @@ export class RegistrationComponent extends BaseIdentityComponent {
   }
 
   public override ngOnInit(): void {
-    // check if user is logged in
-    this.identityApiService.manage2FA({})
-      .subscribe({
-        next: (result) => {
-          if (result) {
-            this.navigate(["dashboard"]);
+    this.identityApiService
+      .getManageInfo()
+      .pipe(
+        this.takeUntilDestroyed(),
+        catchError((error: unknown) => {
+          if (error instanceof HttpErrorResponse && error.status === 401) {
+            return of(null);
           }
-        },
-        error: error => this.handleError(error, "Unable to login")
+
+          this.handleError(error, "Unable to verify authentication state.");
+          return of(null);
+        })
+      )
+      .subscribe((result) => {
+        if (result) {
+          this.navigate(["dashboard"]);
+        }
       });
   }
 

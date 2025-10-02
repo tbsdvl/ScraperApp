@@ -1,1 +1,127 @@
-<p>two-fa-setup works!</p>
+<div class="two-fa-setup">
+  <h1>Two-Factor Authentication</h1>
+
+  <ng-container *ngIf="!isLoading; else loadingTemplate">
+    <div *ngIf="loadError" class="alert alert-danger" role="alert">
+      {{ loadError }}
+    </div>
+
+    <ng-container *ngIf="!loadError">
+      <section class="setup-section" *ngIf="sharedKey">
+        <h2>Authenticator App</h2>
+        <p>
+          Scan this QR code with your authenticator application or enter the
+          setup key manually.
+        </p>
+        <div class="qr-wrapper">
+          <qrcode
+            [qrdata]="sharedKey"
+            [width]="200"
+            errorCorrectionLevel="M"
+          ></qrcode>
+        </div>
+        <div class="shared-key">
+          <span class="label">Setup key:</span>
+          <code>{{ sharedKey }}</code>
+        </div>
+      </section>
+
+      <section class="status-section">
+        <h2>Status</h2>
+        <p *ngIf="isTwoFactorEnabled; else notEnabled">
+          Two-factor authentication is currently <strong>enabled</strong> on
+          your account.
+        </p>
+        <ng-template #notEnabled>
+          <p>
+            Two-factor authentication is <strong>not enabled</strong>. Complete
+            the verification below after scanning the QR code to protect your
+            account.
+          </p>
+        </ng-template>
+      </section>
+
+      <div *ngIf="actionError" class="alert alert-danger" role="alert">
+        {{ actionError }}
+      </div>
+
+      <section class="enable-section" *ngIf="!isTwoFactorEnabled">
+        <h3>Verify your authenticator app</h3>
+        <form [formGroup]="enableForm" (ngSubmit)="enableTwoFactor()">
+          <div class="form-group">
+            <label for="two-fa-code">Verification code</label>
+            <input
+              type="text"
+              id="two-fa-code"
+              formControlName="code"
+              class="form-control"
+              placeholder="Enter the 6-digit code"
+              autocomplete="one-time-code"
+            />
+            <div
+              class="invalid-feedback d-block"
+              *ngIf="enableForm.get('code')?.invalid && enableForm.get('code')?.touched"
+            >
+              A verification code is required.
+            </div>
+          </div>
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="isActionLoading"
+          >
+            {{ isActionLoading ? "Enabling..." : "Enable two-factor" }}
+          </button>
+        </form>
+      </section>
+
+      <section class="manage-section" *ngIf="isTwoFactorEnabled">
+        <h3>Manage your two-factor authentication</h3>
+        <p>
+          Recovery codes remaining:
+          <strong>{{ recoveryCodesLeft }}</strong>
+        </p>
+        <div class="button-group">
+          <button
+            class="btn btn-outline-primary"
+            type="button"
+            (click)="generateRecoveryCodes()"
+            [disabled]="isActionLoading"
+          >
+            {{ isActionLoading ? "Generating..." : "Generate new recovery codes" }}
+          </button>
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            (click)="resetAuthenticator()"
+            [disabled]="isActionLoading"
+          >
+            {{ isActionLoading ? "Resetting..." : "Reset authenticator app" }}
+          </button>
+          <button
+            class="btn btn-danger"
+            type="button"
+            (click)="disableTwoFactor()"
+            [disabled]="isActionLoading"
+          >
+            {{ isActionLoading ? "Disabling..." : "Disable two-factor" }}
+          </button>
+        </div>
+      </section>
+
+      <section class="recovery-codes" *ngIf="recoveryCodes?.length">
+        <h3>Recovery codes</h3>
+        <p>Store these recovery codes in a safe location.</p>
+        <ul>
+          <li *ngFor="let code of recoveryCodes">
+            <code>{{ code }}</code>
+          </li>
+        </ul>
+      </section>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #loadingTemplate>
+    <div class="loading">Loading two-factor authentication details...</div>
+  </ng-template>
+</div>
