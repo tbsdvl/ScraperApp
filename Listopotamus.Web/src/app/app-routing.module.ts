@@ -7,16 +7,15 @@ import { DashboardComponent } from "./dashboard/components/dashboard.component";
 const routes: Routes = [
   {
     path: "",
+    canActivate: [AuthGuard],
     children: [
       {
         path: "",
         component: LandingPageComponent,
-        canActivate: [AuthGuard],
       },
       {
         path: "dashboard",
         component: DashboardComponent,
-        canActivate: [AuthGuard],
       },
     ],
   },

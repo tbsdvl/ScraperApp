@@ -16,7 +16,7 @@ export class LoginComponent extends BaseIdentityComponent {
     this.withLoading(this.identityApiService.manage2FA({}))
       .pipe(this.takeUntilDestroyed())
       .subscribe({
-        next: (result) => {
+        next: () => {
           this.navigate([""]);
         },
         error: () => {
