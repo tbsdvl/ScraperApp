@@ -2,25 +2,27 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using Microsoft.EntityFrameworkCore;
 using Listopotamus.ApplicationCore;
-using Listopotamus.Infrastructure.Data;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Caching.Cosmos;
-using Microsoft.Azure.Cosmos.Fluent;
-using Microsoft.Extensions.Caching.Distributed;
-using Listopotamus.Infrastructure.Data.Repositories.Identity;
-using Listopotamus.Infrastructure.Security.Entities.Identity;
-using Listopotamus.Infrastructure.Security;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Listopotamus.ApplicationCore.Interfaces;
 using Listopotamus.ApplicationCore.Services;
-using Listopotamus.Infrastructure.Data.Services;
-using Listopotamus.Infrastructure.Data.Repositories.Scraper;
+using Listopotamus.Core.Models;
+using Listopotamus.Infrastructure.Data;
+using Listopotamus.Infrastructure.Data.Repositories.Identity;
 using Listopotamus.Infrastructure.Data.Repositories.Jobs;
+using Listopotamus.Infrastructure.Data.Repositories.Lookup;
+using Listopotamus.Infrastructure.Data.Repositories.Scraper;
+using Listopotamus.Infrastructure.Data.Services;
+using Listopotamus.Infrastructure.Security;
+using Listopotamus.Infrastructure.Security.Entities.Identity;
 using Listopotamus.Infrastructure.Services;
 using Listopotamus.Infrastructure.Workers;
-using Listopotamus.Infrastructure.Data.Repositories.Lookup;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Azure.Cosmos.Fluent;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Cosmos;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -46,6 +48,8 @@ builder.Services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
 });
 
 // add services
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 
 // Repositories
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
@@ -72,12 +76,17 @@ builder.Services.TryAddScoped<IRoleValidator<Role>, RoleValidator<Role>>();
 builder.Services.TryAddScoped<RoleManager<Role>>();
 builder.Services.TryAddScoped<SignInManager<User>>();
 builder.Services
-    .AddIdentityCore<User>()
+    .AddIdentityCore<User>(options =>
+    {
+        options.SignIn.RequireConfirmedEmail = true;
+        options.User.RequireUniqueEmail = true;
+    })
     .AddUserStore<ApplicationUserStore<ApplicationDbContext>>()
     .AddRoles<Role>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddUserManager<ApplicationUserManager>()
-    .AddRoleManager<ApplicationRoleManager>();
+    .AddRoleManager<ApplicationRoleManager>()
+    .AddDefaultTokenProviders();
 
 builder.Services
     .AddIdentityApiEndpoints<User>()
@@ -166,6 +175,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
