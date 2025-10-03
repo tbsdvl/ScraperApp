@@ -4,31 +4,26 @@ import { IdentityApiService } from "../../core/auth/services/identity-api.servic
 
 @Component({
   selector: "app-landing-page",
-  template: "",
+  template: "./landing-page.component.html",
   standalone: false,
 })
 export class LandingPageComponent extends BaseComponent {
+  public isEmailConfirmed: boolean = false;
 
   constructor(
     private authService: IdentityApiService,
   ) {
     super();
-
-    // determine whether or not the user is authenticated
-    // the identity API service exposes functions to check if a user is authenticated
-    // if the user is authenticated, then navigate to the dashboard
-    // otherwise, navigate to the login page.
   }
 
   public override ngOnInit(): void {
     this.authService.getManageInfo()
       .subscribe({
         next: (result) => {
-          if (result.email) {
-            // this.navigate(["dashboard"]);
-            this.notifySuccess("At the dashboard");
-          } else {
-            this.navigate(["login"]);
+          if (result.email && result.isEmailConfirmed) {
+            this.isEmailConfirmed = true;
+          } else if (result.email && !result.isEmailConfirmed) {
+            
           }
         },
         error: () => {
