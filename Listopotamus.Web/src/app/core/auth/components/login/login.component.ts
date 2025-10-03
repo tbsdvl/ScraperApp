@@ -13,7 +13,7 @@ export class LoginComponent extends BaseIdentityComponent {
   public showTwoFactorCodeControl: boolean = false;
 
   public override ngOnInit(): void {
-    this.withLoading(this.identityApiService.manage2FA({}))
+    this.withLoading(this.identityApiService.getManageInfo())
       .pipe(this.takeUntilDestroyed())
       .subscribe({
         next: () => {
