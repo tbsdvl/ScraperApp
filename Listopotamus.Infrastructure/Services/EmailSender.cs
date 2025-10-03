@@ -2,12 +2,13 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
+using FluentEmail.Core;
+using FluentEmail.Core.Interfaces;
+using FluentEmail.Mailgun;
 using Listopotamus.Core.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using SendGrid;
-using SendGrid.Helpers.Mail;
 
 namespace Listopotamus.Infrastructure.Services
 {
@@ -34,6 +35,21 @@ namespace Listopotamus.Infrastructure.Services
         private ILogger Logger { get; } = logger;
 
         /// <summary>
+        /// Gets the Mailgun sender.
+        /// </summary>
+        private ISender MailgunSender { get; } = CreateMailgunSender(optionsAccessor.Value, logger);
+
+        /// <summary>
+        /// Gets the configured sender email address.
+        /// </summary>
+        private string SenderEmail { get; } = ResolveSenderEmail(optionsAccessor.Value);
+
+        /// <summary>
+        /// Gets the configured sender name.
+        /// </summary>
+        private string SenderName { get; } = ResolveSenderName(optionsAccessor.Value);
+
+        /// <summary>
         /// Sends an email.
         /// </summary>
         /// <param name="toEmail">The recepient's email.</param>
@@ -42,41 +58,73 @@ namespace Listopotamus.Infrastructure.Services
         /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
         public async Task SendEmailAsync(string toEmail, string subject, string message)
         {
-            if (string.IsNullOrEmpty(this.Options.SendGridKey))
+            var email = new Email()
+                .SetFrom(this.SenderEmail, this.SenderName)
+                .To(toEmail)
+                .Subject(subject)
+                .Body(message, isHtml: true);
+
+            var response = await this.MailgunSender.SendAsync(email);
+
+            if (!response.Successful)
             {
-                throw new Exception("Null SendGridKey");
+                var errorMessage = response.ErrorMessages.Count > 0
+                    ? string.Join(", ", response.ErrorMessages)
+                    : "Unknown error";
+
+                this.Logger.LogError("Failed to send email to {Recipient}: {ErrorMessage}", toEmail, errorMessage);
+                throw new InvalidOperationException($"Failed to send email via Mailgun: {errorMessage}");
             }
 
-            await this.Execute(this.Options.SendGridKey, subject, message, toEmail);
+            this.Logger.LogInformation("Email to {Recipient} sent via Mailgun.", toEmail);
         }
 
-        /// <summary>
-        /// Sends an email using the SendGrid service.
-        /// </summary>
-        /// <param name="apiKey">The API key used to authenticate with the SendGrid service. Cannot be null or empty.</param>
-        /// <param name="subject">The subject line of the email. Cannot be null or empty.</param>
-        /// <param name="message">The content of the email, provided as both plain text and HTML. Cannot be null or empty.</param>
-        /// <param name="toEmail">The recipient's email address. Must be a valid email address and cannot be null or empty.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task Execute(string apiKey, string subject, string message, string toEmail)
+        private static ISender CreateMailgunSender(AuthMessageSenderOptions options, ILogger logger)
         {
-            var client = new SendGridClient(apiKey);
-            var msg = new SendGridMessage()
-            {
-                From = new EmailAddress("Joe@contoso.com", "Password Recovery"),
-                Subject = subject,
-                PlainTextContent = message,
-                HtmlContent = message,
-            };
-            msg.AddTo(new EmailAddress(toEmail));
+            ArgumentNullException.ThrowIfNull(options);
 
-            // Disable click tracking.
-            // See https://sendgrid.com/docs/User_Guide/Settings/tracking.html
-            msg.SetClickTracking(false, false);
-            var response = await client.SendEmailAsync(msg);
-            this.Logger.LogInformation(response.IsSuccessStatusCode
-                                   ? $"Email to {toEmail} queued successfully!"
-                                   : $"Failure Email to {toEmail}");
+            if (string.IsNullOrWhiteSpace(options.MailgunDomain))
+            {
+                throw new InvalidOperationException("Mailgun domain must be configured before sending email.");
+            }
+
+            if (string.IsNullOrWhiteSpace(options.MailgunApiKey))
+            {
+                throw new InvalidOperationException("Mailgun API key must be configured before sending email.");
+            }
+
+            var region = MailGunRegion.USA;
+            if (!string.IsNullOrWhiteSpace(options.MailgunRegion))
+            {
+                if (Enum.TryParse(options.MailgunRegion, out MailGunRegion parsedRegion))
+                {
+                    region = parsedRegion;
+                }
+                else
+                {
+                    logger.LogWarning("Invalid Mailgun region '{Region}' configured. Falling back to US region.", options.MailgunRegion);
+                }
+            }
+
+            return new MailgunSender(options.MailgunDomain, options.MailgunApiKey, region);
+        }
+
+        private static string ResolveSenderEmail(AuthMessageSenderOptions options)
+        {
+            ArgumentNullException.ThrowIfNull(options);
+
+            return string.IsNullOrWhiteSpace(options.SenderEmail)
+                ? "no-reply@localhost"
+                : options.SenderEmail;
+        }
+
+        private static string ResolveSenderName(AuthMessageSenderOptions options)
+        {
+            ArgumentNullException.ThrowIfNull(options);
+
+            return string.IsNullOrWhiteSpace(options.SenderName)
+                ? "Listopotamus"
+                : options.SenderName;
         }
     }
 }
