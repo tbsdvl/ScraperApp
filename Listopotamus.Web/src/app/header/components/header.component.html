@@ -36,7 +36,7 @@
           
           <!-- Links for authenticated users -->
           <li class="nav-item" *ngIf="isLoggedIn">
-            <a class="nav-link" routerLink="/logout" routerLinkActive="active">
+            <a class="nav-link" (click)="logout()" style="cursor: pointer;">
               Logout
             </a>
           </li>

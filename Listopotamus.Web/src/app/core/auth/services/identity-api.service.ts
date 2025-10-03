@@ -30,7 +30,7 @@ export class IdentityApiService {
   }
 
   public logout(): Observable<Object> {
-    return this.http.post(`${this.base}/logout`, {}, { withCredentials: true });
+    return this.http.post(`${this.base}/logout`, {}, { withCredentials: true, observe: 'response', responseType: 'text' });
   }
 
   public getManageInfo(): Observable<ManageInfoModel> {
