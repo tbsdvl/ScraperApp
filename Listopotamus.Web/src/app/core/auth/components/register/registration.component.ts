@@ -32,6 +32,7 @@ export class RegistrationComponent extends BaseIdentityComponent {
       .subscribe({
         next: () => {
           this.notifySuccess("Registered successfully.");
+          this.navigate(["dashboard"]);
         },
         error: error => this.handleError(error, "Unable to register.")
       })

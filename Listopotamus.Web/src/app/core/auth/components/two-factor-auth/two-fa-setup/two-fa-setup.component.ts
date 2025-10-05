@@ -16,6 +16,7 @@ export class TwoFaSetupComponent extends BaseIdentityComponent {
 
   public info: Manage2FAInfoModel | null = null;
   public sharedKey = "";
+  public otpauthUri = "";
   public recoveryCodes: string[] = [];
   public isTwoFactorEnabled = false;
   public recoveryCodesLeft = 0;
@@ -88,6 +89,7 @@ export class TwoFaSetupComponent extends BaseIdentityComponent {
         next: (info) => {
           this.info = info;
           this.sharedKey = info.sharedKey ?? "";
+          this.otpauthUri = `otpauth://totp/listopotamus:${info.email}?secret=${info.sharedKey}&issuer=listopotamus&digits=6&period=30`;
           this.recoveryCodes = info.recoveryCodes ?? [];
           this.isTwoFactorEnabled = info.isTwoFactorEnabled;
           this.recoveryCodesLeft = info.recoveryCodesLeft ?? this.recoveryCodes.length;
