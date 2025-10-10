@@ -1,0 +1,12 @@
+{
+  "/identity": {
+    "target": "https://localhost:7112",
+    "pathRewrite": {"^/identity" : ""},
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug",
+    "headers": {
+      "Connection": "keep-alive"
+    }
+  }
+}

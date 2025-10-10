@@ -2,7 +2,6 @@
 // Copyright (c) Psybersimian LLC. All rights reserved.
 // </copyright>
 
-using System.Transactions;
 using AutoMapper;
 using HtmlAgilityPack;
 using Listopotamus.ApplicationCore.DTOs;
@@ -13,6 +12,8 @@ using Listopotamus.Core;
 using Listopotamus.Resource;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Transactions;
 
 namespace Listopotamus.ApplicationCore.Services
 {
@@ -67,8 +68,32 @@ namespace Listopotamus.ApplicationCore.Services
         {
             searchCriteria.Url = service.GetUrl(searchCriteria);
 
-            var webUtility = new HtmlWeb();
+            var webUtility = new HtmlWeb
+            {
+                UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36",
+                UseCookies = true,
+                Timeout = 30000, // 30 seconds
+            };
+
+            webUtility.PreRequest += request =>
+            {
+                request.AutomaticDecompression = DecompressionMethods.Brotli | DecompressionMethods.GZip | DecompressionMethods.Deflate;
+                request.Referer = "https://www.ebay.com/";
+                request.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8";
+                request.Headers[HttpRequestHeader.AcceptLanguage] = "en-US,en;q=0.9";
+                request.Headers[HttpRequestHeader.CacheControl] = "no-cache";
+                request.Headers[HttpRequestHeader.Pragma] = "no-cache";
+                request.Headers[HttpRequestHeader.AcceptEncoding] = "gzip, deflate, br";
+                return true;
+            };
+
             var doc = await webUtility.LoadFromWebAsync(searchCriteria.Url);
+
+            if (doc.DocumentNode.InnerText.Contains("Pardon Our Interruption", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("eBay blocked the scraping request. The response indicates bot protection was triggered.");
+            }
+
             return doc;
         }
 

@@ -1,0 +1,97 @@
+<div class="two-fa-verify">
+  <h1>Verify Two-Factor Authentication</h1>
+
+  <ng-container *ngIf="!isLoading; else loadingTemplate">
+    <div *ngIf="loadError" class="alert alert-danger" role="alert">
+      {{ loadError }}
+    </div>
+
+    <ng-container *ngIf="!loadError">
+      <p *ngIf="email">
+        Enter a verification code for <strong>{{ email }}</strong> to complete
+        the setup.
+      </p>
+      <p *ngIf="!email">
+        Enter the verification code from your authenticator app or a recovery
+        code.
+      </p>
+
+      <div *ngIf="isTwoFactorEnabled" class="alert alert-info" role="status">
+        Two-factor authentication is already enabled. You can verify another
+        code or return to account management.
+      </div>
+
+      <div *ngIf="submitError" class="alert alert-danger" role="alert">
+        {{ submitError }}
+      </div>
+
+      <form [formGroup]="verificationForm" (ngSubmit)="submitVerification()">
+        <div class="form-group" *ngIf="!useRecoveryCode">
+          <label for="verification-code">Authenticator code</label>
+          <input
+            type="text"
+            id="verification-code"
+            formControlName="verificationCode"
+            class="form-control"
+            placeholder="Enter the 6-digit code"
+            autocomplete="one-time-code"
+          />
+          <div
+            class="invalid-feedback d-block"
+            *ngIf="verificationForm.get('verificationCode')?.invalid && verificationForm.get('verificationCode')?.touched"
+          >
+            A verification code is required.
+          </div>
+        </div>
+
+        <div class="form-group" *ngIf="useRecoveryCode">
+          <label for="recovery-code">Recovery code</label>
+          <input
+            type="text"
+            id="recovery-code"
+            formControlName="recoveryCode"
+            class="form-control"
+            placeholder="Enter a recovery code"
+            autocomplete="one-time-code"
+          />
+          <div
+            class="invalid-feedback d-block"
+            *ngIf="verificationForm.get('recoveryCode')?.invalid && verificationForm.get('recoveryCode')?.touched"
+          >
+            A recovery code is required.
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button
+            class="btn btn-primary"
+            type="submit"
+            [disabled]="isSubmitting"
+          >
+            {{ isSubmitting ? "Verifying..." : "Verify" }}
+          </button>
+          <button
+            class="btn btn-link"
+            type="button"
+            (click)="toggleRecoveryCode()"
+          >
+            {{ useRecoveryCode
+              ? "Use an authenticator code instead"
+              : "Use a recovery code" }}
+          </button>
+          <button
+            class="btn btn-outline-secondary"
+            type="button"
+            (click)="goBackToAccount()"
+          >
+            Back to account management
+          </button>
+        </div>
+      </form>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #loadingTemplate>
+    <div class="loading">Loading verification details...</div>
+  </ng-template>
+</div>

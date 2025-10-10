@@ -1,0 +1,60 @@
+<ng-container>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" routerLink="/">Listopotamus</a>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto" *ngIf="isLoggedIn">
+          <!-- Links for all users -->
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/" routerLinkActive="active">
+              Home
+            </a>
+          </li>
+          
+          <!-- Links for authenticated users -->
+          <li class="nav-item" *ngIf="isLoggedIn">
+            <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+              Dashboard
+            </a>
+          </li>
+        </ul>
+        
+        <ul class="navbar-nav">
+          <!-- Links for unauthenticated users -->
+          <li class="nav-item" *ngIf="!isLoggedIn">
+            <a class="nav-link" routerLink="/login" routerLinkActive="active">
+              Login
+            </a>
+          </li>
+          
+          <li class="nav-item" *ngIf="!isLoggedIn">
+            <a class="nav-link" routerLink="/registration" routerLinkActive="active">
+              Register
+            </a>
+          </li>
+
+          <li class="nav-item dropdown" *ngIf="isLoggedIn">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Settings
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" routerLink="/manage/2fa/setup" routerLinkActive="active">
+                  Two-Factor Authentication Setup
+                </a>
+              </li>
+            </ul>
+          </li>
+          
+          <!-- Links for authenticated users -->
+          <li class="nav-item" *ngIf="isLoggedIn">
+            <a class="nav-link" (click)="logout()" style="cursor: pointer;">
+              Logout
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</ng-container>
