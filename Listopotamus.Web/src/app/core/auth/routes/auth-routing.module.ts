@@ -5,10 +5,11 @@ import { RegistrationComponent } from "../components/register/registration.compo
 import { TwoFaSetupComponent } from "../components/two-factor-auth/two-fa-setup/two-fa-setup.component";
 import { TwoFaVerifyComponent } from "../components/two-factor-auth/two-fa-verify/two-fa-verify.component";
 import { NgModule } from "@angular/core";
+import { NoAuthGuard } from "../guards/no-auth.guard";
 
 const routes: Routes = [
-  { path: "login", component: LoginComponent },
-  { path: "registration", component: RegistrationComponent },
+  { path: "login", component: LoginComponent, canActivate: [NoAuthGuard] },
+  { path: "registration", component: RegistrationComponent, canActivate: [NoAuthGuard] },
   {
     path: "manage/2fa/setup",
     component: TwoFaSetupComponent,
