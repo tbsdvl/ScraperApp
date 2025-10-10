@@ -4,14 +4,14 @@ import { finalize } from "rxjs/operators";
 
 import { TwoFaCommand } from "../../../commands/two-fa.command";
 import { Manage2FAInfoModel } from "../../../models/manage-2fa-info.model";
-import { BaseIdentityComponent } from "../../base-identity/base-identity.component";
+import { BaseComponent } from "../../../../components/base/base.component";
 
 @Component({
   selector: "app-two-fa-setup",
   templateUrl: "./two-fa-setup.component.html",
   standalone: false,
 })
-export class TwoFaSetupComponent extends BaseIdentityComponent {
+export class TwoFaSetupComponent extends BaseComponent {
   private readonly formBuilder = inject(FormBuilder);
 
   public info: Manage2FAInfoModel | null = null;

@@ -1,10 +1,8 @@
 import { NgModule } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { RouterModule } from "@angular/router";
 import { LoginComponent } from "./components/login/login.component";
 import { RegistrationComponent } from "./components/register/registration.component";
-import { LogoutComponent } from "./components/logout/logout.component";
 import { TwoFaSetupComponent } from "./components/two-factor-auth/two-fa-setup/two-fa-setup.component";
 import { TwoFaVerifyComponent } from "./components/two-factor-auth/two-fa-verify/two-fa-verify.component";
 
@@ -20,7 +18,6 @@ import { RegistrationFormComponent } from "./components/register/registration-fo
   declarations: [
     LoginComponent,
     RegistrationComponent,
-    LogoutComponent,
     TwoFaSetupComponent,
     TwoFaVerifyComponent,
     LoginFormComponent,

@@ -1,14 +1,14 @@
 import { Component } from "@angular/core";
 
 import { LoginModel } from "../../models/login.model";
-import { BaseIdentityComponent } from "../base-identity/base-identity.component";
+import { BaseComponent } from "../../../components/base/base.component";
 
 @Component({
   selector: "app-login",
   templateUrl: "./login.component.html",
   standalone: false,
 })
-export class LoginComponent extends BaseIdentityComponent {
+export class LoginComponent extends BaseComponent {
   public loaded = false;
   public showTwoFactorCodeControl: boolean = false;
 

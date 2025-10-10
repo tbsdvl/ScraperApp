@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { BaseIdentityComponent } from '../../core/auth/components/base-identity/base-identity.component';
+import { BaseComponent } from '../../core/components/base/base.component';
 
 @Component({
   selector: 'app-header',
   standalone: false,
   templateUrl: './header.component.html',
 })
-export class HeaderComponent extends BaseIdentityComponent { 
+export class HeaderComponent extends BaseComponent { 
 
   constructor() {
     super();    
