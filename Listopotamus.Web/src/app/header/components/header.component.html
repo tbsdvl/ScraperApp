@@ -33,6 +33,19 @@
               Register
             </a>
           </li>
+
+          <li class="nav-item dropdown" *ngIf="isLoggedIn">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Settings
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a class="dropdown-item" routerLink="/manage/2fa/setup" routerLinkActive="active">
+                  Two-Factor Authentication Setup
+                </a>
+              </li>
+            </ul>
+          </li>
           
           <!-- Links for authenticated users -->
           <li class="nav-item" *ngIf="isLoggedIn">
