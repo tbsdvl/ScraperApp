@@ -52,7 +52,6 @@ export abstract class BaseComponent implements OnInit, OnDestroy {
       .pipe(this.takeUntilDestroyed())
       .subscribe({
         next: (result) => {
-          console.log("authenticated");
           if (result.email) {
             this.isLoggedIn = true;
           } else {

@@ -51,8 +51,9 @@ export class TwoFaSetupComponent extends BaseIdentityComponent {
     this.executeAction(
       { action: "Enable", twoFactorCode: code },
       "Two-factor authentication has been enabled.",
+      () => {},
       () => {
-        this.enableForm.reset();
+        this.navigate(["/manage/2fa/verify"]);
       }
     );
   }
@@ -104,7 +105,8 @@ export class TwoFaSetupComponent extends BaseIdentityComponent {
   private executeAction(
     command: TwoFaCommand,
     successMessage: string,
-    onSuccess?: () => void
+    onSuccess?: () => void,
+    onError?: () => void,
   ): void {
     this.actionError = null;
     this.isActionLoading = true;
@@ -124,6 +126,7 @@ export class TwoFaSetupComponent extends BaseIdentityComponent {
           this.loadTwoFactorInfo();
         },
         error: (error) => {
+          onError?.();
           this.actionError = "We couldn't process your request. Please try again.";
           this.handleError(error, this.actionError);
         },
