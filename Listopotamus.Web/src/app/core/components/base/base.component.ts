@@ -1,9 +1,10 @@
 import { Component, inject, OnDestroy, OnInit } from "@angular/core";
-import { ActivatedRoute, NavigationExtras, Router } from "@angular/router";
-import { MonoTypeOperatorFunction, Observable, Subject, takeUntil } from "rxjs";
-import { finalize } from "rxjs/operators";
+import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from "@angular/router";
+import { MonoTypeOperatorFunction, Observable, Subject, Subscription, takeUntil } from "rxjs";
+import { filter, finalize } from "rxjs/operators";
 import { ProxyApiService } from "../../services/proxy-api.service";
 import { NotificationService } from "../../services/notification.service";
+import { IdentityApiService } from "../../auth/services/identity-api.service";
 
 @Component({
   selector: "app-base",
@@ -14,6 +15,9 @@ export abstract class BaseComponent implements OnInit, OnDestroy {
   protected readonly notificationService = inject(NotificationService);
   protected readonly router = inject(Router);
   protected readonly route = inject(ActivatedRoute);
+  protected identityApiService = inject(IdentityApiService);
+  protected isLoggedIn: boolean = false;
+  private routeSubscription!: Subscription;
 
   protected readonly destroy$ = new Subject<void>();
   public isLoading = false;
@@ -28,9 +32,45 @@ export abstract class BaseComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  protected onInit(): void {}
+  protected onInit(): void {
+    // Listen to navigation end events to detect when navigation completes
+    this.routeSubscription = this.router.events
+      .pipe(
+        filter(event => event instanceof NavigationEnd),
+        this.takeUntilDestroyed()
+      )
+      .subscribe(() => {
+        this.checkAuthentication();
+      });
+    
+    // Also check authentication on initial load
+    this.checkAuthentication();
+  }
 
-  protected onDestroy(): void {}
+  private checkAuthentication(): void {
+    this.identityApiService.getManageInfo()
+      .pipe(this.takeUntilDestroyed())
+      .subscribe({
+        next: (result) => {
+          console.log("authenticated");
+          if (result.email) {
+            this.isLoggedIn = true;
+          } else {
+            this.isLoggedIn = false;
+          }
+        },
+        error: error => {
+          this.isLoggedIn = false;
+          this.navigate(["/login"]);
+        }
+      });
+  }
+
+  protected onDestroy(): void {
+    if (this.routeSubscription) {
+      this.routeSubscription.unsubscribe();
+    }
+  }
 
   protected startLoading(): void {
     this.isLoading = true;

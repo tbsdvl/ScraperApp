@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
 import { BaseIdentityComponent } from '../../core/auth/components/base-identity/base-identity.component';
 
 @Component({
@@ -7,34 +6,23 @@ import { BaseIdentityComponent } from '../../core/auth/components/base-identity/
   standalone: false,
   templateUrl: './header.component.html',
 })
-export class HeaderComponent extends BaseIdentityComponent {
-  public isLoggedIn: boolean = false;
-  
-  public override ngOnInit(): void {
-    this.withLoading(this.identityApiService.getManageInfo())
-      .pipe(this.takeUntilDestroyed())
-      .subscribe({
-        next: (result) => {
-          if (result.email) {
-            this.isLoggedIn = true;
-          }
-        }
-      });
+export class HeaderComponent extends BaseIdentityComponent { 
+
+  constructor() {
+    super();    
   }
 
   public logout(): void {
-    this.withLoading(this.identityApiService.logout())
+    this.identityApiService.logout()
       .pipe(this.takeUntilDestroyed())
       .subscribe({
         next: () => {
           this.isLoggedIn = false;
-          this.router.navigate(['/']);
+          this.navigate(["/login"]);
         },
         error: (error) => {
           console.error('Logout failed:', error);
-          // Even if there's an error, we should update the UI state
           this.isLoggedIn = false;
-          this.router.navigate(['/']);
         }
       });
   }

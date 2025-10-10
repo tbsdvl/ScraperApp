@@ -12,25 +12,13 @@ export class LoginComponent extends BaseIdentityComponent {
   public loaded = false;
   public showTwoFactorCodeControl: boolean = false;
 
-  public override ngOnInit(): void {
-    this.withLoading(this.identityApiService.getManageInfo())
-      .pipe(this.takeUntilDestroyed())
-      .subscribe({
-        next: () => {
-          this.navigate([""]);
-        },
-        error: () => {
-          
-        }
-      });
-  }
-
   public onSubmit(model: LoginModel): void {
-    this.withLoading(this.identityApiService.login(model))
+    this.identityApiService.login(model)
       .pipe(this.takeUntilDestroyed())
       .subscribe({
         next: () => {
           this.notifySuccess("Signed in successfully.");
+          this.navigate([""]);
         },
         error: error => this.handleError(error, "Unable to sign in."),
       });
